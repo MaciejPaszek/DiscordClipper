@@ -8,7 +8,7 @@ namespace DiscordClipper
          * Obiekty Globalne
          *******************************************************/
 
-        const string SettingsFilePath = "settings.txt";
+        private readonly string SettingsFilePath = Application.UserAppDataPath + "\\settings.txt";
 
         // Okno ustawień
         FormSettings? FormSettings;
@@ -51,8 +51,6 @@ namespace DiscordClipper
 
             // Utwórz formularz ustawień
             FormSettings = new FormSettings(settings);
-
-            
         }
 
 
@@ -158,6 +156,7 @@ namespace DiscordClipper
 
             if (FormSettings.DialogResult == DialogResult.OK)
             {
+                FormSettings.Settings.ConsoleFontSize = (int)numericUpDownConsoleFontSize.Value;
                 SaveSettings(FormSettings.Settings, SettingsFilePath);
                 ApplySettings(FormSettings.Settings);
             }
@@ -228,6 +227,7 @@ namespace DiscordClipper
         void UpdateConsoleFontSize()
         {
             richTextBoxConsole.Font = new Font(richTextBoxConsole.Font.FontFamily, (float)numericUpDownConsoleFontSize.Value, richTextBoxConsole.Font.Style);
+            groupBoxConsole.Invalidate();
         }
 
         private void ButtonClearConsole_Click(object sender, EventArgs e)

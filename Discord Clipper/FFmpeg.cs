@@ -24,11 +24,12 @@ namespace DiscordClipper
         };
 
         public static readonly Option[] Resolutions = {
-            new Option("144p",  "256x144"),
-            new Option("240p",  "427x240"),
-            new Option("360p",  "640x360"),
-            new Option("480p",  "854x480"),
-            new Option("720p", "1280x720")
+            new Option( "144p",   "256x144"),
+            new Option( "240p",   "427x240"),
+            new Option( "360p",   "640x360"),
+            new Option( "480p",   "854x480"),
+            new Option( "720p",  "1280x720"),
+            new Option("1080p", "1920x1080"),
         };
 
         public static readonly Option[] FrameRates = {

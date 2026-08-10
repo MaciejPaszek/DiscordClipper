@@ -8,11 +8,15 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>Discord Clipper</AssemblyName>
-    <ApplicationIcon>Resources\Kompresja Powtórek.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Discord Clipper.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Resources\Kompresja Powtórek.ico" />
+    <None Remove="Resources\Replay.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Discord Clipper.ico" />
   </ItemGroup>
 
   <ItemGroup>

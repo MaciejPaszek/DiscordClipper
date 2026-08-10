@@ -40,7 +40,7 @@
             buttonSettings = new Button();
             buttonActivate = new Button();
             splitContainerOutput = new SplitContainer();
-            groupBox1 = new GroupBox();
+            groupBoxConsole = new GroupBox();
             tableLayoutPanel6 = new TableLayoutPanel();
             tableLayoutPanel8 = new TableLayoutPanel();
             buttonClearConsole = new Button();
@@ -57,7 +57,7 @@
             splitContainerOutput.Panel1.SuspendLayout();
             splitContainerOutput.Panel2.SuspendLayout();
             splitContainerOutput.SuspendLayout();
-            groupBox1.SuspendLayout();
+            groupBoxConsole.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
             tableLayoutPanel8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownConsoleFontSize).BeginInit();
@@ -94,7 +94,7 @@
             // 
             // pictureBoxThumbnail
             // 
-            pictureBoxThumbnail.BackgroundImage = Properties.Resources.Replay;
+            pictureBoxThumbnail.BackgroundImage = (Image)resources.GetObject("pictureBoxThumbnail.BackgroundImage");
             pictureBoxThumbnail.BackgroundImageLayout = ImageLayout.Zoom;
             pictureBoxThumbnail.Dock = DockStyle.Fill;
             pictureBoxThumbnail.Location = new Point(3, 3);
@@ -200,7 +200,7 @@
             // 
             // splitContainerOutput.Panel1
             // 
-            splitContainerOutput.Panel1.Controls.Add(groupBox1);
+            splitContainerOutput.Panel1.Controls.Add(groupBoxConsole);
             // 
             // splitContainerOutput.Panel2
             // 
@@ -209,18 +209,18 @@
             splitContainerOutput.SplitterDistance = 170;
             splitContainerOutput.TabIndex = 3;
             // 
-            // groupBox1
+            // groupBoxConsole
             // 
-            groupBox1.Controls.Add(tableLayoutPanel6);
-            groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(0, 0);
-            groupBox1.Margin = new Padding(10, 5, 10, 10);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Padding = new Padding(7);
-            groupBox1.Size = new Size(364, 170);
-            groupBox1.TabIndex = 3;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Konsola";
+            groupBoxConsole.Controls.Add(tableLayoutPanel6);
+            groupBoxConsole.Dock = DockStyle.Fill;
+            groupBoxConsole.Location = new Point(0, 0);
+            groupBoxConsole.Margin = new Padding(10, 5, 10, 10);
+            groupBoxConsole.Name = "groupBoxConsole";
+            groupBoxConsole.Padding = new Padding(7);
+            groupBoxConsole.Size = new Size(364, 170);
+            groupBoxConsole.TabIndex = 3;
+            groupBoxConsole.TabStop = false;
+            groupBoxConsole.Text = "Konsola";
             // 
             // tableLayoutPanel6
             // 
@@ -328,8 +328,8 @@
             splitContainerOutput.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainerOutput).EndInit();
             splitContainerOutput.ResumeLayout(false);
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            groupBoxConsole.ResumeLayout(false);
+            groupBoxConsole.PerformLayout();
             tableLayoutPanel6.ResumeLayout(false);
             tableLayoutPanel6.PerformLayout();
             tableLayoutPanel8.ResumeLayout(false);
@@ -348,7 +348,7 @@
         private Label labelFontSize;
         private NumericUpDown numericUpDownConsoleFontSize;
         private SplitContainer splitContainerOutput;
-        private GroupBox groupBox1;
+        private GroupBox groupBoxConsole;
         private TableLayoutPanel tableLayoutPanel6;
         private RichTextBox richTextBoxConsole;
         private TableLayoutPanel tableLayoutPanel8;
