@@ -39,8 +39,10 @@ namespace DiscordClipper
         };
 
         public static readonly Option[] Encoders = {
-            new Option("CPU", "libx264"),
-            new Option("GPU", "h264_nvenc")
+            new Option("x264", "libx264"),
+            new Option("AMD AMF H.264", "h264_amf"),
+            new Option("Intel Quick Sync Video H.264", "h264_qsv"),
+            new Option("NVIDIA NVENC H.264", "h264_nvenc")
         };
 
         public FFmpeg()
@@ -178,6 +180,7 @@ namespace DiscordClipper
         public string ResolutionName = string.Empty;
         public string FrameRate = string.Empty;
         public string Encoder = string.Empty;
+        public string MaxVideoBitrate = string.Empty;
 
         // Zdarzenia
         public event EventHandler<ClipAddedEventArgs>? ClipAdded;
@@ -191,39 +194,38 @@ namespace DiscordClipper
         // Argumenty zdarzeń
         public class ClipAddedEventArgs : EventArgs
         {
-            public string ClipFilePath { get; set; }
-            public string ClipFileName { get; set; }
+            public string ClipFilePath { get; set; } = string.Empty;
+            public string ClipFileName { get; set; } = string.Empty;
         }
         public class FFmpegErrorEventArgs : EventArgs
         {
             // Nazwa klipu, dla którego wystapił błąd
-            public string ClipFileName { get; set; }
-            public string ErrorMessage { get; set; }
+            public string ClipFileName { get; set; } = string.Empty;
+            public string ErrorMessage { get; set; } = string.Empty;
         }
         public class ConversionStartedEventArgs : EventArgs
         {
             // Nazwa klipu, dla którego wystapił błąd
-            public string ClipFileName { get; set; }
+            public string ClipFileName { get; set; } = string.Empty;
         }
 
         public class ThumbnailCreatedEventArgs : EventArgs
         {
             // Nazwa klipu, dla którego utworzono miniaturę
-            public string ClipFileName { get; set; }
-            public string ThumbnailFilePath { get; set; }
+            public string ClipFileName { get; set; } = string.Empty;
+            public string ThumbnailFilePath { get; set; } = string.Empty;
         }
         public class ProgressChangedEventArgs : EventArgs
         {
-            public string ClipFileName { get; set; }
+            public string ClipFileName { get; set; } = string.Empty;
             public int Frame { get; set; }
             public int FrameCount { get; set; }
         }
         public class VideoCreatedEventArgs : EventArgs
         {
-            public string ClipFileName { get; set; }
-
-            public string OutputFilePath { get; set; }
-            public string OutputFileName { get; set; }
+            public string ClipFileName { get; set; } = string.Empty;
+            public string OutputFilePath { get; set; } = string.Empty;
+            public string OutputFileName { get; set; } = string.Empty;
             public int FrameCount { get; set; }
         }
 
@@ -257,8 +259,17 @@ namespace DiscordClipper
         {
             // Proces FFprobe do liczenia klatek filmu
             Process countProcess = new Process();
+            
+            string command = $"/C ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 \"{inputFile}\"";
+
+            // Pokaż dla testów
+            if(CreateNoWindow == false)
+            {
+                command += " & pause";
+            }
+
             countProcess.StartInfo.FileName = "cmd.exe";
-            countProcess.StartInfo.Arguments = $"/C ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 \"{inputFile}\"";
+            countProcess.StartInfo.Arguments = command;
 
             // Nie używaj Shella
             countProcess.StartInfo.UseShellExecute = false;
@@ -307,10 +318,19 @@ namespace DiscordClipper
         {
             // Proces FFmpeg do tworzenia miniatury
             Process thumbnailProcess = new Process();
+
+            string command = $"/C ffmpeg -y -i \"{inputFilePath}\" -frames:v 1 -update true \"{thumbnailFilePath}\"";
+
+            // Pokaż dla testów
+            if (CreateNoWindow == false)
+            {
+                command += " & pause";
+            }
+
             thumbnailProcess.StartInfo.FileName = "cmd.exe";
 
             // Komenda FFmpeg
-            thumbnailProcess.StartInfo.Arguments = $"/C ffmpeg -y -i \"{inputFilePath}\" -frames:v 1 -update true \"{thumbnailFilePath}\"";
+            thumbnailProcess.StartInfo.Arguments = command;
 
             // Nie używaj Shella
             thumbnailProcess.StartInfo.UseShellExecute = false;
@@ -342,8 +362,17 @@ namespace DiscordClipper
         {
             // Proces FFmpeg
             Process videoProcess = new Process();
+
+            string command = $"/C ffmpeg -y -progress pipe:1 -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -maxrate {MaxVideoBitrate}k -c:a copy \"{outputFilePath}\"";
+
+            // Pokaż dla testów
+            if (CreateNoWindow == false)
+            {
+                command += " & pause";
+            }
+
             videoProcess.StartInfo.FileName = "cmd.exe";
-            videoProcess.StartInfo.Arguments = $"/C ffmpeg -y -progress pipe:1 -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -c:a copy \"{outputFilePath}\"";
+            videoProcess.StartInfo.Arguments = command;
 
             // Nie używaj Shella
             videoProcess.StartInfo.UseShellExecute = false;

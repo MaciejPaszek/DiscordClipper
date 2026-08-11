@@ -42,10 +42,7 @@
             splitContainerOutput = new SplitContainer();
             groupBoxConsole = new GroupBox();
             tableLayoutPanel6 = new TableLayoutPanel();
-            tableLayoutPanel8 = new TableLayoutPanel();
             buttonClearConsole = new Button();
-            numericUpDownConsoleFontSize = new NumericUpDown();
-            labelFontSize = new Label();
             richTextBoxConsole = new RichTextBox();
             groupBoxOutput.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -59,8 +56,6 @@
             splitContainerOutput.SuspendLayout();
             groupBoxConsole.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
-            tableLayoutPanel8.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownConsoleFontSize).BeginInit();
             SuspendLayout();
             // 
             // groupBoxOutput
@@ -227,7 +222,7 @@
             tableLayoutPanel6.AutoSize = true;
             tableLayoutPanel6.ColumnCount = 1;
             tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel6.Controls.Add(tableLayoutPanel8, 0, 1);
+            tableLayoutPanel6.Controls.Add(buttonClearConsole, 0, 1);
             tableLayoutPanel6.Controls.Add(richTextBoxConsole, 0, 0);
             tableLayoutPanel6.Dock = DockStyle.Fill;
             tableLayoutPanel6.Location = new Point(7, 23);
@@ -238,70 +233,27 @@
             tableLayoutPanel6.Size = new Size(350, 140);
             tableLayoutPanel6.TabIndex = 0;
             // 
-            // tableLayoutPanel8
-            // 
-            tableLayoutPanel8.AutoSize = true;
-            tableLayoutPanel8.ColumnCount = 3;
-            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
-            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel8.Controls.Add(buttonClearConsole, 2, 0);
-            tableLayoutPanel8.Controls.Add(numericUpDownConsoleFontSize, 1, 0);
-            tableLayoutPanel8.Controls.Add(labelFontSize, 0, 0);
-            tableLayoutPanel8.Dock = DockStyle.Fill;
-            tableLayoutPanel8.Location = new Point(0, 111);
-            tableLayoutPanel8.Margin = new Padding(0);
-            tableLayoutPanel8.Name = "tableLayoutPanel8";
-            tableLayoutPanel8.RowCount = 1;
-            tableLayoutPanel8.RowStyles.Add(new RowStyle());
-            tableLayoutPanel8.Size = new Size(350, 29);
-            tableLayoutPanel8.TabIndex = 9;
-            // 
             // buttonClearConsole
             // 
             buttonClearConsole.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonClearConsole.Location = new Point(247, 3);
+            buttonClearConsole.Location = new Point(247, 114);
             buttonClearConsole.Name = "buttonClearConsole";
             buttonClearConsole.Size = new Size(100, 23);
-            buttonClearConsole.TabIndex = 14;
+            buttonClearConsole.TabIndex = 15;
             buttonClearConsole.Text = "Wyczyść";
             buttonClearConsole.UseVisualStyleBackColor = true;
             buttonClearConsole.Click += ButtonClearConsole_Click;
             // 
-            // numericUpDownConsoleFontSize
-            // 
-            numericUpDownConsoleFontSize.Location = new Point(153, 3);
-            numericUpDownConsoleFontSize.Maximum = new decimal(new int[] { 36, 0, 0, 0 });
-            numericUpDownConsoleFontSize.Minimum = new decimal(new int[] { 8, 0, 0, 0 });
-            numericUpDownConsoleFontSize.Name = "numericUpDownConsoleFontSize";
-            numericUpDownConsoleFontSize.Size = new Size(60, 23);
-            numericUpDownConsoleFontSize.TabIndex = 11;
-            numericUpDownConsoleFontSize.Value = new decimal(new int[] { 9, 0, 0, 0 });
-            numericUpDownConsoleFontSize.ValueChanged += NumericUpDownConsoleFontSize_ValueChanged;
-            // 
-            // labelFontSize
-            // 
-            labelFontSize.AutoSize = true;
-            labelFontSize.Dock = DockStyle.Top;
-            labelFontSize.Location = new Point(3, 5);
-            labelFontSize.Margin = new Padding(3, 5, 3, 0);
-            labelFontSize.MinimumSize = new Size(0, 23);
-            labelFontSize.Name = "labelFontSize";
-            labelFontSize.Size = new Size(144, 23);
-            labelFontSize.TabIndex = 10;
-            labelFontSize.Text = "Rozmiar czcionki konsoli";
-            // 
             // richTextBoxConsole
             // 
+            richTextBoxConsole.BackColor = SystemColors.Control;
             richTextBoxConsole.BorderStyle = BorderStyle.None;
             richTextBoxConsole.Dock = DockStyle.Fill;
             richTextBoxConsole.Font = new Font("Consolas", 9F);
-            richTextBoxConsole.Location = new Point(10, 10);
-            richTextBoxConsole.Margin = new Padding(10);
+            richTextBoxConsole.Location = new Point(3, 3);
             richTextBoxConsole.Name = "richTextBoxConsole";
             richTextBoxConsole.ReadOnly = true;
-            richTextBoxConsole.Size = new Size(330, 91);
+            richTextBoxConsole.Size = new Size(344, 105);
             richTextBoxConsole.TabIndex = 1;
             richTextBoxConsole.Text = "";
             // 
@@ -331,10 +283,6 @@
             groupBoxConsole.ResumeLayout(false);
             groupBoxConsole.PerformLayout();
             tableLayoutPanel6.ResumeLayout(false);
-            tableLayoutPanel6.PerformLayout();
-            tableLayoutPanel8.ResumeLayout(false);
-            tableLayoutPanel8.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownConsoleFontSize).EndInit();
             ResumeLayout(false);
         }
 
@@ -345,17 +293,14 @@
         private ProgressBar progressBarOutput;
         private TableLayoutPanel tableLayoutPanelMain;
         private TableLayoutPanel tableLayoutPanel1;
-        private Label labelFontSize;
-        private NumericUpDown numericUpDownConsoleFontSize;
         private SplitContainer splitContainerOutput;
         private GroupBox groupBoxConsole;
         private TableLayoutPanel tableLayoutPanel6;
         private RichTextBox richTextBoxConsole;
-        private TableLayoutPanel tableLayoutPanel8;
-        private Button buttonClearConsole;
         private GroupBox groupBox2;
         private TableLayoutPanel tableLayoutPanel2;
         private Button buttonSettings;
         private Button buttonActivate;
+        private Button buttonClearConsole;
     }
 }

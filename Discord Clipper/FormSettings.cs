@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-
-namespace DiscordClipper
+﻿namespace DiscordClipper
 {
     public struct Settings
     {
@@ -22,6 +14,7 @@ namespace DiscordClipper
         public int Resolution = 2;
         public int FrameRate = 1;
         public int Encoder = 1;
+        public int MaxVideoBitrate = 2600;
 
         public string DiscordWebhook = string.Empty;
         public int DiscordMode = 0;
@@ -73,6 +66,7 @@ namespace DiscordClipper
             comboBoxResolution.SelectedIndex = settings.Resolution;
             comboBoxFrameRate.SelectedIndex = settings.FrameRate;
             comboBoxEncoder.SelectedIndex = settings.Encoder;
+            numericUpDownMaxVideoBitrate.Value = settings.MaxVideoBitrate;
 
             textBoxDiscordWebhook.Text = settings.DiscordWebhook;
             comboBoxDiscordMode.SelectedIndex = settings.DiscordMode;
@@ -152,6 +146,7 @@ namespace DiscordClipper
             Settings.Resolution = comboBoxResolution.SelectedIndex;
             Settings.FrameRate = comboBoxFrameRate.SelectedIndex;
             Settings.Encoder = comboBoxEncoder.SelectedIndex;
+            Settings.MaxVideoBitrate = (int) numericUpDownMaxVideoBitrate.Value;
 
             Settings.DiscordWebhook = textBoxDiscordWebhook.Text;
             Settings.DiscordMode = comboBoxDiscordMode.SelectedIndex;

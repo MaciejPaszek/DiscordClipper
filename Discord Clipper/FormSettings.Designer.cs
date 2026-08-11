@@ -43,6 +43,10 @@
             label6 = new Label();
             label7 = new Label();
             label8 = new Label();
+            label12 = new Label();
+            tableLayoutPanel8 = new TableLayoutPanel();
+            label13 = new Label();
+            numericUpDownMaxVideoBitrate = new NumericUpDown();
             groupBox4 = new GroupBox();
             tableLayoutPanel7 = new TableLayoutPanel();
             buttonShowDiscordWebhook = new Button();
@@ -74,6 +78,8 @@
             tableLayoutPanel1.SuspendLayout();
             groupBox3.SuspendLayout();
             tableLayoutPanel5.SuspendLayout();
+            tableLayoutPanel8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownMaxVideoBitrate).BeginInit();
             groupBox4.SuspendLayout();
             tableLayoutPanel7.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
@@ -115,7 +121,7 @@
             groupBox3.Margin = new Padding(10, 5, 10, 10);
             groupBox3.MinimumSize = new Size(350, 0);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(464, 177);
+            groupBox3.Size = new Size(464, 208);
             groupBox3.TabIndex = 5;
             groupBox3.TabStop = false;
             groupBox3.Text = "Ustawienia Wyjścia";
@@ -138,16 +144,19 @@
             tableLayoutPanel5.Controls.Add(label6, 0, 4);
             tableLayoutPanel5.Controls.Add(label7, 0, 3);
             tableLayoutPanel5.Controls.Add(label8, 0, 2);
+            tableLayoutPanel5.Controls.Add(label12, 0, 5);
+            tableLayoutPanel5.Controls.Add(tableLayoutPanel8, 1, 5);
             tableLayoutPanel5.Dock = DockStyle.Fill;
             tableLayoutPanel5.Location = new Point(3, 19);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
-            tableLayoutPanel5.RowCount = 5;
+            tableLayoutPanel5.RowCount = 6;
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
-            tableLayoutPanel5.Size = new Size(458, 155);
+            tableLayoutPanel5.RowStyles.Add(new RowStyle());
+            tableLayoutPanel5.Size = new Size(458, 186);
             tableLayoutPanel5.TabIndex = 8;
             // 
             // label4
@@ -204,11 +213,12 @@
             // 
             // comboBoxEncoder
             // 
+            comboBoxEncoder.Dock = DockStyle.Top;
             comboBoxEncoder.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxEncoder.FormattingEnabled = true;
             comboBoxEncoder.Location = new Point(163, 127);
             comboBoxEncoder.Name = "comboBoxEncoder";
-            comboBoxEncoder.Size = new Size(60, 23);
+            comboBoxEncoder.Size = new Size(242, 23);
             comboBoxEncoder.TabIndex = 7;
             // 
             // comboBoxFrameRate
@@ -262,12 +272,62 @@
             label8.TabIndex = 0;
             label8.Text = "Rozdzielczość";
             // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(3, 160);
+            label12.Margin = new Padding(3, 5, 3, 3);
+            label12.MinimumSize = new Size(0, 23);
+            label12.Name = "label12";
+            label12.Size = new Size(112, 23);
+            label12.TabIndex = 10;
+            label12.Text = "Limit przepływności";
+            // 
+            // tableLayoutPanel8
+            // 
+            tableLayoutPanel8.AutoSize = true;
+            tableLayoutPanel8.ColumnCount = 2;
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel8.Controls.Add(label13, 1, 0);
+            tableLayoutPanel8.Controls.Add(numericUpDownMaxVideoBitrate, 0, 0);
+            tableLayoutPanel8.Dock = DockStyle.Top;
+            tableLayoutPanel8.Location = new Point(160, 155);
+            tableLayoutPanel8.Margin = new Padding(0);
+            tableLayoutPanel8.Name = "tableLayoutPanel8";
+            tableLayoutPanel8.RowCount = 1;
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel8.Size = new Size(248, 31);
+            tableLayoutPanel8.TabIndex = 12;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(69, 5);
+            label13.Margin = new Padding(3, 5, 3, 3);
+            label13.MinimumSize = new Size(0, 23);
+            label13.Name = "label13";
+            label13.Size = new Size(37, 23);
+            label13.TabIndex = 12;
+            label13.Text = "kbit/s";
+            // 
+            // numericUpDownMaxVideoBitrate
+            // 
+            numericUpDownMaxVideoBitrate.Location = new Point(3, 3);
+            numericUpDownMaxVideoBitrate.Maximum = new decimal(new int[] { 12000, 0, 0, 0 });
+            numericUpDownMaxVideoBitrate.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
+            numericUpDownMaxVideoBitrate.Name = "numericUpDownMaxVideoBitrate";
+            numericUpDownMaxVideoBitrate.Size = new Size(60, 23);
+            numericUpDownMaxVideoBitrate.TabIndex = 11;
+            numericUpDownMaxVideoBitrate.TextAlign = HorizontalAlignment.Right;
+            numericUpDownMaxVideoBitrate.Value = new decimal(new int[] { 1000, 0, 0, 0 });
+            // 
             // groupBox4
             // 
             groupBox4.AutoSize = true;
             groupBox4.Controls.Add(tableLayoutPanel7);
             groupBox4.Dock = DockStyle.Fill;
-            groupBox4.Location = new Point(10, 367);
+            groupBox4.Location = new Point(10, 398);
             groupBox4.Margin = new Padding(10, 5, 10, 10);
             groupBox4.MinimumSize = new Size(350, 0);
             groupBox4.Name = "groupBox4";
@@ -597,18 +657,18 @@
             tableLayoutPanel4.Controls.Add(buttonAccept, 1, 0);
             tableLayoutPanel4.Controls.Add(buttonCancel, 0, 0);
             tableLayoutPanel4.Dock = DockStyle.Fill;
-            tableLayoutPanel4.Location = new Point(0, 492);
+            tableLayoutPanel4.Location = new Point(0, 523);
             tableLayoutPanel4.Margin = new Padding(0);
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle());
-            tableLayoutPanel4.Size = new Size(484, 69);
+            tableLayoutPanel4.Size = new Size(484, 38);
             tableLayoutPanel4.TabIndex = 6;
             // 
             // buttonAccept
             // 
             buttonAccept.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonAccept.Location = new Point(406, 43);
+            buttonAccept.Location = new Point(406, 12);
             buttonAccept.Name = "buttonAccept";
             buttonAccept.Size = new Size(75, 23);
             buttonAccept.TabIndex = 8;
@@ -619,7 +679,7 @@
             // buttonCancel
             // 
             buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonCancel.Location = new Point(325, 43);
+            buttonCancel.Location = new Point(325, 12);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(75, 23);
             buttonCancel.TabIndex = 7;
@@ -645,6 +705,9 @@
             groupBox3.PerformLayout();
             tableLayoutPanel5.ResumeLayout(false);
             tableLayoutPanel5.PerformLayout();
+            tableLayoutPanel8.ResumeLayout(false);
+            tableLayoutPanel8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownMaxVideoBitrate).EndInit();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
             tableLayoutPanel7.ResumeLayout(false);
@@ -708,5 +771,9 @@
         private ComboBox comboBoxColorMode;
         private ComboBox comboBoxInputFileFormat;
         private TextBox textBoxInputFolder;
+        private Label label12;
+        private NumericUpDown numericUpDownMaxVideoBitrate;
+        private TableLayoutPanel tableLayoutPanel8;
+        private Label label13;
     }
 }
