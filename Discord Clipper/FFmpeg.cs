@@ -18,7 +18,12 @@ namespace DiscordClipper
     {
         public const bool CreateNoWindow = true;
 
-        public static readonly Option[] FileFormats = {
+        public static readonly Option[] InputFileFormats = {
+            new Option("*.mkv", "mkv"),
+            new Option("*.mp4", "mp4")
+        };
+
+        public static readonly Option[] OutputFileFormats = {
             new Option("*.mkv", "mkv"),
             new Option("*.mp4", "mp4")
         };

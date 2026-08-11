@@ -1,43 +1,28 @@
 ﻿namespace DiscordClipper
 {
-    public struct Settings
-    {
-        public Settings() { }
-
-        public int ColorMode = 0;
-
-        public string InputFolder = string.Empty;
-        public int InputFileFormat = 0;
-
-        public string OutputFolder = string.Empty;
-        public int OutputFileFormat = 1;
-        public int Resolution = 2;
-        public int FrameRate = 1;
-        public int Encoder = 1;
-        public int MaxVideoBitrate = 2600;
-
-        public string DiscordWebhook = string.Empty;
-        public int DiscordMode = 0;
-        public string DiscordShortcut = string.Empty;
-
-        public int ConsoleFontSize = 9;
-    };
-
     public partial class FormSettings : Form
     {
-        public Settings Settings;
-
+        // Pokaż okno dialogowe jeden raz
         private bool ShowColorModeMessageBox = true;
+
+        public Settings? Settings { get; private set; }
 
         public FormSettings(Settings settings)
         {
             InitializeComponent();
-
+            
+            // PRzyjmij ustawienia razem z nazwą profilu
             Settings = settings;
+            
+            // Opcje list rozwijanych
 
-            foreach (Option option in FFmpeg.FileFormats)
+            foreach (Option option in FFmpeg.InputFileFormats)
             {
                 comboBoxInputFileFormat.Items.Add(option.Name);
+            }
+
+            foreach (Option option in FFmpeg.OutputFileFormats)
+            {
                 comboBoxOutputFileFormat.Items.Add(option.Name);
             }
 
@@ -56,6 +41,8 @@
                 comboBoxEncoder.Items.Add(option.Name);
             }
 
+            // Ładowanie wartości do kontrolek
+
             comboBoxColorMode.SelectedIndex = settings.ColorMode;
 
             textBoxInputFolder.Text = settings.InputFolder;
@@ -72,6 +59,7 @@
             comboBoxDiscordMode.SelectedIndex = settings.DiscordMode;
             textBoxDiscordShortcut.Text = settings.DiscordShortcut;
         }
+
         private void ComboBoxColorMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBoxColorMode.IsHandleCreated && ShowColorModeMessageBox)
@@ -80,6 +68,7 @@
                 ShowColorModeMessageBox = false;
             }
         }
+
         private void ButtonFolder_Click(object sender, EventArgs e)
         {
             Button button = (Button)sender;
@@ -136,6 +125,11 @@
 
         private void ButtonAccept_Click(object sender, EventArgs e)
         {
+            if(Settings == null)
+            {
+                return;
+            }
+
             Settings.ColorMode = comboBoxColorMode.SelectedIndex;
 
             Settings.InputFolder = textBoxInputFolder.Text;
@@ -153,6 +147,7 @@
             Settings.DiscordShortcut = textBoxDiscordShortcut.Text;
 
             DialogResult = DialogResult.OK;
+
             Close();
         }
     }

@@ -1,4 +1,3 @@
-using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
 
 namespace DiscordClipper
@@ -9,8 +8,6 @@ namespace DiscordClipper
          * Obiekty Globalne
          *******************************************************/
 
-        private readonly string SettingsFilePath = Application.UserAppDataPath + "\\settings.txt";
-
         // Okno ustawień
         FormSettings? FormSettings;
 
@@ -19,6 +16,9 @@ namespace DiscordClipper
 
         // Czy monitorowanie plików jest aktywne
         private bool isWatcherActive = false;
+
+        // Klasa Settings
+        Settings? Settings;
 
         // Klasa FFmpeg
         FFmpeg? FFmpeg;
@@ -47,103 +47,21 @@ namespace DiscordClipper
             Discord.ClipSent += Discord_ClipSent;
             Discord.DiscordError += Discord_DiscordError;
 
+            // Utwórz obiekt klasy Settings zawierający ustawienia domyślne
+            string profileName = "settings";
+            Settings = new Settings(profileName);
+
             // Załaduj ustawienia z pliku settings.txt
-            Settings settings = LoadSettings(SettingsFilePath);
+            Settings.Load();
 
-            // Utwórz formularz ustawień
-            FormSettings = new FormSettings(settings);
-        }
+            // Zastosuj tryb kolorów (tylko raz na początku)
+            ApplyColorMode(Settings.ColorMode);
 
+            // Zastosuj ustawienia do obiektów FFmpeg i Discord
+            ApplySettings(Settings);
 
-
-        /*******************************************************
-         * Ustawienia
-         *******************************************************/
-
-        private Settings LoadSettings(string settingsFilePath)
-        {
-            // Ustawienia domyślne
-            Settings settings = new Settings();
-
-            // Jeśli plik ustawień nie istnieje, zwróć ustawienia domyślne
-            if (!File.Exists(settingsFilePath))
-            {
-                return settings;
-            }
-
-            StreamReader streamReader = File.OpenText(settingsFilePath);
-
-            if(streamReader == null)
-            {
-                return settings;
-            }
-
-            // Numer linii
-            int i = 0;
-
-            // Tekst linii
-            string? line;
-
-            // Czytaj koljene linie, aż do końca pliku
-            while ((line = streamReader.ReadLine()) != null)
-            {
-                try
-                {
-                    string[] parts = line.Split('=');
-
-                    if (parts.Length != 2)
-                    {
-                        continue;
-                    }
-
-                    string name = parts[0].Trim();
-                    string value = parts[1].Trim();
-
-                    if (name == "ColorMode") { settings.ColorMode = Convert.ToInt32(value); }
-
-                    if (name == "InputFolder") { settings.InputFolder = value; }
-                    if (name == "InputFileFormat") { settings.InputFileFormat = Convert.ToInt32(value); }
-
-                    if (name == "OutputFolder") { settings.OutputFolder = value; }
-                    if (name == "OutputFileFormat") { settings.OutputFileFormat = Convert.ToInt32(value); }
-                    if (name == "Resolution") { settings.Resolution = Convert.ToInt32(value); }
-                    if (name == "FrameRate") { settings.FrameRate = Convert.ToInt32(value); }
-                    if (name == "Encoder") { settings.Encoder = Convert.ToInt32(value); }
-
-                    if (name == "DiscordWebhook") { settings.DiscordWebhook = value; }
-                    if (name == "DiscordMode") { settings.DiscordMode = Convert.ToInt32(value); }
-                    if (name == "DiscordShortcut") { settings.DiscordShortcut = value; }
-                }
-                catch
-                {
-                    
-                }
-
-                i++;
-            }
-
-            // Zamykanie pliku
-            streamReader.Close();
-            streamReader.Dispose();
-
-            switch (settings.ColorMode)
-            {
-                case 0:
-                    Application.SetColorMode(SystemColorMode.Classic);
-                    break;
-
-                case 1:
-                    Application.SetColorMode(SystemColorMode.Dark);
-                    break;
-
-                default:
-                    Application.SetColorMode(SystemColorMode.System);
-                    break;
-            }
-
-            ApplySettings(settings);
-
-            return settings;
+            // Utwórz formularz ustawień wykorzystując wczytane ustawienia
+            FormSettings = new FormSettings(Settings);
         }
 
         /*******************************************************
@@ -159,38 +77,39 @@ namespace DiscordClipper
 
             FormSettings.ShowDialog();
 
-            if (FormSettings.DialogResult == DialogResult.OK)
+            if (FormSettings.DialogResult != DialogResult.OK)
             {
-                SaveSettings(FormSettings.Settings, SettingsFilePath);
-                ApplySettings(FormSettings.Settings);
+                return;
+            }
+
+            Settings = FormSettings.Settings;
+
+            if (Settings == null)
+            {
+                return;
+            }
+
+            Settings.Save();
+
+            ApplySettings(Settings);
+        }
+
+        private void ApplyColorMode(int colorMode)
+        {
+            switch (colorMode)
+            {
+                case 0:
+                    Application.SetColorMode(SystemColorMode.Classic);
+                    break;
+                case 1:
+                    Application.SetColorMode(SystemColorMode.Dark);
+                    break;
+                default:
+                    Application.SetColorMode(SystemColorMode.System);
+                    break;
             }
         }
 
-        private void SaveSettings(Settings settings, string settingsFilePath)
-        {
-            StreamWriter streamWriter = File.CreateText(settingsFilePath);
-
-            streamWriter.WriteLine($"ColorMode        = {settings.ColorMode.ToString()}");
-
-            streamWriter.WriteLine($"InputFolder      = {settings.InputFolder.ToString()}");
-            streamWriter.WriteLine($"InputFileFormat  = {settings.InputFileFormat.ToString()}");
-
-            streamWriter.WriteLine($"OutputFolder     = {settings.OutputFolder.ToString()}");
-            streamWriter.WriteLine($"OutputFileFormat = {settings.OutputFileFormat.ToString()}");
-            streamWriter.WriteLine($"Resolution       = {settings.Resolution.ToString()}");
-            streamWriter.WriteLine($"FrameRate        = {settings.FrameRate.ToString()}");
-            streamWriter.WriteLine($"Encoder          = {settings.Encoder.ToString()}");
-            streamWriter.WriteLine($"MaxVideoBitrate  = {settings.MaxVideoBitrate.ToString()}");
-
-            streamWriter.WriteLine($"DiscordWebhook   = {settings.DiscordWebhook.ToString()}");
-            streamWriter.WriteLine($"DiscordMode      = {settings.DiscordMode.ToString()}");
-            streamWriter.WriteLine($"DiscordShortcut  = {settings.DiscordShortcut.ToString()}");
-
-            streamWriter.WriteLine($"ConsoleFontSize  = {settings.ConsoleFontSize.ToString()}");
-
-            streamWriter.Close();
-            streamWriter.Dispose();
-        }
         private void ApplySettings(Settings settings)
         {
             if(FFmpeg == null)
@@ -314,32 +233,32 @@ namespace DiscordClipper
 
         private bool InitalizeFileSystemWatcher()
         {
-            if (FormSettings == null)
+            if (Settings == null)
             {
                 return false;
             }
 
             // Walidacja pola InputFolder
-            if (FormSettings.Settings.InputFolder == null || FormSettings.Settings.InputFolder == string.Empty)
+            if (Settings.InputFolder == null || Settings.InputFolder == string.Empty)
             {
                 MessageBox.Show("Ustaw folder wejściowy.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
-            if (!Directory.Exists(FormSettings.Settings.InputFolder))
+            if (!Directory.Exists(Settings.InputFolder))
             {
                 MessageBox.Show($"Wybrany folder wejściowy nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
             // Walidacja pola OutputFolder
-            if (FormSettings.Settings.OutputFolder == null || FormSettings.Settings.OutputFolder == string.Empty)
+            if (Settings.OutputFolder == null || Settings.OutputFolder == string.Empty)
             {
                 MessageBox.Show("Nie określono folderu wyjściowego.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
-            if (!Directory.Exists(FormSettings.Settings.OutputFolder))
+            if (!Directory.Exists(Settings.OutputFolder))
             {
                 MessageBox.Show($"Wybrany folder wyjściowy nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -352,9 +271,9 @@ namespace DiscordClipper
             }
 
             // Nowy FileSystemWatcher
-            FileSystemWatcher = new FileSystemWatcher(FormSettings.Settings.InputFolder);
+            FileSystemWatcher = new FileSystemWatcher(Settings.InputFolder);
             FileSystemWatcher.Created += FileSystemWatcher_Created;
-            FileSystemWatcher.Filter = FFmpeg.FileFormats[FormSettings.Settings.InputFileFormat].Name;
+            FileSystemWatcher.Filter = FFmpeg.InputFileFormats[Settings.InputFileFormat].Name;
             FileSystemWatcher.IncludeSubdirectories = false;
             FileSystemWatcher.EnableRaisingEvents = true;
 
@@ -392,10 +311,10 @@ namespace DiscordClipper
 
             return;
         }
+
         /*******************************************************
          * Zdarzenia FFmpeg
          *******************************************************/
-
         private void FFmpeg_FFmpegError(object? sender, FFmpeg.FFmpegErrorEventArgs e)
         {
             if (richTextBoxConsole.InvokeRequired)
@@ -521,7 +440,7 @@ namespace DiscordClipper
                 ConsoleSetColor(e.ClipFileName, Color.Green, FontStyle.Bold);
             }
 
-            if(FormSettings == null)
+            if(Settings == null)
             {
                 return;
             }
@@ -531,7 +450,7 @@ namespace DiscordClipper
                 return;
             }
 
-            if (FormSettings.Settings.DiscordMode == 1)
+            if (Settings.DiscordMode == 1)
             {
                 Discord.Send(e.ClipFileName, e.OutputFilePath, e.OutputFileName);
             }

@@ -279,9 +279,9 @@
             label12.Margin = new Padding(3, 5, 3, 3);
             label12.MinimumSize = new Size(0, 23);
             label12.Name = "label12";
-            label12.Size = new Size(112, 23);
+            label12.Size = new Size(110, 23);
             label12.TabIndex = 10;
-            label12.Text = "Limit przepływności";
+            label12.Text = "Limit bitrate obrazu";
             // 
             // tableLayoutPanel8
             // 
