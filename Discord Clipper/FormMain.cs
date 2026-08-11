@@ -1,3 +1,4 @@
+using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
 
 namespace DiscordClipper
@@ -81,33 +82,41 @@ namespace DiscordClipper
             int i = 0;
 
             // Tekst linii
-            string line = "";
+            string? line;
 
             // Czytaj koljene linie, aż do końca pliku
             while ((line = streamReader.ReadLine()) != null)
             {
                 try
                 {
-                    if (i == 0) { settings.ColorMode = Convert.ToInt32(line); }
+                    string[] parts = line.Split('=');
 
-                    if (i == 1) { settings.InputFolder = line; }
-                    if (i == 2) { settings.InputFileFormat = Convert.ToInt32(line); }
+                    if (parts.Length != 2)
+                    {
+                        continue;
+                    }
 
-                    if (i == 3) { settings.OutputFolder = line; }
-                    if (i == 4) { settings.OutputFileFormat = Convert.ToInt32(line); }
-                    if (i == 5) { settings.Resolution = Convert.ToInt32(line); }
-                    if (i == 6) { settings.FrameRate = Convert.ToInt32(line); }
-                    if (i == 7) { settings.Encoder = Convert.ToInt32(line); }
+                    string name = parts[0].Trim();
+                    string value = parts[1].Trim();
 
-                    if (i == 8) { settings.DiscordWebhook = line; }
-                    if (i == 9) { settings.DiscordMode = Convert.ToInt32(line); }
-                    if (i == 10) { settings.DiscordShortcut = line; }
+                    if (name == "ColorMode") { settings.ColorMode = Convert.ToInt32(value); }
 
-                    if (i == 11) { settings.ConsoleFontSize = Convert.ToInt32(line); }
+                    if (name == "InputFolder") { settings.InputFolder = value; }
+                    if (name == "InputFileFormat") { settings.InputFileFormat = Convert.ToInt32(value); }
+
+                    if (name == "OutputFolder") { settings.OutputFolder = value; }
+                    if (name == "OutputFileFormat") { settings.OutputFileFormat = Convert.ToInt32(value); }
+                    if (name == "Resolution") { settings.Resolution = Convert.ToInt32(value); }
+                    if (name == "FrameRate") { settings.FrameRate = Convert.ToInt32(value); }
+                    if (name == "Encoder") { settings.Encoder = Convert.ToInt32(value); }
+
+                    if (name == "DiscordWebhook") { settings.DiscordWebhook = value; }
+                    if (name == "DiscordMode") { settings.DiscordMode = Convert.ToInt32(value); }
+                    if (name == "DiscordShortcut") { settings.DiscordShortcut = value; }
                 }
                 catch
                 {
-
+                    
                 }
 
                 i++;
@@ -132,10 +141,6 @@ namespace DiscordClipper
                     break;
             }
 
-            // Ustawianie czcionki
-            numericUpDownConsoleFontSize.Value = settings.ConsoleFontSize;
-            UpdateConsoleFontSize();
-
             ApplySettings(settings);
 
             return settings;
@@ -156,7 +161,6 @@ namespace DiscordClipper
 
             if (FormSettings.DialogResult == DialogResult.OK)
             {
-                FormSettings.Settings.ConsoleFontSize = (int)numericUpDownConsoleFontSize.Value;
                 SaveSettings(FormSettings.Settings, SettingsFilePath);
                 ApplySettings(FormSettings.Settings);
             }
@@ -166,34 +170,46 @@ namespace DiscordClipper
         {
             StreamWriter streamWriter = File.CreateText(settingsFilePath);
 
-            streamWriter.WriteLine(settings.ColorMode.ToString());
+            streamWriter.WriteLine($"ColorMode        = {settings.ColorMode.ToString()}");
 
-            streamWriter.WriteLine(settings.InputFolder.ToString());
-            streamWriter.WriteLine(settings.InputFileFormat.ToString());
+            streamWriter.WriteLine($"InputFolder      = {settings.InputFolder.ToString()}");
+            streamWriter.WriteLine($"InputFileFormat  = {settings.InputFileFormat.ToString()}");
 
-            streamWriter.WriteLine(settings.OutputFolder.ToString());
-            streamWriter.WriteLine(settings.OutputFileFormat.ToString());
-            streamWriter.WriteLine(settings.Resolution.ToString());
-            streamWriter.WriteLine(settings.FrameRate.ToString());
-            streamWriter.WriteLine(settings.Encoder.ToString());
+            streamWriter.WriteLine($"OutputFolder     = {settings.OutputFolder.ToString()}");
+            streamWriter.WriteLine($"OutputFileFormat = {settings.OutputFileFormat.ToString()}");
+            streamWriter.WriteLine($"Resolution       = {settings.Resolution.ToString()}");
+            streamWriter.WriteLine($"FrameRate        = {settings.FrameRate.ToString()}");
+            streamWriter.WriteLine($"Encoder          = {settings.Encoder.ToString()}");
+            streamWriter.WriteLine($"MaxVideoBitrate  = {settings.MaxVideoBitrate.ToString()}");
 
-            streamWriter.WriteLine(settings.DiscordWebhook.ToString());
-            streamWriter.WriteLine(settings.DiscordMode.ToString());
-            streamWriter.WriteLine(settings.DiscordShortcut.ToString());
+            streamWriter.WriteLine($"DiscordWebhook   = {settings.DiscordWebhook.ToString()}");
+            streamWriter.WriteLine($"DiscordMode      = {settings.DiscordMode.ToString()}");
+            streamWriter.WriteLine($"DiscordShortcut  = {settings.DiscordShortcut.ToString()}");
 
-            streamWriter.WriteLine(settings.ConsoleFontSize.ToString());
+            streamWriter.WriteLine($"ConsoleFontSize  = {settings.ConsoleFontSize.ToString()}");
 
             streamWriter.Close();
             streamWriter.Dispose();
         }
         private void ApplySettings(Settings settings)
         {
+            if(FFmpeg == null)
+            {
+                return;
+            }
+
             FFmpeg.OutputFolder = settings.OutputFolder;
             
-            FFmpeg.FrameRate      = FFmpeg.FrameRates[settings.FrameRate].Value;
-            FFmpeg.ResolutionName = FFmpeg.Resolutions[settings.Resolution].Name;
-            FFmpeg.Resolution     = FFmpeg.Resolutions[settings.Resolution].Value;
-            FFmpeg.Encoder        = FFmpeg.Encoders[settings.Encoder].Value;
+            FFmpeg.FrameRate       = FFmpeg.FrameRates[settings.FrameRate].Value;
+            FFmpeg.ResolutionName  = FFmpeg.Resolutions[settings.Resolution].Name;
+            FFmpeg.Resolution      = FFmpeg.Resolutions[settings.Resolution].Value;
+            FFmpeg.Encoder         = FFmpeg.Encoders[settings.Encoder].Value;
+            FFmpeg.MaxVideoBitrate = settings.MaxVideoBitrate.ToString();
+
+            if (Discord == null)
+            {
+                return;
+            }
 
             Discord.WebhookURL = settings.DiscordWebhook;
         }
@@ -217,17 +233,6 @@ namespace DiscordClipper
                 buttonActivate.Text = "Rozpocznij monitorowanie";
                 isWatcherActive = false;
             }
-        }
-
-        private void NumericUpDownConsoleFontSize_ValueChanged(object sender, EventArgs e)
-        {
-            UpdateConsoleFontSize();
-        }
-
-        void UpdateConsoleFontSize()
-        {
-            richTextBoxConsole.Font = new Font(richTextBoxConsole.Font.FontFamily, (float)numericUpDownConsoleFontSize.Value, richTextBoxConsole.Font.Style);
-            groupBoxConsole.Invalidate();
         }
 
         private void ButtonClearConsole_Click(object sender, EventArgs e)
@@ -358,6 +363,11 @@ namespace DiscordClipper
 
         private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
         {
+            if(e.Name == null || e.Name == string.Empty)
+            {
+                return;
+            }
+
             // Dodaj plik na listę RichText
             if (richTextBoxConsole.InvokeRequired)
             {
@@ -369,6 +379,11 @@ namespace DiscordClipper
             else
             {
                 ConsoleWriteLine(e.Name, Color.Gray, FontStyle.Regular);
+            }
+
+            if(FFmpeg == null)
+            {
+                return;
             }
 
             // Dodaj plik do kolejki FFMpeg
