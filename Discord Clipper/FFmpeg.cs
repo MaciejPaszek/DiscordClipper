@@ -1,7 +1,12 @@
 ﻿using System.Diagnostics;
+using static DiscordClipper.FormConsole;
 
 namespace DiscordClipper
 {
+    /// <summary>
+    /// Struktura do listowania opcji w kontrolkach oi odpowiadających im wartości
+    /// name 
+    /// </summary>
     struct Option
     {
         public Option(string name, string value)
@@ -188,6 +193,8 @@ namespace DiscordClipper
         public string MaxVideoBitrate = string.Empty;
 
         // Zdarzenia
+        public event EventHandler<ConsoleEventArgs>? Console;
+
         public event EventHandler<ClipAddedEventArgs>? ClipAdded;
 
         public event EventHandler<FFmpegErrorEventArgs>? FFmpegError;
@@ -235,6 +242,10 @@ namespace DiscordClipper
         }
 
         // Metody zapalania zdarzeń
+        protected virtual void OnConsole(ConsoleEventArgs e)
+        {
+            Console?.Invoke(this, e);
+        }
         protected virtual void OnClipAdded(ClipAddedEventArgs e)
         {
             ClipAdded?.Invoke(this, e);
@@ -267,30 +278,41 @@ namespace DiscordClipper
             
             string command = $"/C ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 \"{inputFile}\"";
 
-            // Pokaż dla testów
-            if(CreateNoWindow == false)
-            {
-                command += " & pause";
-            }
-
             countProcess.StartInfo.FileName = "cmd.exe";
             countProcess.StartInfo.Arguments = command;
-
-            // Nie używaj Shella
             countProcess.StartInfo.UseShellExecute = false;
-
-            // Otwórz terminal bez tworzenia okna
-            countProcess.StartInfo.CreateNoWindow = CreateNoWindow;
+            countProcess.StartInfo.CreateNoWindow = true;
 
             // Włącz logowanie wyjścia
             countProcess.StartInfo.RedirectStandardOutput = true;
 
+            // Wysłanie komendy do konsoli
+            OnConsole(new ConsoleEventArgs(command));
+
             // Rozpoczęcie procesu
             countProcess.Start();
 
-            // Odczytaj liczbę klatek w formie tekstu
-            string? line = countProcess.StandardOutput.ReadLine();
+            // Odczytania linia
+            string? line;
 
+            frameCount = 0;
+
+            // Czytaj aż do końca strumienia
+            while ((line = countProcess.StandardOutput.ReadLine()) != null)
+            {
+                OnConsole(new ConsoleEventArgs(line));
+
+                // Konwersja
+                try
+                {
+                    frameCount = Convert.ToInt32(line);
+                }
+                catch
+                {
+                    return -1;
+                }
+            }
+            
             // Oczekiwanie na zakończenie procesu
             countProcess.WaitForExit();
 
@@ -299,20 +321,10 @@ namespace DiscordClipper
             // Zamykanie procesu
             countProcess.Close();
 
-            // Konwersja
-            try
-            {
-                frameCount = Convert.ToInt32(line);
-            }
-            catch
-            {
-                frameCount = 0;
-                return -1;
-            }
-
             // Sprawdzenie, czy nastąpił błąd
             if (exitCode != 0)
             {
+
                 return exitCode;
             }
 
@@ -326,28 +338,30 @@ namespace DiscordClipper
 
             string command = $"/C ffmpeg -y -i \"{inputFilePath}\" -frames:v 1 -update true \"{thumbnailFilePath}\"";
 
-            // Pokaż dla testów
-            if (CreateNoWindow == false)
-            {
-                command += " & pause";
-            }
-
             thumbnailProcess.StartInfo.FileName = "cmd.exe";
-
-            // Komenda FFmpeg
             thumbnailProcess.StartInfo.Arguments = command;
-
-            // Nie używaj Shella
             thumbnailProcess.StartInfo.UseShellExecute = false;
+            thumbnailProcess.StartInfo.CreateNoWindow = true;
+            thumbnailProcess.StartInfo.RedirectStandardOutput = true;
 
-            // Otwórz terminal bez tworzenia okna
-            thumbnailProcess.StartInfo.CreateNoWindow = CreateNoWindow;
+            // Wysłanie komendy do konsoli
+            OnConsole(new ConsoleEventArgs(command));
 
             // Rozpoczęcie procesu
             thumbnailProcess.Start();
 
+            // Odczytania linia
+            string? line;
+
+            // Czytaj aż do końca strumienia
+            while ((line = thumbnailProcess.StandardOutput.ReadLine()) != null)
+            {
+                OnConsole(new ConsoleEventArgs(line));
+            }
+
             // Oczekiwanie na zakończenie procesu
             thumbnailProcess.WaitForExit();
+            
 
             int exitCode = thumbnailProcess.ExitCode;
 
@@ -370,23 +384,14 @@ namespace DiscordClipper
 
             string command = $"/C ffmpeg -y -progress pipe:1 -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -maxrate {MaxVideoBitrate}k -c:a copy \"{outputFilePath}\"";
 
-            // Pokaż dla testów
-            if (CreateNoWindow == false)
-            {
-                command += " & pause";
-            }
-
             videoProcess.StartInfo.FileName = "cmd.exe";
             videoProcess.StartInfo.Arguments = command;
-
-            // Nie używaj Shella
             videoProcess.StartInfo.UseShellExecute = false;
-
-            // Otwórz terminal bez tworzenia okna
             videoProcess.StartInfo.CreateNoWindow = CreateNoWindow;
-
-            // Włącz logowanie wyjścia
             videoProcess.StartInfo.RedirectStandardOutput = true;
+
+            // Wysłanie komendy do konsoli
+            OnConsole(new ConsoleEventArgs(command));
 
             // Rozpoczęcie procesu
             videoProcess.Start();
@@ -397,6 +402,8 @@ namespace DiscordClipper
             // Czytaj aż do końca strumienia
             while ((line = videoProcess.StandardOutput.ReadLine()) != null)
             {
+                OnConsole(new ConsoleEventArgs(line));
+
                 // Rodziel nazwę i wartość
                 string[] strings = line.Split('=');
 

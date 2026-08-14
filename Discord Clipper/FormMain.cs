@@ -1,3 +1,4 @@
+using DiscordClipper.Properties;
 using System.Text.RegularExpressions;
 
 namespace DiscordClipper
@@ -10,6 +11,9 @@ namespace DiscordClipper
 
         // Okno ustawień
         FormSettings? FormSettings;
+
+        // Okno ustawień
+        FormConsole? FormConsole;
 
         // Monitorowanie folderu
         FileSystemWatcher? FileSystemWatcher;
@@ -36,11 +40,12 @@ namespace DiscordClipper
 
             // Utwóz obiekt klasy FFmpeg i dodaj obsługę zdarzeń
             FFmpeg = new FFmpeg();
-            FFmpeg.FFmpegError       += FFmpeg_FFmpegError;
+            FFmpeg.Console += FFmpeg_Console;
+            FFmpeg.FFmpegError += FFmpeg_FFmpegError;
             FFmpeg.ConversionStarted += FFmpeg_ConversionStarted;
-            FFmpeg.ThumbnailCreated  += FFmpeg_ThumbnailCreated;
-            FFmpeg.ProgressChanged   += FFmpeg_ProgressChanged;
-            FFmpeg.VideoCreated      += FFmpeg_VideoCreated;
+            FFmpeg.ThumbnailCreated += FFmpeg_ThumbnailCreated;
+            FFmpeg.ProgressChanged += FFmpeg_ProgressChanged;
+            FFmpeg.VideoCreated += FFmpeg_VideoCreated;
 
             // Utwórz obiekt klasy Discord
             Discord = new Discord();
@@ -62,6 +67,62 @@ namespace DiscordClipper
 
             // Utwórz formularz ustawień wykorzystując wczytane ustawienia
             FormSettings = new FormSettings(Settings);
+
+            FormConsole = new FormConsole();
+            FormConsole.FormClosed += FormConsole_FormClosed;
+
+            FormConsole.ConsoleEventArgs e = new FormConsole.ConsoleEventArgs("Test");
+
+            e.Sender = "XDD";
+            e.MessagePriority = FormConsole.ConsoleEventArgs.Priority.Warning;
+
+            FormConsole.WriteLine(e);
+        }
+
+        private void buttonConsole_Click(object sender, EventArgs e)
+        {
+            if (FormConsole == null)
+            {
+                return;
+            }
+
+            if (FormConsole.Visible)
+            {
+                buttonConsole.Text = "Pokaż konsolę";
+                FormConsole.Hide();
+            }
+            else
+            {
+                buttonConsole.Text = "Ukryj konsolę";
+                FormConsole.Show();
+            }
+        }
+
+        private void FormConsole_FormClosed(object? sender, FormClosedEventArgs e)
+        {
+            if (FormConsole == null)
+            {
+                return;
+            }
+
+            buttonConsole.Text = "Pokaż konsolę";
+            FormConsole.Hide();
+        }
+
+        private void FFmpeg_Console(object? sender, FormConsole.ConsoleEventArgs e)
+        {
+            if(FormConsole == null)
+            {
+                return;
+            }
+
+            if (sender != null)
+            {
+                string senderName = sender.GetType().Name;
+                e.Sender = senderName;
+            }
+
+            FormConsole.WriteLine(e);
         }
 
         /*******************************************************
@@ -112,17 +173,17 @@ namespace DiscordClipper
 
         private void ApplySettings(Settings settings)
         {
-            if(FFmpeg == null)
+            if (FFmpeg == null)
             {
                 return;
             }
 
             FFmpeg.OutputFolder = settings.OutputFolder;
-            
-            FFmpeg.FrameRate       = FFmpeg.FrameRates[settings.FrameRate].Value;
-            FFmpeg.ResolutionName  = FFmpeg.Resolutions[settings.Resolution].Name;
-            FFmpeg.Resolution      = FFmpeg.Resolutions[settings.Resolution].Value;
-            FFmpeg.Encoder         = FFmpeg.Encoders[settings.Encoder].Value;
+
+            FFmpeg.FrameRate = FFmpeg.FrameRates[settings.FrameRate].Value;
+            FFmpeg.ResolutionName = FFmpeg.Resolutions[settings.Resolution].Name;
+            FFmpeg.Resolution = FFmpeg.Resolutions[settings.Resolution].Value;
+            FFmpeg.Encoder = FFmpeg.Encoders[settings.Encoder].Value;
             FFmpeg.MaxVideoBitrate = settings.MaxVideoBitrate.ToString();
 
             if (Discord == null)
@@ -132,7 +193,7 @@ namespace DiscordClipper
 
             Discord.WebhookURL = settings.DiscordWebhook;
         }
-        
+
         private void ButtonActivate_Click(object sender, EventArgs e)
         {
             if (!isWatcherActive)
@@ -156,80 +217,12 @@ namespace DiscordClipper
 
         private void ButtonClearConsole_Click(object sender, EventArgs e)
         {
-            richTextBoxConsole.Clear();
+            //richTextBoxConsole.Clear();
         }
 
-        /*******************************************************
-         * Konsola
-         *******************************************************/
-
-        private int ConsoleWriteLine(string message)
-        {
-            string line = string.Empty;
-            
-            if (richTextBoxConsole.Text == string.Empty)
-            {
-                line = message;
-            }
-            else
-            {
-                line = Environment.NewLine + message;
-            }
-
-            richTextBoxConsole.AppendText(line);
-            richTextBoxConsole.ScrollToCaret();
-
-            return line.Length;
-        }
-
-        private void ConsoleWriteLine(string message, Color color, FontStyle fontStyle)
-        {
-            richTextBoxConsole.SelectAll();
-            int messageStart = richTextBoxConsole.SelectionLength;
-
-            int messageLength = ConsoleWriteLine(message);
-
-            richTextBoxConsole.Select(messageStart, messageLength);
-
-            richTextBoxConsole.SelectionColor = color;
-
-            if(richTextBoxConsole.SelectionFont == null)
-            {
-                return;
-            }
-
-            richTextBoxConsole.SelectionFont = new Font(richTextBoxConsole.SelectionFont, fontStyle);
-        }
-
-        private void ConsoleWriteError(string clipFileName, string errorMessage)
-        {
-            Regex regex = new Regex(clipFileName);
-            Match match = regex.Match(richTextBoxConsole.Text);
-
-            if (match.Success)
-            {
-                richTextBoxConsole.Select(match.Index, match.Length);
-                richTextBoxConsole.SelectionColor = Color.Red;
-                richTextBoxConsole.SelectedText = $"{clipFileName} - {errorMessage}";
-            }
-        }
-
-        private void ConsoleSetColor(string clipFileName, Color color, FontStyle fontStyle)
-        {
-            Regex regex = new Regex(clipFileName);
-            Match match = regex.Match(richTextBoxConsole.Text);
-
-            if (match.Success)
-            {
-                richTextBoxConsole.Select(match.Index, match.Length);
-                richTextBoxConsole.SelectionFont = new Font(richTextBoxConsole.Font, fontStyle);
-                richTextBoxConsole.SelectionColor = color;
-            }
-        }
-
-        /*******************************************************
-         * FileSystemWatcher
-         *******************************************************/
+        //*******************************************************
+        // FileSystemWatcher
+        //*******************************************************
 
         private bool InitalizeFileSystemWatcher()
         {
@@ -280,167 +273,240 @@ namespace DiscordClipper
             return true;
         }
 
-        private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
-        {
-            if(e.Name == null || e.Name == string.Empty)
-            {
-                return;
-            }
+        
 
-            // Dodaj plik na listę RichText
-            if (richTextBoxConsole.InvokeRequired)
+        //*******************************************************
+        // Funkcje pomocnicze formularza
+        //*******************************************************
+
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania etykiety nazwy pliku
+        /// </summary>
+        /// <param name="fileName"></param>
+        private void SetLabelFileName(string fileName)
+        {
+            if (labelFileName.InvokeRequired)
             {
-                richTextBoxConsole.Invoke(new Action(() =>
-                {
-                    ConsoleWriteLine(e.Name, Color.Gray, FontStyle.Regular);
-                }));
+                labelFileName.Invoke(new Action(() => { SetLabelFileName(fileName); }));
             }
             else
             {
-                ConsoleWriteLine(e.Name, Color.Gray, FontStyle.Regular);
+                labelFileName.Text = fileName;
+            }
+        }
+
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania miniatury podglądu
+        /// </summary>
+        /// <param name="bitmap"></param>
+        private void ClearPictureBox()
+        {
+            if (pictureBoxThumbnail.InvokeRequired)
+            {
+                pictureBoxThumbnail.Invoke(new Action(() => ClearPictureBox()));
+            }
+            else
+            {
+                if (pictureBoxThumbnail.Image != null)
+                {
+                    pictureBoxThumbnail.Image.Dispose();
+                    pictureBoxThumbnail.Image = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania wartości paska postępu
+        /// </summary>
+        /// <param name="value"></param>
+        private void SetProgressBar(int value)
+        {
+            if (progressBarOutput.InvokeRequired)
+            {
+                progressBarOutput.Invoke(new Action(() => SetProgressBar(value)));
+            }
+            else
+            {
+                progressBarOutput.Value = value;
+            }
+        }
+
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania wartości i zakresu paska postępu
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="maximum"></param>
+        private void SetProgressBar(int value, int maximum)
+        {
+            if (progressBarOutput.InvokeRequired)
+            {
+                progressBarOutput.Invoke(new Action(() => SetProgressBar(value, maximum)));
+            }
+            else
+            {
+                progressBarOutput.Value = value;
+                progressBarOutput.Maximum = maximum;
+            }
+        }
+
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania miniatury podglądu
+        /// </summary>
+        /// <param name="bitmap"></param>
+        private void SetPictureBoxImage(Bitmap bitmap)
+        {
+            if (pictureBoxThumbnail.InvokeRequired)
+            {
+                pictureBoxThumbnail.Invoke(new Action(() => SetPictureBoxImage(bitmap)));
+            }
+            else
+            {
+                pictureBoxThumbnail.Image = bitmap;
+            }
+        }
+
+        private int AddDataGridViewClip(string clipName)
+        {
+            if (dataGridViewClips.InvokeRequired)
+            {
+                dataGridViewClips.Invoke(new Action(() => AddDataGridViewClip(clipName)));
+            }
+            else
+            {
+                // Znajdź wiersz i dodaj obraz
+                dataGridViewClips.Rows.Add(new object[] { Resources.Replay, clipName, "Znaleziony" });
+                return dataGridViewClips.Rows.Count - 1;
             }
 
-            if(FFmpeg == null)
+            return -1;
+        }
+
+
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania miniatury podglądu
+        /// </summary>
+        /// <param name="bitmap"></param>
+        private void SetDataGridViewStatus(int rowIndex, string status)
+        {
+            if (dataGridViewClips.InvokeRequired)
+            {
+                dataGridViewClips.Invoke(new Action(() => SetDataGridViewStatus(rowIndex, status)));
+            }
+            else
+            {
+                // Znajdź wiersz i dodaj obraz
+                dataGridViewClips.Rows[rowIndex].Cells[2].Value = status;
+            }
+        }
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania miniatury podglądu
+        /// </summary>
+        /// <param name="bitmap"></param>
+        private void SetDataGridViewImage(int rowIndex, Bitmap bitmap)
+        {
+            if (dataGridViewClips.InvokeRequired)
+            {
+                dataGridViewClips.Invoke(new Action(() => SetDataGridViewImage(rowIndex, bitmap)));
+            }
+            else
+            {
+                // Znajdź wiersz i dodaj obraz
+                dataGridViewClips.Rows[rowIndex].Cells[0].Value = bitmap;
+            }
+        }
+
+        //*******************************************************
+        // Zdarzenia
+        //*******************************************************
+
+        /// <summary>
+        /// Zdarzenie utworzenia nowgo pliku w folderze wejściowym (kolor szary)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
+        {
+            // Sprawdzenie, czy nazwa nie jest pusta
+            if (e.Name == null || e.Name == string.Empty)
             {
                 return;
             }
 
-            // Dodaj plik do kolejki FFMpeg
+            // Ustaw etykietę nazwy pliku
+            SetLabelFileName(e.Name);
+
+            // Dodaj plik na listę RichText
+            AddDataGridViewClip(e.Name);
+
+            // Dodawanie pliku do kolejki FFmpeg w osobnym wątku
+            if (FFmpeg == null)
+            {
+                return;
+            }
+
             Task AddClipTask = new Task(() => FFmpeg.AddClip(e.FullPath, e.Name));
             AddClipTask.Start();
 
             return;
         }
 
-        /*******************************************************
-         * Zdarzenia FFmpeg
-         *******************************************************/
-        private void FFmpeg_FFmpegError(object? sender, FFmpeg.FFmpegErrorEventArgs e)
-        {
-            if (richTextBoxConsole.InvokeRequired)
-            {
-                richTextBoxConsole.Invoke(new Action(() =>
-                {
-                    ConsoleWriteError(e.ClipFileName, e.ErrorMessage);
-                }));
-            }
-            else
-            {
-                ConsoleWriteError(e.ClipFileName, e.ErrorMessage);
-            }
-        }
-
+        /// <summary>
+        /// Zdarzenie rozpoczęcia konwersji klipu (kolor niebieski)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FFmpeg_ConversionStarted(object? sender, FFmpeg.ConversionStartedEventArgs e)
         {
             // Ustaw nazwę nowego klipu 
-            if (labelFileName.InvokeRequired)
-            {
-                labelFileName.Invoke(new Action(() => { labelFileName.Text = e.ClipFileName; }));
-            }
-            else
-            {
-                labelFileName.Text = e.ClipFileName;
-            }
+            SetLabelFileName(e.ClipFileName);
 
-            if (progressBarOutput.InvokeRequired)
-            {
-                progressBarOutput.Invoke(new Action(() =>
-                {
-                    // możliwe, że warto dać też maksimum
-                    progressBarOutput.Value = 0;
-                }));
-            }
-            else
-            {
-                progressBarOutput.Value = 0;
-            }
+            // Ustaw status 
+            SetDataGridViewStatus(0, "Konwersja rozpoczęta");
+
+            // Ustaw pasek postępu na 0
+            SetProgressBar(0);
         }
 
+        /// <summary>
+        /// Zdarzenie utworzenia miniatury klipu (kolor niebieski)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FFmpeg_ThumbnailCreated(object? sender, FFmpeg.ThumbnailCreatedEventArgs e)
         {
-            if (labelFileName.InvokeRequired)
-            {
-                labelFileName.Invoke(new Action(() =>
-                {
-                    labelFileName.Text = e.ClipFileName;
-                }));
-            }
-            else
-            {
-                labelFileName.Text = e.ClipFileName;
-            }
+            Bitmap bitmap = new Bitmap(e.ThumbnailFilePath);
 
-            if (pictureBoxThumbnail.InvokeRequired)
-            {
-                pictureBoxThumbnail.Invoke(new Action(() =>
-                {
-                    pictureBoxThumbnail.Image = new Bitmap(e.ThumbnailFilePath);
-                }));
-            }
-            else
-            {
-                pictureBoxThumbnail.Image = new Bitmap(e.ThumbnailFilePath);
-            }
+            SetPictureBoxImage(bitmap);
 
-            if (richTextBoxConsole.InvokeRequired)
-            {
-                richTextBoxConsole.Invoke(new Action(() =>
-                {
-                    ConsoleSetColor(e.ClipFileName, Color.Blue, FontStyle.Bold);
-                }));
-            }
-            else
-            {
-                ConsoleSetColor(e.ClipFileName, Color.Blue, FontStyle.Bold);
-            }
+            SetDataGridViewStatus(0, "Utworzono miniaturę");
+
+            SetDataGridViewImage(0, bitmap);
+
+
         }
 
+        /// <summary>
+        /// Zdarzenie zmiany postępu konwersji klipu (kolor niebieski)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FFmpeg_ProgressChanged(object? sender, FFmpeg.ProgressChangedEventArgs e)
         {
-            if (progressBarOutput.InvokeRequired)
-            {
-                progressBarOutput.Invoke(new Action(() =>
-                {
-                    progressBarOutput.Maximum = e.FrameCount;
-                    progressBarOutput.Value = e.Frame;
-                }));
-            }
-            else
-            {
-                progressBarOutput.Maximum = e.FrameCount;
-                progressBarOutput.Value = e.Frame;
-            }
+            SetProgressBar(e.Frame, e.FrameCount);
         }
 
+        /// <summary>
+        /// Zdarzenie zakończenia konwersji klipu (kolor zielony)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FFmpeg_VideoCreated(object? sender, FFmpeg.VideoCreatedEventArgs e)
         {
-            if (progressBarOutput.InvokeRequired)
-            {
-                progressBarOutput.Invoke(new Action(() =>
-                {
-                    progressBarOutput.Maximum = e.FrameCount;
-                    progressBarOutput.Value = e.FrameCount;
-                }));
-            }
-            else
-            {
-                progressBarOutput.Maximum = e.FrameCount;
-                progressBarOutput.Value = e.FrameCount;
-            }
+            SetDataGridViewStatus(0, "Zakończono konwersję");
 
-            if (richTextBoxConsole.InvokeRequired)
-            {
-                richTextBoxConsole.Invoke(new Action(() =>
-                {
-                    ConsoleSetColor(e.ClipFileName, Color.Green, FontStyle.Bold);
-                }));
-            }
-            else
-            {
-                ConsoleSetColor(e.ClipFileName, Color.Green, FontStyle.Bold);
-            }
+            SetProgressBar(e.FrameCount, e.FrameCount);
 
-            if(Settings == null)
+            if (Settings == null)
             {
                 return;
             }
@@ -458,32 +524,17 @@ namespace DiscordClipper
 
         private void Discord_ClipSent(object? sender, Discord.ClipSentEventArgs e)
         {
-            if (richTextBoxConsole.InvokeRequired)
-            {
-                richTextBoxConsole.Invoke(new Action(() =>
-                {
-                    ConsoleSetColor(e.ClipFileName, Color.Purple, FontStyle.Bold);
-                }));
-            }
-            else
-            {
-                ConsoleSetColor(e.ClipFileName, Color.Purple, FontStyle.Bold);
-            }
+
+        }
+
+        private void FFmpeg_FFmpegError(object? sender, FFmpeg.FFmpegErrorEventArgs e)
+        {
+            FormConsole.WriteLine(new FormConsole.ConsoleEventArgs($"Błąd FFmpeg: {e.ErrorMessage}") { Sender = "FFmpeg", MessagePriority = FormConsole.ConsoleEventArgs.Priority.Error });
         }
 
         private void Discord_DiscordError(object? sender, Discord.DiscordErrorEventArgs e)
         {
-            if (richTextBoxConsole.InvokeRequired)
-            {
-                richTextBoxConsole.Invoke(new Action(() =>
-                {
-                    ConsoleWriteError(e.ClipFileName, e.ErrorMessage);
-                }));
-            }
-            else
-            {
-                ConsoleWriteError(e.ClipFileName, e.ErrorMessage);
-            }
+
         }
 
         /*******************************************************
