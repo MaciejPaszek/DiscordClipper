@@ -53,7 +53,7 @@
             tableLayoutPanel6.RowCount = 2;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle());
-            tableLayoutPanel6.Size = new Size(391, 243);
+            tableLayoutPanel6.Size = new Size(984, 361);
             tableLayoutPanel6.TabIndex = 1;
             // 
             // richTextBoxConsole
@@ -65,7 +65,7 @@
             richTextBoxConsole.Location = new Point(3, 3);
             richTextBoxConsole.Name = "richTextBoxConsole";
             richTextBoxConsole.ReadOnly = true;
-            richTextBoxConsole.Size = new Size(385, 206);
+            richTextBoxConsole.Size = new Size(978, 324);
             richTextBoxConsole.TabIndex = 1;
             richTextBoxConsole.Text = "";
             // 
@@ -80,12 +80,12 @@
             tableLayoutPanel1.Controls.Add(buttonClearConsole, 2, 0);
             tableLayoutPanel1.Controls.Add(numericUpDownConsoleFontSize, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Top;
-            tableLayoutPanel1.Location = new Point(0, 212);
+            tableLayoutPanel1.Location = new Point(0, 330);
             tableLayoutPanel1.Margin = new Padding(0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(391, 31);
+            tableLayoutPanel1.Size = new Size(984, 31);
             tableLayoutPanel1.TabIndex = 2;
             // 
             // label12
@@ -102,7 +102,7 @@
             // buttonClearConsole
             // 
             buttonClearConsole.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonClearConsole.Location = new Point(288, 3);
+            buttonClearConsole.Location = new Point(881, 3);
             buttonClearConsole.Name = "buttonClearConsole";
             buttonClearConsole.Size = new Size(100, 23);
             buttonClearConsole.TabIndex = 16;
@@ -126,12 +126,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(391, 243);
+            ClientSize = new Size(984, 361);
             Controls.Add(tableLayoutPanel6);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(400, 200);
             Name = "FormConsole";
             Text = "Konsola";
+            FormClosing += FormConsole_FormClosing;
             tableLayoutPanel6.ResumeLayout(false);
             tableLayoutPanel6.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);

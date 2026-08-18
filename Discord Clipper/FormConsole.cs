@@ -3,70 +3,74 @@
     public partial class FormConsole : Form
     {
         /// <summary>
+        /// Priorytet
+        /// </summary>
+        public enum Priority
+        {
+            Info,
+            Command,
+            Output,
+            Error
+        }
+
+        public class ConsoleLineEventArgs : EventArgs
+        {
+            public DateTime DateTime = DateTime.Now;
+            public string Sender = string.Empty;
+            public string Message = string.Empty;
+            public Priority Priority = Priority.Info;
+            public ConsoleLineEventArgs(string message)
+            {
+                Message = message;
+            }
+
+            public ConsoleLineEventArgs(string message, Priority priority)
+            {
+                Message = message;
+                Priority = priority;
+            }
+
+            public override string ToString()
+            {
+                if(Sender == null || Sender == string.Empty)
+                {
+                    return $"[{DateTime:yyyy-MM-dd HH:mm:ss}] {Message}";
+                }
+
+                return $"[{DateTime:yyyy-MM-dd HH:mm:ss}] {Sender} {Message}";
+            }
+        }
+
+        /// <summary>
         /// Formularz okna konsoli
         /// </summary>
         public FormConsole()
         {
             InitializeComponent();
         }
-
-        /// <summary>
-        /// Klasa argumentów zdarzenia dla konsoli
-        /// </summary>
-        public class ConsoleEventArgs : EventArgs
-        {
-            public DateTime DateTime { get; set; } = DateTime.Now;
-            public string Sender { get; set; } = string.Empty;
-            public string Message { get; set; } = string.Empty;
-            public Priority MessagePriority { get; set; } = Priority.Info;
-
-            public enum Priority
-            {
-                Info,
-                Warning,
-                Error
-            }
-
-            public ConsoleEventArgs(string message)
-            {
-                Message = message;
-            }
-
-            public ConsoleEventArgs(string message, Priority messagePriority)
-            {
-                Message = message;
-                MessagePriority = messagePriority;
-            }
-
-            public override string ToString()
-            {
-                if (string.IsNullOrEmpty(Sender))
-                {
-                    return $"[{DateTime:yyyy-MM-dd HH:mm:ss}] {Message}";
-                }
-
-                return $"[{DateTime:yyyy-MM-dd HH:mm:ss}] {Sender}: {Message}";
-            }
-        }
-
+        
         /// <summary>
         /// Publiczna metoda do pisania po konsoli
         /// </summary>
         /// <param name="e"></param>
-        public void WriteLine(ConsoleEventArgs e)
+        public void WriteLine(ConsoleLineEventArgs consoleLineEventArgs)
         {
-            switch (e.MessagePriority)
+            switch (consoleLineEventArgs.Priority)
             {
-                case ConsoleEventArgs.Priority.Warning:
-                    WriteWarning(e.ToString());
+                case Priority.Command:
+                    WriteCommand(consoleLineEventArgs.ToString());
                     break;
 
-                case ConsoleEventArgs.Priority.Error:
-                    WriteError(e.ToString());
+                case Priority.Output:
+                    WriteOutput(consoleLineEventArgs.ToString());
+                    break;
+
+                case Priority.Error:
+                    WriteError(consoleLineEventArgs.ToString());
                     break;
 
                 default:
-                    WriteLine(e.ToString());
+                    WriteLine(consoleLineEventArgs.ToString());
                     break;
             }
         }
@@ -84,7 +88,6 @@
             else
             {
                 richTextBoxConsole.AppendText(text);
-
                 richTextBoxConsole.ScrollToCaret();
             }
         }
@@ -141,6 +144,24 @@
         }
 
         /// <summary>
+        /// Predefiniowana funkcja dla ostrzerzeń
+        /// </summary>
+        /// <param name="text"></param>
+        private void WriteCommand(string text)
+        {
+            WriteLine(text, Color.Blue);
+        }
+
+        /// <summary>
+        /// Predefiniowana funkcja dla ostrzerzeń
+        /// </summary>
+        /// <param name="text"></param>
+        private void WriteOutput(string text)
+        {
+            WriteLine(text, Color.DarkBlue);
+        }
+
+        /// <summary>
         /// Predefiniowana funkcja dla błędów
         /// </summary>
         /// <param name="text"></param>
@@ -149,14 +170,9 @@
             WriteLine(text, Color.Red);
         }
 
-        /// <summary>
-        /// Predefiniowana funkcja dla ostrzerzeń
-        /// </summary>
-        /// <param name="text"></param>
-        private void WriteWarning(string text)
-        {
-            WriteLine(text, Color.Orange);
-        }
+        
+
+
 
         /// <summary>
         /// Czyszczenie konsoli formularza
@@ -184,6 +200,15 @@
 
             // Odznaczenie całego tekstu
             richTextBoxConsole.DeselectAll();
+        }
+
+        private void FormConsole_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                this.Hide();
+            }
         }
     }
 }

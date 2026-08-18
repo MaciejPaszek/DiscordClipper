@@ -1,5 +1,6 @@
 using DiscordClipper.Properties;
-using System.Text.RegularExpressions;
+using System.Diagnostics;
+using static DiscordClipper.FormConsole;
 
 namespace DiscordClipper
 {
@@ -12,7 +13,7 @@ namespace DiscordClipper
         // Okno ustawień
         FormSettings? FormSettings;
 
-        // Okno ustawień
+        // Okno konsoli
         FormConsole? FormConsole;
 
         // Monitorowanie folderu
@@ -34,13 +35,16 @@ namespace DiscordClipper
          * FormMain 
          *******************************************************/
 
+        /// <summary>
+        /// Konstruktor klasy FormMain
+        /// </summary>
         public FormMain()
         {
             InitializeComponent();
 
-            // Utwóz obiekt klasy FFmpeg i dodaj obsługę zdarzeń
+            // Utwórz obiekt klasy FFmpeg i dodaj obsługę zdarzeń
             FFmpeg = new FFmpeg();
-            FFmpeg.Console += FFmpeg_Console;
+            FFmpeg.ConsoleLine += ConsoleLine;
             FFmpeg.FFmpegError += FFmpeg_FFmpegError;
             FFmpeg.ConversionStarted += FFmpeg_ConversionStarted;
             FFmpeg.ThumbnailCreated += FFmpeg_ThumbnailCreated;
@@ -68,17 +72,30 @@ namespace DiscordClipper
             // Utwórz formularz ustawień wykorzystując wczytane ustawienia
             FormSettings = new FormSettings(Settings);
 
+            // Utwóz formularz konsoli
             FormConsole = new FormConsole();
-            FormConsole.FormClosed += FormConsole_FormClosed;
+        }
 
-            FormConsole.ConsoleEventArgs e = new FormConsole.ConsoleEventArgs("Test");
-
-            e.Sender = "XDD";
-            e.MessagePriority = FormConsole.ConsoleEventArgs.Priority.Warning;
+        /// <summary>
+        /// Funkcja do pisania konsoli przez inne okna
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ConsoleLine(object? sender, ConsoleLineEventArgs e)
+        {
+            if (FormConsole == null)
+            {
+                return;
+            }
 
             FormConsole.WriteLine(e);
         }
 
+        /// <summary>
+        /// PRzełączanie widoczności konsoli
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonConsole_Click(object sender, EventArgs e)
         {
             if (FormConsole == null)
@@ -88,42 +105,15 @@ namespace DiscordClipper
 
             if (FormConsole.Visible)
             {
-                buttonConsole.Text = "Pokaż konsolę";
                 FormConsole.Hide();
             }
             else
             {
-                buttonConsole.Text = "Ukryj konsolę";
                 FormConsole.Show();
             }
         }
 
-        private void FormConsole_FormClosed(object? sender, FormClosedEventArgs e)
-        {
-            if (FormConsole == null)
-            {
-                return;
-            }
 
-            buttonConsole.Text = "Pokaż konsolę";
-            FormConsole.Hide();
-        }
-
-        private void FFmpeg_Console(object? sender, FormConsole.ConsoleEventArgs e)
-        {
-            if(FormConsole == null)
-            {
-                return;
-            }
-
-            if (sender != null)
-            {
-                string senderName = sender.GetType().Name;
-                e.Sender = senderName;
-            }
-
-            FormConsole.WriteLine(e);
-        }
 
         /*******************************************************
          * Zdarzenia FormMain
@@ -215,9 +205,22 @@ namespace DiscordClipper
             }
         }
 
-        private void ButtonClearConsole_Click(object sender, EventArgs e)
+        private void ButtonAddClips_Click(object sender, EventArgs e)
         {
-            //richTextBoxConsole.Clear();
+            //FileBrowserDialog
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Wybierz folder wejściowy";
+            openFileDialog.Filter = "Matroska (*.mkv)|*.mkv|MPEG-4(*.mp4)|*.mp4";
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.Multiselect = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                foreach (string filePath in openFileDialog.FileNames)
+                {
+                    AddClip(filePath);
+                }
+            }
         }
 
         //*******************************************************
@@ -273,11 +276,54 @@ namespace DiscordClipper
             return true;
         }
 
-        
+
 
         //*******************************************************
         // Funkcje pomocnicze formularza
         //*******************************************************
+
+        private void AddClip(string filePath)
+        {
+            if (FormConsole == null)
+            {
+                return;
+            }
+
+            FormConsole.WriteLine(new ConsoleLineEventArgs($"Dodawanie pliku \"{filePath}\" do kolejki...", Priority.Info));
+
+            // Dodaj plik na listę
+            int clipID = AddDataGridViewClip(Path.GetFileName(filePath));
+
+            // Dodawanie pliku do kolejki FFmpeg w osobnym wątku
+            if (FFmpeg == null)
+            {
+                return;
+            }
+
+            FFmpeg.AddClip(clipID, filePath);
+
+            FormConsole.WriteLine(new ConsoleLineEventArgs($"Dodano plik \"{filePath}\" do kolejki.", Priority.Info));
+
+            return;
+        }
+
+        private void SendToDiscord()
+        {
+            if (Settings == null)
+            {
+                return;
+            }
+
+            if (Discord == null)
+            {
+                return;
+            }
+
+            if (Settings.DiscordMode == 1)
+            {
+                //Discord.Send(e.ClipFileName, e.OutputFilePath, e.OutputFileName);
+            }
+        }
 
         /// <summary>
         /// Funkcja pomocnicza do ustawiania etykiety nazwy pliku
@@ -374,11 +420,11 @@ namespace DiscordClipper
             else
             {
                 // Znajdź wiersz i dodaj obraz
-                dataGridViewClips.Rows.Add(new object[] { Resources.Replay, clipName, "Znaleziony" });
-                return dataGridViewClips.Rows.Count - 1;
+                dataGridViewClips.Rows.Add(new object[] { Resources.Replay, clipName, "Oczekiwanie" });
             }
 
-            return -1;
+            // Zwróć numer klipu
+            return dataGridViewClips.Rows.Count - 1;
         }
 
 
@@ -386,16 +432,18 @@ namespace DiscordClipper
         /// Funkcja pomocnicza do ustawiania miniatury podglądu
         /// </summary>
         /// <param name="bitmap"></param>
-        private void SetDataGridViewStatus(int rowIndex, string status)
+        private void SetDataGridViewStatus(int rowIndex, string status, Color color)
         {
             if (dataGridViewClips.InvokeRequired)
             {
-                dataGridViewClips.Invoke(new Action(() => SetDataGridViewStatus(rowIndex, status)));
+                dataGridViewClips.Invoke(new Action(() => SetDataGridViewStatus(rowIndex, status, color)));
             }
             else
             {
                 // Znajdź wiersz i dodaj obraz
                 dataGridViewClips.Rows[rowIndex].Cells[2].Value = status;
+                dataGridViewClips.Rows[rowIndex].Cells[1].Style.ForeColor = color;
+                dataGridViewClips.Rows[rowIndex].Cells[2].Style.ForeColor = color;
             }
         }
         /// <summary>
@@ -426,28 +474,20 @@ namespace DiscordClipper
         /// <param name="e"></param>
         private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
         {
-            // Sprawdzenie, czy nazwa nie jest pusta
-            if (e.Name == null || e.Name == string.Empty)
-            {
-                return;
-            }
-
-            // Ustaw etykietę nazwy pliku
-            SetLabelFileName(e.Name);
-
-            // Dodaj plik na listę RichText
-            AddDataGridViewClip(e.Name);
-
-            // Dodawanie pliku do kolejki FFmpeg w osobnym wątku
-            if (FFmpeg == null)
-            {
-                return;
-            }
-
-            Task AddClipTask = new Task(() => FFmpeg.AddClip(e.FullPath, e.Name));
-            AddClipTask.Start();
+            // Dodaj klip do kolejki FFmpeg
+            AddClip(e.FullPath);
 
             return;
+        }
+
+        /// <summary>
+        /// Zdarzenie utworzenia miniatury klipu (kolor niebieski)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FFmpeg_ThumbnailCreated(object? sender, FFmpeg.ThumbnailCreatedEventArgs e)
+        {
+            SetDataGridViewImage(e.ClipID, new Bitmap(e.ThumbnailFilePath));
         }
 
         /// <summary>
@@ -460,29 +500,13 @@ namespace DiscordClipper
             // Ustaw nazwę nowego klipu 
             SetLabelFileName(e.ClipFileName);
 
+            SetPictureBoxImage(new Bitmap(e.ThumbnailFilePath));
+
             // Ustaw status 
-            SetDataGridViewStatus(0, "Konwersja rozpoczęta");
+            SetDataGridViewStatus(e.ClipID, "Rozpoczęto", Color.Blue);
 
             // Ustaw pasek postępu na 0
             SetProgressBar(0);
-        }
-
-        /// <summary>
-        /// Zdarzenie utworzenia miniatury klipu (kolor niebieski)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FFmpeg_ThumbnailCreated(object? sender, FFmpeg.ThumbnailCreatedEventArgs e)
-        {
-            Bitmap bitmap = new Bitmap(e.ThumbnailFilePath);
-
-            SetPictureBoxImage(bitmap);
-
-            SetDataGridViewStatus(0, "Utworzono miniaturę");
-
-            SetDataGridViewImage(0, bitmap);
-
-
         }
 
         /// <summary>
@@ -502,81 +526,50 @@ namespace DiscordClipper
         /// <param name="e"></param>
         private void FFmpeg_VideoCreated(object? sender, FFmpeg.VideoCreatedEventArgs e)
         {
-            SetDataGridViewStatus(0, "Zakończono konwersję");
+            SetDataGridViewStatus(e.ClipID, "Ukończono", Color.Green);
 
             SetProgressBar(e.FrameCount, e.FrameCount);
-
-            if (Settings == null)
-            {
-                return;
-            }
-
-            if (Discord == null)
-            {
-                return;
-            }
-
-            if (Settings.DiscordMode == 1)
-            {
-                Discord.Send(e.ClipFileName, e.OutputFilePath, e.OutputFileName);
-            }
         }
 
         private void Discord_ClipSent(object? sender, Discord.ClipSentEventArgs e)
         {
-
+            SetDataGridViewStatus(e.ClipID, "Wysłano", Color.Purple);
         }
 
         private void FFmpeg_FFmpegError(object? sender, FFmpeg.FFmpegErrorEventArgs e)
         {
-            FormConsole.WriteLine(new FormConsole.ConsoleEventArgs($"Błąd FFmpeg: {e.ErrorMessage}") { Sender = "FFmpeg", MessagePriority = FormConsole.ConsoleEventArgs.Priority.Error });
+            SetDataGridViewStatus(e.ClipID, "FFmpeg error", Color.Red);
         }
 
         private void Discord_DiscordError(object? sender, Discord.DiscordErrorEventArgs e)
         {
-
+            //SetDataGridViewStatus(e.ClipID, "FFmpeg error", Color.Red);
         }
 
-        /*******************************************************
-         * Skróty Klawiszowe
-         *******************************************************/
-
-        Keys ShortcutKey = new Keys();
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        private void instrukcjaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Keys shortcut = ShortcutKey;
-
-            //if (checkBoxControl.Checked) { shortcut |= Keys.Control; }
-            //if (checkBoxShift.Checked) { shortcut |= Keys.Shift; }
-            //if (checkBoxAlt.Checked) { shortcut |= Keys.Alt; }
-
-            //if (textBoxShortcut.Focused == false)
-            //{
-            //    if (keyData == ShortcutKey)
-            //    {
-            //        MessageBox.Show("Shortcut");
-            //        return true;
-            //    }
-            //}
-
-
-            return base.ProcessCmdKey(ref msg, keyData);
+            OpenBrowser("https://github.com/MaciejPaszek/DiscordClipper/wiki");
         }
 
-        private void textBoxShortcut_KeyDown(object sender, KeyEventArgs e)
+        private void zgłośBłądToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //checkBoxControl.Checked = e.Control;
-            //checkBoxShift.Checked = e.Shift;
-            //checkBoxAlt.Checked = e.Alt;
-
-            //ShortcutKey = e.KeyData;
-
-            //textBoxShortcut.Text = string.Empty;
-            //textBoxShortcut.Text = e.KeyData.ToString();
+            OpenBrowser("https://github.com/MaciejPaszek/DiscordClipper/issues");
 
         }
 
-        
+        private void OpenBrowser(string url)
+        {
+            Process browserProcess = new Process();
+            browserProcess.StartInfo.FileName = url;
+            browserProcess.StartInfo.UseShellExecute = true;
+
+            browserProcess.Start();
+
+        }
+
+        private void otwórzFolderAppDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", Application.UserAppDataPath);
+        }
     }
 }

@@ -43,11 +43,19 @@
             splitContainerOutput = new SplitContainer();
             groupBoxConsole = new GroupBox();
             tableLayoutPanel6 = new TableLayoutPanel();
-            buttonClearConsole = new Button();
+            buttonAddClips = new Button();
             dataGridViewClips = new DataGridView();
             Thumbnail = new DataGridViewImageColumn();
             ClipName = new DataGridViewTextBoxColumn();
             Status = new DataGridViewTextBoxColumn();
+            ColumnSend = new DataGridViewButtonColumn();
+            menuStrip1 = new MenuStrip();
+            oknaToolStripMenuItem = new ToolStripMenuItem();
+            ustawieniaToolStripMenuItem = new ToolStripMenuItem();
+            otwórzFolderAppDataToolStripMenuItem = new ToolStripMenuItem();
+            pomocToolStripMenuItem = new ToolStripMenuItem();
+            instrukcjaToolStripMenuItem = new ToolStripMenuItem();
+            zgłośBłądToolStripMenuItem = new ToolStripMenuItem();
             groupBoxOutput.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxThumbnail).BeginInit();
@@ -61,6 +69,7 @@
             groupBoxConsole.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridViewClips).BeginInit();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // groupBoxOutput
@@ -70,7 +79,7 @@
             groupBoxOutput.Location = new Point(0, 0);
             groupBoxOutput.Margin = new Padding(10, 5, 10, 10);
             groupBoxOutput.Name = "groupBoxOutput";
-            groupBoxOutput.Size = new Size(546, 272);
+            groupBoxOutput.Size = new Size(604, 407);
             groupBoxOutput.TabIndex = 1;
             groupBoxOutput.TabStop = false;
             groupBoxOutput.Text = "Podgląd";
@@ -89,7 +98,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(540, 250);
+            tableLayoutPanel1.Size = new Size(598, 385);
             tableLayoutPanel1.TabIndex = 3;
             // 
             // pictureBoxThumbnail
@@ -99,7 +108,7 @@
             pictureBoxThumbnail.Dock = DockStyle.Fill;
             pictureBoxThumbnail.Location = new Point(3, 3);
             pictureBoxThumbnail.Name = "pictureBoxThumbnail";
-            pictureBoxThumbnail.Size = new Size(534, 200);
+            pictureBoxThumbnail.Size = new Size(592, 335);
             pictureBoxThumbnail.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxThumbnail.TabIndex = 0;
             pictureBoxThumbnail.TabStop = false;
@@ -107,18 +116,18 @@
             // progressBarOutput
             // 
             progressBarOutput.Dock = DockStyle.Top;
-            progressBarOutput.Location = new Point(3, 224);
+            progressBarOutput.Location = new Point(3, 359);
             progressBarOutput.Name = "progressBarOutput";
-            progressBarOutput.Size = new Size(534, 23);
+            progressBarOutput.Size = new Size(592, 23);
             progressBarOutput.TabIndex = 1;
             // 
             // labelFileName
             // 
             labelFileName.AutoSize = true;
             labelFileName.Dock = DockStyle.Top;
-            labelFileName.Location = new Point(3, 206);
+            labelFileName.Location = new Point(3, 341);
             labelFileName.Name = "labelFileName";
-            labelFileName.Size = new Size(534, 15);
+            labelFileName.Size = new Size(592, 15);
             labelFileName.TabIndex = 2;
             labelFileName.Text = "Nazwa pliku";
             // 
@@ -129,13 +138,13 @@
             tableLayoutPanelMain.Controls.Add(groupBox2, 0, 0);
             tableLayoutPanelMain.Controls.Add(splitContainerOutput, 0, 1);
             tableLayoutPanelMain.Dock = DockStyle.Fill;
-            tableLayoutPanelMain.Location = new Point(0, 0);
+            tableLayoutPanelMain.Location = new Point(0, 24);
             tableLayoutPanelMain.Margin = new Padding(0);
             tableLayoutPanelMain.Name = "tableLayoutPanelMain";
             tableLayoutPanelMain.RowCount = 2;
             tableLayoutPanelMain.RowStyles.Add(new RowStyle());
             tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanelMain.Size = new Size(566, 720);
+            tableLayoutPanelMain.Size = new Size(624, 1017);
             tableLayoutPanelMain.TabIndex = 2;
             // 
             // groupBox2
@@ -146,7 +155,7 @@
             groupBox2.Location = new Point(10, 10);
             groupBox2.Margin = new Padding(10);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(546, 109);
+            groupBox2.Size = new Size(604, 109);
             groupBox2.TabIndex = 4;
             groupBox2.TabStop = false;
             groupBox2.Text = "Aplikacja";
@@ -166,7 +175,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
-            tableLayoutPanel2.Size = new Size(540, 87);
+            tableLayoutPanel2.Size = new Size(598, 87);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // buttonConsole
@@ -174,7 +183,7 @@
             buttonConsole.Dock = DockStyle.Top;
             buttonConsole.Location = new Point(3, 61);
             buttonConsole.Name = "buttonConsole";
-            buttonConsole.Size = new Size(534, 23);
+            buttonConsole.Size = new Size(592, 23);
             buttonConsole.TabIndex = 8;
             buttonConsole.Text = "Konsola";
             buttonConsole.UseVisualStyleBackColor = true;
@@ -185,7 +194,7 @@
             buttonSettings.Dock = DockStyle.Top;
             buttonSettings.Location = new Point(3, 3);
             buttonSettings.Name = "buttonSettings";
-            buttonSettings.Size = new Size(534, 23);
+            buttonSettings.Size = new Size(592, 23);
             buttonSettings.TabIndex = 0;
             buttonSettings.Text = "Ustawienia";
             buttonSettings.UseVisualStyleBackColor = true;
@@ -196,7 +205,7 @@
             buttonActivate.Dock = DockStyle.Top;
             buttonActivate.Location = new Point(3, 32);
             buttonActivate.Name = "buttonActivate";
-            buttonActivate.Size = new Size(534, 23);
+            buttonActivate.Size = new Size(592, 23);
             buttonActivate.TabIndex = 7;
             buttonActivate.Text = "Rozpocznij monitorowanie";
             buttonActivate.UseVisualStyleBackColor = true;
@@ -218,8 +227,8 @@
             // splitContainerOutput.Panel2
             // 
             splitContainerOutput.Panel2.Controls.Add(groupBoxOutput);
-            splitContainerOutput.Size = new Size(546, 576);
-            splitContainerOutput.SplitterDistance = 300;
+            splitContainerOutput.Size = new Size(604, 873);
+            splitContainerOutput.SplitterDistance = 462;
             splitContainerOutput.TabIndex = 3;
             // 
             // groupBoxConsole
@@ -230,7 +239,7 @@
             groupBoxConsole.Margin = new Padding(10, 5, 10, 10);
             groupBoxConsole.Name = "groupBoxConsole";
             groupBoxConsole.Padding = new Padding(7);
-            groupBoxConsole.Size = new Size(546, 300);
+            groupBoxConsole.Size = new Size(604, 462);
             groupBoxConsole.TabIndex = 3;
             groupBoxConsole.TabStop = false;
             groupBoxConsole.Text = "Kolejka";
@@ -240,7 +249,7 @@
             tableLayoutPanel6.AutoSize = true;
             tableLayoutPanel6.ColumnCount = 1;
             tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel6.Controls.Add(buttonClearConsole, 0, 1);
+            tableLayoutPanel6.Controls.Add(buttonAddClips, 0, 1);
             tableLayoutPanel6.Controls.Add(dataGridViewClips, 0, 0);
             tableLayoutPanel6.Dock = DockStyle.Fill;
             tableLayoutPanel6.Location = new Point(7, 23);
@@ -257,32 +266,33 @@
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel6.Size = new Size(532, 270);
+            tableLayoutPanel6.Size = new Size(590, 432);
             tableLayoutPanel6.TabIndex = 0;
             // 
-            // buttonClearConsole
+            // buttonAddClips
             // 
-            buttonClearConsole.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonClearConsole.Location = new Point(429, 244);
-            buttonClearConsole.Name = "buttonClearConsole";
-            buttonClearConsole.Size = new Size(100, 23);
-            buttonClearConsole.TabIndex = 15;
-            buttonClearConsole.Text = "Wyczyść";
-            buttonClearConsole.UseVisualStyleBackColor = true;
-            buttonClearConsole.Click += ButtonClearConsole_Click;
+            buttonAddClips.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonAddClips.Location = new Point(487, 406);
+            buttonAddClips.Name = "buttonAddClips";
+            buttonAddClips.Size = new Size(100, 23);
+            buttonAddClips.TabIndex = 15;
+            buttonAddClips.Text = "Dodaj klipy...";
+            buttonAddClips.UseVisualStyleBackColor = true;
+            buttonAddClips.Click += ButtonAddClips_Click;
             // 
             // dataGridViewClips
             // 
+            dataGridViewClips.AllowUserToAddRows = false;
             dataGridViewClips.AllowUserToDeleteRows = false;
-            dataGridViewClips.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewClips.Columns.AddRange(new DataGridViewColumn[] { Thumbnail, ClipName, Status });
+            dataGridViewClips.Columns.AddRange(new DataGridViewColumn[] { Thumbnail, ClipName, Status, ColumnSend });
             dataGridViewClips.Dock = DockStyle.Fill;
             dataGridViewClips.Location = new Point(3, 3);
             dataGridViewClips.Name = "dataGridViewClips";
             dataGridViewClips.ReadOnly = true;
             dataGridViewClips.RowHeadersVisible = false;
             dataGridViewClips.RowTemplate.Height = 90;
-            dataGridViewClips.Size = new Size(526, 235);
+            dataGridViewClips.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridViewClips.Size = new Size(584, 397);
             dataGridViewClips.TabIndex = 16;
             // 
             // Thumbnail
@@ -299,20 +309,83 @@
             ClipName.HeaderText = "Nazwa pliku";
             ClipName.Name = "ClipName";
             ClipName.ReadOnly = true;
+            ClipName.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // Status
             // 
             Status.HeaderText = "Status";
             Status.Name = "Status";
             Status.ReadOnly = true;
+            Status.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // ColumnSend
+            // 
+            ColumnSend.HeaderText = "Discord";
+            ColumnSend.MinimumWidth = 100;
+            ColumnSend.Name = "ColumnSend";
+            ColumnSend.ReadOnly = true;
+            ColumnSend.Text = "Wyślij";
+            ColumnSend.UseColumnTextForButtonValue = true;
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { oknaToolStripMenuItem, pomocToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(624, 24);
+            menuStrip1.TabIndex = 3;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // oknaToolStripMenuItem
+            // 
+            oknaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ustawieniaToolStripMenuItem, otwórzFolderAppDataToolStripMenuItem });
+            oknaToolStripMenuItem.Name = "oknaToolStripMenuItem";
+            oknaToolStripMenuItem.Size = new Size(100, 20);
+            oknaToolStripMenuItem.Text = "Discord Clipper";
+            // 
+            // ustawieniaToolStripMenuItem
+            // 
+            ustawieniaToolStripMenuItem.Name = "ustawieniaToolStripMenuItem";
+            ustawieniaToolStripMenuItem.Size = new Size(195, 22);
+            ustawieniaToolStripMenuItem.Text = "Ustawienia";
+            // 
+            // otwórzFolderAppDataToolStripMenuItem
+            // 
+            otwórzFolderAppDataToolStripMenuItem.Name = "otwórzFolderAppDataToolStripMenuItem";
+            otwórzFolderAppDataToolStripMenuItem.Size = new Size(195, 22);
+            otwórzFolderAppDataToolStripMenuItem.Text = "Otwórz folder AppData";
+            otwórzFolderAppDataToolStripMenuItem.Click += otwórzFolderAppDataToolStripMenuItem_Click;
+            // 
+            // pomocToolStripMenuItem
+            // 
+            pomocToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { instrukcjaToolStripMenuItem, zgłośBłądToolStripMenuItem });
+            pomocToolStripMenuItem.Name = "pomocToolStripMenuItem";
+            pomocToolStripMenuItem.Size = new Size(57, 20);
+            pomocToolStripMenuItem.Text = "GitHub";
+            // 
+            // instrukcjaToolStripMenuItem
+            // 
+            instrukcjaToolStripMenuItem.Name = "instrukcjaToolStripMenuItem";
+            instrukcjaToolStripMenuItem.Size = new Size(210, 22);
+            instrukcjaToolStripMenuItem.Text = "Discord Clipper Wiki";
+            instrukcjaToolStripMenuItem.Click += instrukcjaToolStripMenuItem_Click;
+            // 
+            // zgłośBłądToolStripMenuItem
+            // 
+            zgłośBłądToolStripMenuItem.Name = "zgłośBłądToolStripMenuItem";
+            zgłośBłądToolStripMenuItem.Size = new Size(210, 22);
+            zgłośBłądToolStripMenuItem.Text = "Zgłoś błąd lub propozycję";
+            zgłośBłądToolStripMenuItem.Click += zgłośBłądToolStripMenuItem_Click;
             // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(566, 720);
+            ClientSize = new Size(624, 1041);
             Controls.Add(tableLayoutPanelMain);
+            Controls.Add(menuStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = menuStrip1;
             MinimumSize = new Size(400, 600);
             Name = "FormMain";
             Text = "Discord Clipper";
@@ -333,7 +406,10 @@
             groupBoxConsole.PerformLayout();
             tableLayoutPanel6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridViewClips).EndInit();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -350,11 +426,19 @@
         private TableLayoutPanel tableLayoutPanel2;
         private Button buttonSettings;
         private Button buttonActivate;
-        private Button buttonClearConsole;
+        private Button buttonAddClips;
         private Button buttonConsole;
         private DataGridView dataGridViewClips;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem oknaToolStripMenuItem;
+        private ToolStripMenuItem ustawieniaToolStripMenuItem;
+        private ToolStripMenuItem otwórzFolderAppDataToolStripMenuItem;
+        private ToolStripMenuItem pomocToolStripMenuItem;
+        private ToolStripMenuItem instrukcjaToolStripMenuItem;
+        private ToolStripMenuItem zgłośBłądToolStripMenuItem;
         private DataGridViewImageColumn Thumbnail;
         private DataGridViewTextBoxColumn ClipName;
         private DataGridViewTextBoxColumn Status;
+        private DataGridViewButtonColumn ColumnSend;
     }
 }

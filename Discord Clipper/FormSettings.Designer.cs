@@ -54,13 +54,6 @@
             label9 = new Label();
             textBoxDiscordWebhook = new TextBox();
             label10 = new Label();
-            label11 = new Label();
-            buttonClearShortcut = new Button();
-            tableLayoutPanel6 = new TableLayoutPanel();
-            checkBoxShortcutControl = new CheckBox();
-            checkBoxShortcutShift = new CheckBox();
-            checkBoxShortcutAlt = new CheckBox();
-            textBoxDiscordShortcut = new TextBox();
             groupBox1 = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
             label1 = new Label();
@@ -82,7 +75,6 @@
             ((System.ComponentModel.ISupportInitialize)numericUpDownMaxVideoBitrate).BeginInit();
             groupBox4.SuspendLayout();
             tableLayoutPanel7.SuspendLayout();
-            tableLayoutPanel6.SuspendLayout();
             groupBox1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -331,7 +323,7 @@
             groupBox4.Margin = new Padding(10, 5, 10, 10);
             groupBox4.MinimumSize = new Size(350, 0);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new Size(464, 115);
+            groupBox4.Size = new Size(464, 84);
             groupBox4.TabIndex = 4;
             groupBox4.TabStop = false;
             groupBox4.Text = "Ustawienia Discorda";
@@ -348,17 +340,13 @@
             tableLayoutPanel7.Controls.Add(label9, 0, 0);
             tableLayoutPanel7.Controls.Add(textBoxDiscordWebhook, 1, 0);
             tableLayoutPanel7.Controls.Add(label10, 0, 1);
-            tableLayoutPanel7.Controls.Add(label11, 0, 2);
-            tableLayoutPanel7.Controls.Add(buttonClearShortcut, 2, 2);
-            tableLayoutPanel7.Controls.Add(tableLayoutPanel6, 1, 2);
             tableLayoutPanel7.Dock = DockStyle.Fill;
             tableLayoutPanel7.Location = new Point(3, 19);
             tableLayoutPanel7.Name = "tableLayoutPanel7";
-            tableLayoutPanel7.RowCount = 3;
+            tableLayoutPanel7.RowCount = 2;
             tableLayoutPanel7.RowStyles.Add(new RowStyle());
             tableLayoutPanel7.RowStyles.Add(new RowStyle());
-            tableLayoutPanel7.RowStyles.Add(new RowStyle());
-            tableLayoutPanel7.Size = new Size(458, 93);
+            tableLayoutPanel7.Size = new Size(458, 62);
             tableLayoutPanel7.TabIndex = 8;
             // 
             // buttonShowDiscordWebhook
@@ -415,96 +403,6 @@
             label10.Size = new Size(154, 23);
             label10.TabIndex = 1;
             label10.Text = "Tryb wysyłania klipów";
-            // 
-            // label11
-            // 
-            label11.AutoSize = true;
-            label11.Dock = DockStyle.Top;
-            label11.Enabled = false;
-            label11.Location = new Point(3, 67);
-            label11.Margin = new Padding(3, 5, 3, 3);
-            label11.MinimumSize = new Size(0, 23);
-            label11.Name = "label11";
-            label11.Size = new Size(154, 23);
-            label11.TabIndex = 11;
-            label11.Text = "Skrót klawiszowy";
-            // 
-            // buttonClearShortcut
-            // 
-            buttonClearShortcut.Enabled = false;
-            buttonClearShortcut.Location = new Point(391, 65);
-            buttonClearShortcut.Name = "buttonClearShortcut";
-            buttonClearShortcut.Size = new Size(64, 23);
-            buttonClearShortcut.TabIndex = 13;
-            buttonClearShortcut.Text = "Wyczyść";
-            buttonClearShortcut.UseVisualStyleBackColor = true;
-            buttonClearShortcut.Click += ButtonClearShortcut_Click;
-            // 
-            // tableLayoutPanel6
-            // 
-            tableLayoutPanel6.AutoSize = true;
-            tableLayoutPanel6.ColumnCount = 4;
-            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel6.Controls.Add(checkBoxShortcutControl, 0, 0);
-            tableLayoutPanel6.Controls.Add(checkBoxShortcutShift, 1, 0);
-            tableLayoutPanel6.Controls.Add(checkBoxShortcutAlt, 2, 0);
-            tableLayoutPanel6.Controls.Add(textBoxDiscordShortcut, 3, 0);
-            tableLayoutPanel6.Dock = DockStyle.Top;
-            tableLayoutPanel6.Location = new Point(160, 62);
-            tableLayoutPanel6.Margin = new Padding(0);
-            tableLayoutPanel6.Name = "tableLayoutPanel6";
-            tableLayoutPanel6.RowCount = 1;
-            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel6.Size = new Size(228, 29);
-            tableLayoutPanel6.TabIndex = 14;
-            // 
-            // checkBoxShortcutControl
-            // 
-            checkBoxShortcutControl.AutoSize = true;
-            checkBoxShortcutControl.Enabled = false;
-            checkBoxShortcutControl.Location = new Point(3, 5);
-            checkBoxShortcutControl.Margin = new Padding(3, 5, 0, 3);
-            checkBoxShortcutControl.Name = "checkBoxShortcutControl";
-            checkBoxShortcutControl.Size = new Size(56, 19);
-            checkBoxShortcutControl.TabIndex = 0;
-            checkBoxShortcutControl.Text = "Ctrl +";
-            checkBoxShortcutControl.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxShortcutShift
-            // 
-            checkBoxShortcutShift.AutoSize = true;
-            checkBoxShortcutShift.Enabled = false;
-            checkBoxShortcutShift.Location = new Point(62, 5);
-            checkBoxShortcutShift.Margin = new Padding(3, 5, 0, 3);
-            checkBoxShortcutShift.Name = "checkBoxShortcutShift";
-            checkBoxShortcutShift.Size = new Size(61, 19);
-            checkBoxShortcutShift.TabIndex = 1;
-            checkBoxShortcutShift.Text = "Shift +";
-            checkBoxShortcutShift.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxShortcutAlt
-            // 
-            checkBoxShortcutAlt.AutoSize = true;
-            checkBoxShortcutAlt.Enabled = false;
-            checkBoxShortcutAlt.Location = new Point(126, 5);
-            checkBoxShortcutAlt.Margin = new Padding(3, 5, 0, 3);
-            checkBoxShortcutAlt.Name = "checkBoxShortcutAlt";
-            checkBoxShortcutAlt.Size = new Size(52, 19);
-            checkBoxShortcutAlt.TabIndex = 2;
-            checkBoxShortcutAlt.Text = "Alt +";
-            checkBoxShortcutAlt.UseVisualStyleBackColor = true;
-            // 
-            // textBoxDiscordShortcut
-            // 
-            textBoxDiscordShortcut.Dock = DockStyle.Top;
-            textBoxDiscordShortcut.Enabled = false;
-            textBoxDiscordShortcut.Location = new Point(181, 3);
-            textBoxDiscordShortcut.Name = "textBoxDiscordShortcut";
-            textBoxDiscordShortcut.Size = new Size(44, 23);
-            textBoxDiscordShortcut.TabIndex = 12;
             // 
             // groupBox1
             // 
@@ -657,18 +555,18 @@
             tableLayoutPanel4.Controls.Add(buttonAccept, 1, 0);
             tableLayoutPanel4.Controls.Add(buttonCancel, 0, 0);
             tableLayoutPanel4.Dock = DockStyle.Fill;
-            tableLayoutPanel4.Location = new Point(0, 523);
+            tableLayoutPanel4.Location = new Point(0, 492);
             tableLayoutPanel4.Margin = new Padding(0);
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle());
-            tableLayoutPanel4.Size = new Size(484, 38);
+            tableLayoutPanel4.Size = new Size(484, 69);
             tableLayoutPanel4.TabIndex = 6;
             // 
             // buttonAccept
             // 
             buttonAccept.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonAccept.Location = new Point(406, 12);
+            buttonAccept.Location = new Point(406, 43);
             buttonAccept.Name = "buttonAccept";
             buttonAccept.Size = new Size(75, 23);
             buttonAccept.TabIndex = 8;
@@ -679,7 +577,7 @@
             // buttonCancel
             // 
             buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonCancel.Location = new Point(325, 12);
+            buttonCancel.Location = new Point(325, 43);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(75, 23);
             buttonCancel.TabIndex = 7;
@@ -712,8 +610,6 @@
             groupBox4.PerformLayout();
             tableLayoutPanel7.ResumeLayout(false);
             tableLayoutPanel7.PerformLayout();
-            tableLayoutPanel6.ResumeLayout(false);
-            tableLayoutPanel6.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
@@ -745,13 +641,6 @@
         private Label label9;
         private TextBox textBoxDiscordWebhook;
         private Label label10;
-        private Label label11;
-        private Button buttonClearShortcut;
-        private TableLayoutPanel tableLayoutPanel6;
-        private CheckBox checkBoxShortcutControl;
-        private CheckBox checkBoxShortcutShift;
-        private CheckBox checkBoxShortcutAlt;
-        private TextBox textBoxDiscordShortcut;
         private GroupBox groupBox1;
         private TableLayoutPanel tableLayoutPanel2;
         private Label label1;

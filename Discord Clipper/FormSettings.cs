@@ -11,7 +11,7 @@
         {
             InitializeComponent();
             
-            // PRzyjmij ustawienia razem z nazwą profilu
+            // Przyjmij ustawienia razem z nazwą profilu
             Settings = settings;
             
             // Opcje list rozwijanych
@@ -57,7 +57,6 @@
 
             textBoxDiscordWebhook.Text = settings.DiscordWebhook;
             comboBoxDiscordMode.SelectedIndex = settings.DiscordMode;
-            textBoxDiscordShortcut.Text = settings.DiscordShortcut;
         }
 
         private void ComboBoxColorMode_SelectedIndexChanged(object sender, EventArgs e)
@@ -109,14 +108,7 @@
                 buttonShowDiscordWebhook.Text = "Pokaż";
             }
         }
-        private void ButtonClearShortcut_Click(object sender, EventArgs e)
-        {
-            checkBoxShortcutControl.Checked = false;
-            checkBoxShortcutShift.Checked = false;
-            checkBoxShortcutAlt.Checked = false;
 
-            textBoxDiscordShortcut.Text = string.Empty;
-        }
         private void ButtonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
@@ -144,7 +136,6 @@
 
             Settings.DiscordWebhook = textBoxDiscordWebhook.Text;
             Settings.DiscordMode = comboBoxDiscordMode.SelectedIndex;
-            Settings.DiscordShortcut = textBoxDiscordShortcut.Text;
 
             DialogResult = DialogResult.OK;
 

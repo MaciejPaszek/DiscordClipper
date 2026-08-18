@@ -14,7 +14,8 @@ namespace DiscordClipper
 
         public class ClipSentEventArgs : EventArgs
         {
-            public string ClipFileName { get; set; }
+            public int ClipID { get; set; } = 0;
+            public string ClipFileName { get; set; } = string.Empty;
         }
 
         protected virtual void OnClipSent(ClipSentEventArgs e)
@@ -26,8 +27,8 @@ namespace DiscordClipper
 
         public class DiscordErrorEventArgs : EventArgs
         {
-            public string ClipFileName { get; set; }
-            public string ErrorMessage { get; set; }
+            public string ClipFileName { get; set; } = string.Empty;
+            public string ErrorMessage { get; set; } = string.Empty;
         }
 
         protected virtual void OnDiscordError(DiscordErrorEventArgs e)
