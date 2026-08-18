@@ -14,10 +14,10 @@ namespace DiscordClipper
         public int InputFileFormat = 0;
 
         public string OutputFolder = string.Empty;
-        public int OutputFileFormat = 1;
+        public int OutputFileFormat = 0;
         public int Resolution = 2;
         public int FrameRate = 1;
-        public int Encoder = 1;
+        public int Encoder = 3;
         public int MaxVideoBitrate = 2600;
 
         public string DiscordWebhook = string.Empty;
