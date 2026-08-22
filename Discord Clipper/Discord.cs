@@ -125,7 +125,7 @@ namespace DiscordClipper
                 if (!File.Exists(clip.FilePath))
                 {
                     OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
-                    OnConsoleLine(new ConsoleLineEventArgs($"Klip nie istnieje.", Priority.Error));
+                    OnConsoleLine(new ConsoleLineEventArgs($"Plik \"{clip.FilePath}\" nie istnieje.", Priority.Error));
                     return;
                 }
 
@@ -134,7 +134,7 @@ namespace DiscordClipper
                 using MultipartFormDataContent form = new();
 
                 // Wiadomość
-                form.Add(new StringContent(Path.GetFileName(clip.FilePath)), "content");
+                form.Add(new StringContent($":clapper: **{Path.GetFileName(clip.FilePath)}**"), "content");
 
                 // Plik
                 byte[] fileBytes = await File.ReadAllBytesAsync(clip.FilePath);
@@ -152,7 +152,7 @@ namespace DiscordClipper
                 {
                     OnClipSent(new ClipSentEventArgs(clip.ClipID, clip.FilePath));
 
-                    OnConsoleLine(new ConsoleLineEventArgs($"Klip {Path.GetFileName(clip.FilePath)} został wysłany."));
+                    OnConsoleLine(new ConsoleLineEventArgs($"Plik \"{clip.FilePath}\" został wysłany."));
 
                 }
                 else
@@ -160,13 +160,13 @@ namespace DiscordClipper
                     string error = await response.Content.ReadAsStringAsync();
 
                     OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
-                    OnConsoleLine(new ConsoleLineEventArgs($"Klip {Path.GetFileName(clip.FilePath)} nie został wysłany - HTTP {response.StatusCode}: {error}.", Priority.Error));
+                    OnConsoleLine(new ConsoleLineEventArgs($"Plik \"{clip.FilePath}\" nie został wysłany - HTTP {response.StatusCode}: {error}", Priority.Error));
                 }
             }
             catch (Exception ex)
             {
                 OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
-                OnConsoleLine(new ConsoleLineEventArgs($"Klip {Path.GetFileName(clip.FilePath)} - {ex.Message}.", Priority.Error));
+                OnConsoleLine(new ConsoleLineEventArgs($"Plik \"{clip.FilePath}\" - {ex.Message}", Priority.Error));
             }
         }
     }

@@ -326,6 +326,25 @@ namespace DiscordClipper
 
         private void AddClip(string filePath)
         {
+            if(Settings == null)
+            {
+                return;
+            }
+
+            // Walidacja pola OutputFolder
+            if (Settings.OutputFolder == null || Settings.OutputFolder == string.Empty)
+            {
+                MessageBox.Show("Nie określono folderu wyjściowego.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+
+            }
+
+            if (!Directory.Exists(Settings.OutputFolder))
+            {
+                MessageBox.Show($"Wybrany folder wyjściowy nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             ConsoleLine(this.ToString(), new ConsoleLineEventArgs($"Dodawanie pliku \"{filePath}\" do kolejki..."));
 
             // Dodaj plik na listę
@@ -348,6 +367,18 @@ namespace DiscordClipper
         {
             if (Discord == null)
             {
+                return;
+            }
+
+            if (Settings == null)
+            {
+                return;
+            }
+
+            // Walidacja pola OutputFolder
+            if (Settings.DiscordWebhook == null || Settings.DiscordWebhook == string.Empty)
+            {
+                MessageBox.Show("Nie określono adresu URL Webhooka.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
