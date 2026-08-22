@@ -45,17 +45,16 @@
             tableLayoutPanel6 = new TableLayoutPanel();
             buttonAddClips = new Button();
             dataGridViewClips = new DataGridView();
-            menuStrip1 = new MenuStrip();
-            oknaToolStripMenuItem = new ToolStripMenuItem();
-            ustawieniaToolStripMenuItem = new ToolStripMenuItem();
-            otwórzFolderAppDataToolStripMenuItem = new ToolStripMenuItem();
-            pomocToolStripMenuItem = new ToolStripMenuItem();
-            instrukcjaToolStripMenuItem = new ToolStripMenuItem();
-            zgłośBłądToolStripMenuItem = new ToolStripMenuItem();
             Thumbnail = new DataGridViewImageColumn();
             ClipName = new DataGridViewTextBoxColumn();
             Status = new DataGridViewTextBoxColumn();
             ColumnSend = new DataGridViewButtonColumn();
+            menuStrip1 = new MenuStrip();
+            oknaToolStripMenuItem = new ToolStripMenuItem();
+            otwórzFolderAppDataToolStripMenuItem = new ToolStripMenuItem();
+            pomocToolStripMenuItem = new ToolStripMenuItem();
+            instrukcjaToolStripMenuItem = new ToolStripMenuItem();
+            zgłośBłądToolStripMenuItem = new ToolStripMenuItem();
             groupBoxOutput.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxThumbnail).BeginInit();
@@ -297,56 +296,6 @@
             dataGridViewClips.CellContentClick += dataGridViewClips_CellContentClick;
             dataGridViewClips.SelectionChanged += dataGridViewClips_SelectionChanged;
             // 
-            // menuStrip1
-            // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { oknaToolStripMenuItem, pomocToolStripMenuItem });
-            menuStrip1.Location = new Point(0, 0);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(624, 24);
-            menuStrip1.TabIndex = 3;
-            menuStrip1.Text = "menuStrip1";
-            // 
-            // oknaToolStripMenuItem
-            // 
-            oknaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ustawieniaToolStripMenuItem, otwórzFolderAppDataToolStripMenuItem });
-            oknaToolStripMenuItem.Name = "oknaToolStripMenuItem";
-            oknaToolStripMenuItem.Size = new Size(100, 20);
-            oknaToolStripMenuItem.Text = "Discord Clipper";
-            // 
-            // ustawieniaToolStripMenuItem
-            // 
-            ustawieniaToolStripMenuItem.Name = "ustawieniaToolStripMenuItem";
-            ustawieniaToolStripMenuItem.Size = new Size(195, 22);
-            ustawieniaToolStripMenuItem.Text = "Ustawienia";
-            // 
-            // otwórzFolderAppDataToolStripMenuItem
-            // 
-            otwórzFolderAppDataToolStripMenuItem.Name = "otwórzFolderAppDataToolStripMenuItem";
-            otwórzFolderAppDataToolStripMenuItem.Size = new Size(195, 22);
-            otwórzFolderAppDataToolStripMenuItem.Text = "Otwórz folder AppData";
-            otwórzFolderAppDataToolStripMenuItem.Click += otwórzFolderAppDataToolStripMenuItem_Click;
-            // 
-            // pomocToolStripMenuItem
-            // 
-            pomocToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { instrukcjaToolStripMenuItem, zgłośBłądToolStripMenuItem });
-            pomocToolStripMenuItem.Name = "pomocToolStripMenuItem";
-            pomocToolStripMenuItem.Size = new Size(57, 20);
-            pomocToolStripMenuItem.Text = "GitHub";
-            // 
-            // instrukcjaToolStripMenuItem
-            // 
-            instrukcjaToolStripMenuItem.Name = "instrukcjaToolStripMenuItem";
-            instrukcjaToolStripMenuItem.Size = new Size(210, 22);
-            instrukcjaToolStripMenuItem.Text = "Discord Clipper Wiki";
-            instrukcjaToolStripMenuItem.Click += instrukcjaToolStripMenuItem_Click;
-            // 
-            // zgłośBłądToolStripMenuItem
-            // 
-            zgłośBłądToolStripMenuItem.Name = "zgłośBłądToolStripMenuItem";
-            zgłośBłądToolStripMenuItem.Size = new Size(210, 22);
-            zgłośBłądToolStripMenuItem.Text = "Zgłoś błąd lub propozycję";
-            zgłośBłądToolStripMenuItem.Click += zgłośBłądToolStripMenuItem_Click;
-            // 
             // Thumbnail
             // 
             Thumbnail.HeaderText = "Miniatura";
@@ -377,6 +326,50 @@
             ColumnSend.Name = "ColumnSend";
             ColumnSend.ReadOnly = true;
             ColumnSend.Text = "Wyślij";
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { oknaToolStripMenuItem, pomocToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(624, 24);
+            menuStrip1.TabIndex = 3;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // oknaToolStripMenuItem
+            // 
+            oknaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { otwórzFolderAppDataToolStripMenuItem });
+            oknaToolStripMenuItem.Name = "oknaToolStripMenuItem";
+            oknaToolStripMenuItem.Size = new Size(100, 20);
+            oknaToolStripMenuItem.Text = "Discord Clipper";
+            // 
+            // otwórzFolderAppDataToolStripMenuItem
+            // 
+            otwórzFolderAppDataToolStripMenuItem.Name = "otwórzFolderAppDataToolStripMenuItem";
+            otwórzFolderAppDataToolStripMenuItem.Size = new Size(195, 22);
+            otwórzFolderAppDataToolStripMenuItem.Text = "Otwórz folder AppData";
+            otwórzFolderAppDataToolStripMenuItem.Click += otwórzFolderAppDataToolStripMenuItem_Click;
+            // 
+            // pomocToolStripMenuItem
+            // 
+            pomocToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { instrukcjaToolStripMenuItem, zgłośBłądToolStripMenuItem });
+            pomocToolStripMenuItem.Name = "pomocToolStripMenuItem";
+            pomocToolStripMenuItem.Size = new Size(57, 20);
+            pomocToolStripMenuItem.Text = "GitHub";
+            // 
+            // instrukcjaToolStripMenuItem
+            // 
+            instrukcjaToolStripMenuItem.Name = "instrukcjaToolStripMenuItem";
+            instrukcjaToolStripMenuItem.Size = new Size(210, 22);
+            instrukcjaToolStripMenuItem.Text = "Discord Clipper Wiki";
+            instrukcjaToolStripMenuItem.Click += instrukcjaToolStripMenuItem_Click;
+            // 
+            // zgłośBłądToolStripMenuItem
+            // 
+            zgłośBłądToolStripMenuItem.Name = "zgłośBłądToolStripMenuItem";
+            zgłośBłądToolStripMenuItem.Size = new Size(210, 22);
+            zgłośBłądToolStripMenuItem.Text = "Zgłoś błąd lub propozycję";
+            zgłośBłądToolStripMenuItem.Click += zgłośBłądToolStripMenuItem_Click;
             // 
             // FormMain
             // 
@@ -432,7 +425,6 @@
         private DataGridView dataGridViewClips;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem oknaToolStripMenuItem;
-        private ToolStripMenuItem ustawieniaToolStripMenuItem;
         private ToolStripMenuItem otwórzFolderAppDataToolStripMenuItem;
         private ToolStripMenuItem pomocToolStripMenuItem;
         private ToolStripMenuItem instrukcjaToolStripMenuItem;
