@@ -178,7 +178,7 @@ namespace DiscordClipper
         /// <summary>
         /// Struktura do przechowywania informacji o klipie w kolejce
         /// </summary>
-        private struct Clip
+        public struct Clip
         {
             public int ClipID;
             public string FilePath;
@@ -319,25 +319,35 @@ namespace DiscordClipper
         private void CreateThumbnail(Clip clip)
         {
             // Konsola
-            OnConsoleLine(new ConsoleLineEventArgs($"Tworzenie miniatury dla pliku \"{clip.FilePath}\"..."));
 
             // Ścieżka do miniatury (w folderze wyjściowym)
             string thumbnailFilePath = $"{OutputFolder}\\{Path.GetFileNameWithoutExtension(clip.FilePath)}.png";
 
-            int exitCode = FFmpegCreateThumbnail(clip.ClipID, clip.FilePath, thumbnailFilePath);
-
-            if (exitCode != 0)
+            if(!File.Exists(thumbnailFilePath))
             {
-                // Informacja dla okna głównego
-                OnFFmpegError(new FFmpegErrorEventArgs(clip.ClipID));
+                // Miniatura nie istnieje, tworzymy ją
+                OnConsoleLine(new ConsoleLineEventArgs($"Tworzenie miniatury dla pliku \"{clip.FilePath}\"..."));
 
-                // Konsola
-                OnConsoleLine(new ConsoleLineEventArgs($"Nie można utworzyć miniatury dla pliku \"{clip.FilePath}\" (FFmpeg exit code: {exitCode})", Priority.Error));
+                int exitCode = FFmpegCreateThumbnail(clip.ClipID, clip.FilePath, thumbnailFilePath);
 
-                return;
+                if (exitCode != 0)
+                {
+                    // Informacja dla okna głównego
+                    OnFFmpegError(new FFmpegErrorEventArgs(clip.ClipID));
+
+                    // Konsola
+                    OnConsoleLine(new ConsoleLineEventArgs($"Nie można utworzyć miniatury dla pliku \"{clip.FilePath}\" (FFmpeg exit code: {exitCode})", Priority.Error));
+
+                    return;
+                }
+
+                OnConsoleLine(new ConsoleLineEventArgs($"Utworzono miniaturę dla pliku \"{clip.FilePath}\"."));
             }
-
-            OnConsoleLine(new ConsoleLineEventArgs($"Utworzono miniaturę dla pliku \"{clip.FilePath}\"."));
+            else
+            {
+                // Miniatura istnieje, tworzymy ją
+                OnConsoleLine(new ConsoleLineEventArgs($"Miniatura dla pliku \"{clip.FilePath}\" już istnieje."));
+            }
 
             // Informacja dla okna głównego
             OnThumbnailCreated(new ThumbnailCreatedEventArgs(clip.ClipID, thumbnailFilePath));
@@ -347,7 +357,6 @@ namespace DiscordClipper
 
             // Obudź kolejkę VideoQueue
             Task.Run(() => OnVideoQueueClipAdded(new EventArgs()));
-            
         }
 
         public int FFmpegCreateThumbnail(int clipID, string inputFilePath, string thumbnailFilePath)
@@ -551,7 +560,7 @@ namespace DiscordClipper
                     continue;
                 }
 
-                OnConsoleLine(new ConsoleLineEventArgs(line, Priority.Output));
+                //OnConsoleLine(new ConsoleLineEventArgs(line, Priority.Output));
 
                 try
                 {

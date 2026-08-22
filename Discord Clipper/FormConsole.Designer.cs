@@ -33,8 +33,9 @@
             richTextBoxConsole = new RichTextBox();
             tableLayoutPanel1 = new TableLayoutPanel();
             label12 = new Label();
-            buttonClearConsole = new Button();
             numericUpDownConsoleFontSize = new NumericUpDown();
+            buttonClearConsole = new Button();
+            checkBoxAutoscroll = new CheckBox();
             tableLayoutPanel6.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownConsoleFontSize).BeginInit();
@@ -53,7 +54,7 @@
             tableLayoutPanel6.RowCount = 2;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle());
-            tableLayoutPanel6.Size = new Size(984, 361);
+            tableLayoutPanel6.Size = new Size(1264, 681);
             tableLayoutPanel6.TabIndex = 1;
             // 
             // richTextBoxConsole
@@ -65,27 +66,29 @@
             richTextBoxConsole.Location = new Point(3, 3);
             richTextBoxConsole.Name = "richTextBoxConsole";
             richTextBoxConsole.ReadOnly = true;
-            richTextBoxConsole.Size = new Size(978, 324);
+            richTextBoxConsole.Size = new Size(1258, 644);
             richTextBoxConsole.TabIndex = 1;
             richTextBoxConsole.Text = "";
             // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.AutoSize = true;
-            tableLayoutPanel1.ColumnCount = 3;
+            tableLayoutPanel1.ColumnCount = 4;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.Controls.Add(label12, 0, 0);
-            tableLayoutPanel1.Controls.Add(buttonClearConsole, 2, 0);
             tableLayoutPanel1.Controls.Add(numericUpDownConsoleFontSize, 1, 0);
+            tableLayoutPanel1.Controls.Add(buttonClearConsole, 3, 0);
+            tableLayoutPanel1.Controls.Add(checkBoxAutoscroll, 2, 0);
             tableLayoutPanel1.Dock = DockStyle.Top;
-            tableLayoutPanel1.Location = new Point(0, 330);
+            tableLayoutPanel1.Location = new Point(0, 650);
             tableLayoutPanel1.Margin = new Padding(0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(984, 31);
+            tableLayoutPanel1.Size = new Size(1264, 31);
             tableLayoutPanel1.TabIndex = 2;
             // 
             // label12
@@ -99,17 +102,6 @@
             label12.TabIndex = 18;
             label12.Text = "Rozmiar czcionki konsoli";
             // 
-            // buttonClearConsole
-            // 
-            buttonClearConsole.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonClearConsole.Location = new Point(881, 3);
-            buttonClearConsole.Name = "buttonClearConsole";
-            buttonClearConsole.Size = new Size(100, 23);
-            buttonClearConsole.TabIndex = 16;
-            buttonClearConsole.Text = "Wyczyść";
-            buttonClearConsole.UseVisualStyleBackColor = true;
-            buttonClearConsole.Click += buttonClearConsole_Click;
-            // 
             // numericUpDownConsoleFontSize
             // 
             numericUpDownConsoleFontSize.Location = new Point(146, 3);
@@ -122,17 +114,40 @@
             numericUpDownConsoleFontSize.Value = new decimal(new int[] { 9, 0, 0, 0 });
             numericUpDownConsoleFontSize.ValueChanged += numericUpDownConsoleFontSize_ValueChanged;
             // 
+            // buttonClearConsole
+            // 
+            buttonClearConsole.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonClearConsole.Location = new Point(1161, 3);
+            buttonClearConsole.Name = "buttonClearConsole";
+            buttonClearConsole.Size = new Size(100, 23);
+            buttonClearConsole.TabIndex = 16;
+            buttonClearConsole.Text = "Wyczyść";
+            buttonClearConsole.UseVisualStyleBackColor = true;
+            buttonClearConsole.Click += buttonClearConsole_Click;
+            // 
+            // checkBoxAutoscroll
+            // 
+            checkBoxAutoscroll.AutoSize = true;
+            checkBoxAutoscroll.Checked = true;
+            checkBoxAutoscroll.CheckState = CheckState.Checked;
+            checkBoxAutoscroll.Location = new Point(219, 5);
+            checkBoxAutoscroll.Margin = new Padding(10, 5, 3, 3);
+            checkBoxAutoscroll.Name = "checkBoxAutoscroll";
+            checkBoxAutoscroll.Size = new Size(80, 19);
+            checkBoxAutoscroll.TabIndex = 19;
+            checkBoxAutoscroll.Text = "Autoscroll";
+            checkBoxAutoscroll.UseVisualStyleBackColor = true;
+            // 
             // FormConsole
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(984, 361);
+            ClientSize = new Size(1264, 681);
             Controls.Add(tableLayoutPanel6);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(400, 200);
             Name = "FormConsole";
             Text = "Konsola";
-            FormClosing += FormConsole_FormClosing;
             tableLayoutPanel6.ResumeLayout(false);
             tableLayoutPanel6.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);
@@ -150,5 +165,6 @@
         private Button buttonClearConsole;
         private NumericUpDown numericUpDownConsoleFontSize;
         private Label label12;
+        private CheckBox checkBoxAutoscroll;
     }
 }

@@ -45,10 +45,6 @@
             tableLayoutPanel6 = new TableLayoutPanel();
             buttonAddClips = new Button();
             dataGridViewClips = new DataGridView();
-            Thumbnail = new DataGridViewImageColumn();
-            ClipName = new DataGridViewTextBoxColumn();
-            Status = new DataGridViewTextBoxColumn();
-            ColumnSend = new DataGridViewButtonColumn();
             menuStrip1 = new MenuStrip();
             oknaToolStripMenuItem = new ToolStripMenuItem();
             ustawieniaToolStripMenuItem = new ToolStripMenuItem();
@@ -56,6 +52,10 @@
             pomocToolStripMenuItem = new ToolStripMenuItem();
             instrukcjaToolStripMenuItem = new ToolStripMenuItem();
             zgłośBłądToolStripMenuItem = new ToolStripMenuItem();
+            Thumbnail = new DataGridViewImageColumn();
+            ClipName = new DataGridViewTextBoxColumn();
+            Status = new DataGridViewTextBoxColumn();
+            ColumnSend = new DataGridViewButtonColumn();
             groupBoxOutput.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxThumbnail).BeginInit();
@@ -185,7 +185,7 @@
             buttonConsole.Name = "buttonConsole";
             buttonConsole.Size = new Size(592, 23);
             buttonConsole.TabIndex = 8;
-            buttonConsole.Text = "Konsola";
+            buttonConsole.Text = "Pokaż konsolę";
             buttonConsole.UseVisualStyleBackColor = true;
             buttonConsole.Click += buttonConsole_Click;
             // 
@@ -294,38 +294,8 @@
             dataGridViewClips.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewClips.Size = new Size(584, 397);
             dataGridViewClips.TabIndex = 16;
-            // 
-            // Thumbnail
-            // 
-            Thumbnail.HeaderText = "Miniatura";
-            Thumbnail.ImageLayout = DataGridViewImageCellLayout.Zoom;
-            Thumbnail.Name = "Thumbnail";
-            Thumbnail.ReadOnly = true;
-            Thumbnail.Width = 160;
-            // 
-            // ClipName
-            // 
-            ClipName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            ClipName.HeaderText = "Nazwa pliku";
-            ClipName.Name = "ClipName";
-            ClipName.ReadOnly = true;
-            ClipName.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // Status
-            // 
-            Status.HeaderText = "Status";
-            Status.Name = "Status";
-            Status.ReadOnly = true;
-            Status.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // ColumnSend
-            // 
-            ColumnSend.HeaderText = "Discord";
-            ColumnSend.MinimumWidth = 100;
-            ColumnSend.Name = "ColumnSend";
-            ColumnSend.ReadOnly = true;
-            ColumnSend.Text = "Wyślij";
-            ColumnSend.UseColumnTextForButtonValue = true;
+            dataGridViewClips.CellContentClick += dataGridViewClips_CellContentClick;
+            dataGridViewClips.SelectionChanged += dataGridViewClips_SelectionChanged;
             // 
             // menuStrip1
             // 
@@ -376,6 +346,37 @@
             zgłośBłądToolStripMenuItem.Size = new Size(210, 22);
             zgłośBłądToolStripMenuItem.Text = "Zgłoś błąd lub propozycję";
             zgłośBłądToolStripMenuItem.Click += zgłośBłądToolStripMenuItem_Click;
+            // 
+            // Thumbnail
+            // 
+            Thumbnail.HeaderText = "Miniatura";
+            Thumbnail.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            Thumbnail.Name = "Thumbnail";
+            Thumbnail.ReadOnly = true;
+            Thumbnail.Width = 160;
+            // 
+            // ClipName
+            // 
+            ClipName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            ClipName.HeaderText = "Nazwa pliku";
+            ClipName.Name = "ClipName";
+            ClipName.ReadOnly = true;
+            ClipName.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // Status
+            // 
+            Status.HeaderText = "Status";
+            Status.Name = "Status";
+            Status.ReadOnly = true;
+            Status.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // ColumnSend
+            // 
+            ColumnSend.HeaderText = "Discord";
+            ColumnSend.MinimumWidth = 100;
+            ColumnSend.Name = "ColumnSend";
+            ColumnSend.ReadOnly = true;
+            ColumnSend.Text = "Wyślij";
             // 
             // FormMain
             // 

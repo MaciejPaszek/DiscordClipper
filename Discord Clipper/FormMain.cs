@@ -1,5 +1,6 @@
 using DiscordClipper.Properties;
 using System.Diagnostics;
+using static DiscordClipper.FFmpeg;
 using static DiscordClipper.FormConsole;
 
 namespace DiscordClipper
@@ -10,11 +11,14 @@ namespace DiscordClipper
          * Obiekty Globalne
          *******************************************************/
 
+        List<Clip> OutputClips = new List<Clip>();
+
         // Okno ustawień
         FormSettings? FormSettings;
 
         // Okno konsoli
         FormConsole? FormConsole;
+        List<ConsoleLineEventArgs> ListConsoleLineEventArgs = new List<ConsoleLineEventArgs>();
 
         // Monitorowanie folderu
         FileSystemWatcher? FileSystemWatcher;
@@ -42,6 +46,13 @@ namespace DiscordClipper
         {
             InitializeComponent();
 
+            // Utwóz formularz konsoli
+            //FormConsole = new FormConsole();
+
+            // Rozwiązanie tymczasowe na crash consoli
+            //FormConsole.Show();
+            //FormConsole.Hide();
+
             // Utwórz obiekt klasy FFmpeg i dodaj obsługę zdarzeń
             FFmpeg = new FFmpeg();
             FFmpeg.ConsoleLine += ConsoleLine;
@@ -53,6 +64,7 @@ namespace DiscordClipper
 
             // Utwórz obiekt klasy Discord
             Discord = new Discord();
+            Discord.ConsoleLine += ConsoleLine;
             Discord.ClipSent += Discord_ClipSent;
             Discord.DiscordError += Discord_DiscordError;
 
@@ -71,9 +83,48 @@ namespace DiscordClipper
 
             // Utwórz formularz ustawień wykorzystując wczytane ustawienia
             FormSettings = new FormSettings(Settings);
+        }
 
-            // Utwóz formularz konsoli
-            FormConsole = new FormConsole();
+        /*******************************************************
+         * Okno Konsoli 
+         *******************************************************/
+
+        /// <summary>
+        /// OBsługa przycisku do tworzenia okna konsoli
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonConsole_Click(object sender, EventArgs e)
+        {
+            if (FormConsole == null)
+            {
+                // Okno konsoli jest zamknięte, otwórz je
+
+                FormConsole = new FormConsole(ListConsoleLineEventArgs);
+                FormConsole.FormClosed += FormConsole_FormClosed;
+                FormConsole.Show();
+
+                buttonConsole.Text = "Ukryj konsolę";
+
+            }
+            else
+            {
+                // Okno konsoli jest otwarte, zamknij je
+                FormConsole.Close();
+            }
+
+            return;
+        }
+
+        /// <summary>
+        /// Zwalnianie konsoli po jej zamknięciu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FormConsole_FormClosed(object? sender, FormClosedEventArgs e)
+        {
+            FormConsole = null;
+            buttonConsole.Text = "Pokaż konsolę";
         }
 
         /// <summary>
@@ -83,37 +134,26 @@ namespace DiscordClipper
         /// <param name="e"></param>
         private void ConsoleLine(object? sender, ConsoleLineEventArgs e)
         {
+            // Konsola jest ukryta, dodaj do kolejki
+            ListConsoleLineEventArgs.Add(e);
+
+            // JEśli okno konsoli jest zamknięte, to koniec
             if (FormConsole == null)
             {
                 return;
             }
 
+            // Jeśli okno konsoli jest otwarte, to dodaj nowy
             FormConsole.WriteLine(e);
+
+            return;
         }
 
         /// <summary>
-        /// PRzełączanie widoczności konsoli
+        /// Przełączanie widoczności konsoli
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonConsole_Click(object sender, EventArgs e)
-        {
-            if (FormConsole == null)
-            {
-                return;
-            }
-
-            if (FormConsole.Visible)
-            {
-                FormConsole.Hide();
-            }
-            else
-            {
-                FormConsole.Show();
-            }
-        }
-
-
 
         /*******************************************************
          * Zdarzenia FormMain
@@ -221,6 +261,8 @@ namespace DiscordClipper
                     AddClip(filePath);
                 }
             }
+
+            return;
         }
 
         //*******************************************************
@@ -284,12 +326,7 @@ namespace DiscordClipper
 
         private void AddClip(string filePath)
         {
-            if (FormConsole == null)
-            {
-                return;
-            }
-
-            FormConsole.WriteLine(new ConsoleLineEventArgs($"Dodawanie pliku \"{filePath}\" do kolejki...", Priority.Info));
+            ConsoleLine(this.ToString(), new ConsoleLineEventArgs($"Dodawanie pliku \"{filePath}\" do kolejki..."));
 
             // Dodaj plik na listę
             int clipID = AddDataGridViewClip(Path.GetFileName(filePath));
@@ -302,27 +339,30 @@ namespace DiscordClipper
 
             FFmpeg.AddClip(clipID, filePath);
 
-            FormConsole.WriteLine(new ConsoleLineEventArgs($"Dodano plik \"{filePath}\" do kolejki.", Priority.Info));
+            ConsoleLine(this.ToString(), new ConsoleLineEventArgs($"Dodano plik \"{filePath}\" do kolejki."));
 
             return;
         }
 
-        private void SendToDiscord()
+        private void SendToDiscord(int clipID, string filePath)
         {
-            if (Settings == null)
-            {
-                return;
-            }
-
             if (Discord == null)
             {
                 return;
             }
 
-            if (Settings.DiscordMode == 1)
+            if (Application.ColorMode == SystemColorMode.Classic)
             {
-                //Discord.Send(e.ClipFileName, e.OutputFilePath, e.OutputFileName);
+                SetDataGridViewStatus(clipID, "Wysyłanie...", Color.Purple);
             }
+            else
+            {
+                SetDataGridViewStatus(clipID, "Wysyłanie...", Color.MediumPurple);
+            }
+
+            Discord.AddClip(clipID, filePath);
+          
+            return;
         }
 
         /// <summary>
@@ -420,7 +460,8 @@ namespace DiscordClipper
             else
             {
                 // Znajdź wiersz i dodaj obraz
-                dataGridViewClips.Rows.Add(new object[] { Resources.Replay, clipName, "Oczekiwanie" });
+                dataGridViewClips.Rows.Add(new object[] { Resources.Replay, clipName, "Oczekiwanie", "Oczekiwanie" });
+                dataGridViewClips.FirstDisplayedScrollingRowIndex = dataGridViewClips.Rows.Count - 1;
             }
 
             // Zwróć numer klipu
@@ -446,6 +487,24 @@ namespace DiscordClipper
                 dataGridViewClips.Rows[rowIndex].Cells[2].Style.ForeColor = color;
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rowIndex"></param>
+        /// <param name="status"></param>
+        /// <param name="color"></param>
+        private void SetDataGridViewButton(int rowIndex, string value)
+        {
+            if (dataGridViewClips.InvokeRequired)
+            {
+                dataGridViewClips.Invoke(new Action(() => SetDataGridViewButton(rowIndex, value)));
+            }
+            else
+            {
+                dataGridViewClips.Rows[rowIndex].Cells[3].Value = value;
+            }
+        }
+
         /// <summary>
         /// Funkcja pomocnicza do ustawiania miniatury podglądu
         /// </summary>
@@ -502,8 +561,15 @@ namespace DiscordClipper
 
             SetPictureBoxImage(new Bitmap(e.ThumbnailFilePath));
 
-            // Ustaw status 
-            SetDataGridViewStatus(e.ClipID, "Rozpoczęto", Color.Blue);
+            // Ustaw status
+            if (Application.ColorMode == SystemColorMode.Classic)
+            {
+                SetDataGridViewStatus(e.ClipID, "Rozpoczęto", Color.Blue);
+            }
+            else
+            {
+                SetDataGridViewStatus(e.ClipID, "Rozpoczęto", Color.LightBlue);
+            }
 
             // Ustaw pasek postępu na 0
             SetProgressBar(0);
@@ -526,14 +592,48 @@ namespace DiscordClipper
         /// <param name="e"></param>
         private void FFmpeg_VideoCreated(object? sender, FFmpeg.VideoCreatedEventArgs e)
         {
-            SetDataGridViewStatus(e.ClipID, "Ukończono", Color.Green);
+            if (Application.ColorMode == SystemColorMode.Classic)
+            {
+                SetDataGridViewStatus(e.ClipID, "Ukończono", Color.Green);
+            }
+            else
+            {
+                SetDataGridViewStatus(e.ClipID, "Ukończono", Color.LightGreen);
+            }
 
             SetProgressBar(e.FrameCount, e.FrameCount);
+
+            OutputClips.Add(new Clip(e.ClipID, e.OutputFilePath));
+
+            if (Settings == null)
+            {
+                return;
+            }
+
+            if (Settings.DiscordMode == 0)
+            {
+                // Nie wysyłaj klipów automatycznie
+                SetDataGridViewButton(e.ClipID, "Wyślij");
+            }
+            else
+            {
+                // Wysyłaj klipy automatycznie
+                SendToDiscord(e.ClipID, e.OutputFilePath);
+            }
         }
 
         private void Discord_ClipSent(object? sender, Discord.ClipSentEventArgs e)
         {
-            SetDataGridViewStatus(e.ClipID, "Wysłano", Color.Purple);
+            if (Application.ColorMode == SystemColorMode.Classic)
+            {
+                SetDataGridViewStatus(e.ClipID, "Wysłano", Color.Purple);
+            }
+            else
+            {
+                SetDataGridViewStatus(e.ClipID, "Wysłano", Color.MediumPurple);
+            }
+
+            SetDataGridViewButton(e.ClipID, "Wysłano");
         }
 
         private void FFmpeg_FFmpegError(object? sender, FFmpeg.FFmpegErrorEventArgs e)
@@ -543,7 +643,7 @@ namespace DiscordClipper
 
         private void Discord_DiscordError(object? sender, Discord.DiscordErrorEventArgs e)
         {
-            //SetDataGridViewStatus(e.ClipID, "FFmpeg error", Color.Red);
+            SetDataGridViewStatus(e.ClipID, "Discord error", Color.Red);
         }
 
         private void instrukcjaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -570,6 +670,46 @@ namespace DiscordClipper
         private void otwórzFolderAppDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start("explorer.exe", Application.UserAppDataPath);
+        }
+
+        private void dataGridViewClips_SelectionChanged(object sender, EventArgs e)
+        {
+            dataGridViewClips.ClearSelection();
+        }
+
+        private void dataGridViewClips_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex != 3)
+            {
+                // Nie jest to kolumna przycisków.
+                return;
+            }
+
+            string? value = (string?) dataGridViewClips.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+            if (value == null)
+            {
+                return;
+            }
+
+            if (value == "Oczekiwanie")
+            {
+                return;
+            }
+
+            if (value == "Wysłano")
+            {
+                return;
+            }
+
+            Clip clip = OutputClips.Find(x => x.ClipID == e.RowIndex);
+
+            if(!File.Exists(clip.FilePath))
+            {
+                return;
+            }
+
+            SendToDiscord(clip.ClipID, clip.FilePath);
         }
     }
 }

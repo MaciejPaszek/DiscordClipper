@@ -32,7 +32,7 @@
 
             public override string ToString()
             {
-                if(Sender == null || Sender == string.Empty)
+                if (Sender == null || Sender == string.Empty)
                 {
                     return $"[{DateTime:yyyy-MM-dd HH:mm:ss}] {Message}";
                 }
@@ -44,11 +44,17 @@
         /// <summary>
         /// Formularz okna konsoli
         /// </summary>
-        public FormConsole()
+        public FormConsole(List<ConsoleLineEventArgs> consoleLineEventArgs)
         {
             InitializeComponent();
+
+            // Dodaj komunikaty z archiwum
+            foreach(ConsoleLineEventArgs e in consoleLineEventArgs)
+            {
+                WriteLine(e);
+            }
         }
-        
+
         /// <summary>
         /// Publiczna metoda do pisania po konsoli
         /// </summary>
@@ -81,6 +87,11 @@
         /// <param name="text"></param>
         private void Write(string text)
         {
+            if (richTextBoxConsole == null)
+            {
+                return;
+            }
+
             if (richTextBoxConsole.InvokeRequired)
             {
                 richTextBoxConsole.Invoke(new Action<string>(Write), text);
@@ -88,7 +99,11 @@
             else
             {
                 richTextBoxConsole.AppendText(text);
-                richTextBoxConsole.ScrollToCaret();
+
+                if (checkBoxAutoscroll.Checked)
+                {
+                    richTextBoxConsole.ScrollToCaret();
+                }
             }
         }
 
@@ -99,6 +114,11 @@
         /// <param name="color"></param>
         private void Write(string text, Color color)
         {
+            if (richTextBoxConsole == null)
+            {
+                return;
+            }
+
             if (richTextBoxConsole.InvokeRequired)
             {
                 richTextBoxConsole.Invoke(new Action<string, Color>(Write), text, color);
@@ -149,7 +169,7 @@
         /// <param name="text"></param>
         private void WriteCommand(string text)
         {
-            WriteLine(text, Color.Blue);
+            WriteLine(text, Color.Gray);
         }
 
         /// <summary>
@@ -169,10 +189,6 @@
         {
             WriteLine(text, Color.Red);
         }
-
-        
-
-
 
         /// <summary>
         /// Czyszczenie konsoli formularza
@@ -200,15 +216,6 @@
 
             // Odznaczenie całego tekstu
             richTextBoxConsole.DeselectAll();
-        }
-
-        private void FormConsole_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (e.CloseReason == CloseReason.UserClosing)
-            {
-                e.Cancel = true;
-                this.Hide();
-            }
         }
     }
 }
