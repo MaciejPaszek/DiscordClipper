@@ -10,10 +10,10 @@
         public FormSettings(Settings settings)
         {
             InitializeComponent();
-            
+
             // Przyjmij ustawienia razem z nazwą profilu
             Settings = settings;
-            
+
             // Opcje list rozwijanych
 
             foreach (Option option in FFmpeg.InputFileFormats)
@@ -117,7 +117,7 @@
 
         private void ButtonAccept_Click(object sender, EventArgs e)
         {
-            if(Settings == null)
+            if (Settings == null)
             {
                 return;
             }
@@ -132,7 +132,7 @@
             Settings.Resolution = comboBoxResolution.SelectedIndex;
             Settings.FrameRate = comboBoxFrameRate.SelectedIndex;
             Settings.Encoder = comboBoxEncoder.SelectedIndex;
-            Settings.MaxVideoBitrate = (int) numericUpDownMaxVideoBitrate.Value;
+            Settings.MaxVideoBitrate = (int)numericUpDownMaxVideoBitrate.Value;
 
             Settings.DiscordWebhook = textBoxDiscordWebhook.Text;
             Settings.DiscordMode = comboBoxDiscordMode.SelectedIndex;
@@ -140,6 +140,21 @@
             DialogResult = DialogResult.OK;
 
             Close();
+        }
+
+        private void checkBoxLimitBitrate_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox checkBox = (CheckBox)sender;
+
+            if(checkBox == checkBoxLimitVideoBitrate)
+            {
+                numericUpDownMaxVideoBitrate.Enabled = checkBox.Checked;
+            }
+
+            if (checkBox == checkBoxLimitAudioBitrate)
+            {
+                numericUpDownMaxAudioBitrate.Enabled = checkBox.Checked;
+            }
         }
     }
 }

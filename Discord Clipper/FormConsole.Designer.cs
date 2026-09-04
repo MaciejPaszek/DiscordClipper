@@ -36,6 +36,7 @@
             numericUpDownConsoleFontSize = new NumericUpDown();
             buttonClearConsole = new Button();
             checkBoxAutoscroll = new CheckBox();
+            buttonCopyToClipboard = new Button();
             tableLayoutPanel6.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownConsoleFontSize).BeginInit();
@@ -73,15 +74,17 @@
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.AutoSize = true;
-            tableLayoutPanel1.ColumnCount = 4;
+            tableLayoutPanel1.ColumnCount = 5;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.Controls.Add(buttonCopyToClipboard, 3, 0);
             tableLayoutPanel1.Controls.Add(label12, 0, 0);
             tableLayoutPanel1.Controls.Add(numericUpDownConsoleFontSize, 1, 0);
-            tableLayoutPanel1.Controls.Add(buttonClearConsole, 3, 0);
             tableLayoutPanel1.Controls.Add(checkBoxAutoscroll, 2, 0);
+            tableLayoutPanel1.Controls.Add(buttonClearConsole, 4, 0);
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 650);
             tableLayoutPanel1.Margin = new Padding(0);
@@ -138,6 +141,17 @@
             checkBoxAutoscroll.Text = "Autoscroll";
             checkBoxAutoscroll.UseVisualStyleBackColor = true;
             // 
+            // buttonCopyToClipboard
+            // 
+            buttonCopyToClipboard.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonCopyToClipboard.Location = new Point(1035, 3);
+            buttonCopyToClipboard.Name = "buttonCopyToClipboard";
+            buttonCopyToClipboard.Size = new Size(120, 23);
+            buttonCopyToClipboard.TabIndex = 20;
+            buttonCopyToClipboard.Text = "Kopiuj do schowka";
+            buttonCopyToClipboard.UseVisualStyleBackColor = true;
+            buttonCopyToClipboard.Click += buttonCopyToClipboard_Click;
+            // 
             // FormConsole
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -166,5 +180,6 @@
         private NumericUpDown numericUpDownConsoleFontSize;
         private Label label12;
         private CheckBox checkBoxAutoscroll;
+        private Button buttonCopyToClipboard;
     }
 }

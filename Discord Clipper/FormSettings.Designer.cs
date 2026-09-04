@@ -47,6 +47,12 @@
             tableLayoutPanel8 = new TableLayoutPanel();
             label13 = new Label();
             numericUpDownMaxVideoBitrate = new NumericUpDown();
+            checkBoxLimitVideoBitrate = new CheckBox();
+            label11 = new Label();
+            tableLayoutPanel6 = new TableLayoutPanel();
+            label14 = new Label();
+            numericUpDownMaxAudioBitrate = new NumericUpDown();
+            checkBoxLimitAudioBitrate = new CheckBox();
             groupBox4 = new GroupBox();
             tableLayoutPanel7 = new TableLayoutPanel();
             buttonShowDiscordWebhook = new Button();
@@ -73,6 +79,8 @@
             tableLayoutPanel5.SuspendLayout();
             tableLayoutPanel8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownMaxVideoBitrate).BeginInit();
+            tableLayoutPanel6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownMaxAudioBitrate).BeginInit();
             groupBox4.SuspendLayout();
             tableLayoutPanel7.SuspendLayout();
             groupBox1.SuspendLayout();
@@ -113,7 +121,7 @@
             groupBox3.Margin = new Padding(10, 5, 10, 10);
             groupBox3.MinimumSize = new Size(350, 0);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(464, 208);
+            groupBox3.Size = new Size(464, 239);
             groupBox3.TabIndex = 5;
             groupBox3.TabStop = false;
             groupBox3.Text = "Ustawienia Wyjścia";
@@ -138,17 +146,20 @@
             tableLayoutPanel5.Controls.Add(label8, 0, 2);
             tableLayoutPanel5.Controls.Add(label12, 0, 5);
             tableLayoutPanel5.Controls.Add(tableLayoutPanel8, 1, 5);
+            tableLayoutPanel5.Controls.Add(label11, 0, 6);
+            tableLayoutPanel5.Controls.Add(tableLayoutPanel6, 1, 6);
             tableLayoutPanel5.Dock = DockStyle.Fill;
             tableLayoutPanel5.Location = new Point(3, 19);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
-            tableLayoutPanel5.RowCount = 6;
+            tableLayoutPanel5.RowCount = 7;
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
             tableLayoutPanel5.RowStyles.Add(new RowStyle());
-            tableLayoutPanel5.Size = new Size(458, 186);
+            tableLayoutPanel5.RowStyles.Add(new RowStyle());
+            tableLayoutPanel5.Size = new Size(458, 217);
             tableLayoutPanel5.TabIndex = 8;
             // 
             // label4
@@ -278,11 +289,13 @@
             // tableLayoutPanel8
             // 
             tableLayoutPanel8.AutoSize = true;
-            tableLayoutPanel8.ColumnCount = 2;
+            tableLayoutPanel8.ColumnCount = 3;
             tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel8.Controls.Add(label13, 1, 0);
             tableLayoutPanel8.Controls.Add(numericUpDownMaxVideoBitrate, 0, 0);
+            tableLayoutPanel8.Controls.Add(checkBoxLimitVideoBitrate, 2, 0);
             tableLayoutPanel8.Dock = DockStyle.Top;
             tableLayoutPanel8.Location = new Point(160, 155);
             tableLayoutPanel8.Margin = new Padding(0);
@@ -295,16 +308,18 @@
             // label13
             // 
             label13.AutoSize = true;
+            label13.Dock = DockStyle.Top;
             label13.Location = new Point(69, 5);
             label13.Margin = new Padding(3, 5, 3, 3);
             label13.MinimumSize = new Size(0, 23);
             label13.Name = "label13";
-            label13.Size = new Size(37, 23);
+            label13.Size = new Size(73, 23);
             label13.TabIndex = 12;
             label13.Text = "kbit/s";
             // 
             // numericUpDownMaxVideoBitrate
             // 
+            numericUpDownMaxVideoBitrate.Dock = DockStyle.Top;
             numericUpDownMaxVideoBitrate.Location = new Point(3, 3);
             numericUpDownMaxVideoBitrate.Maximum = new decimal(new int[] { 12000, 0, 0, 0 });
             numericUpDownMaxVideoBitrate.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
@@ -314,12 +329,92 @@
             numericUpDownMaxVideoBitrate.TextAlign = HorizontalAlignment.Right;
             numericUpDownMaxVideoBitrate.Value = new decimal(new int[] { 1000, 0, 0, 0 });
             // 
+            // checkBoxLimitVideoBitrate
+            // 
+            checkBoxLimitVideoBitrate.AutoSize = true;
+            checkBoxLimitVideoBitrate.Dock = DockStyle.Top;
+            checkBoxLimitVideoBitrate.Location = new Point(148, 5);
+            checkBoxLimitVideoBitrate.Margin = new Padding(3, 5, 3, 3);
+            checkBoxLimitVideoBitrate.Name = "checkBoxLimitVideoBitrate";
+            checkBoxLimitVideoBitrate.Size = new Size(97, 19);
+            checkBoxLimitVideoBitrate.TabIndex = 13;
+            checkBoxLimitVideoBitrate.Text = "Zastosuj limit";
+            checkBoxLimitVideoBitrate.UseVisualStyleBackColor = true;
+            checkBoxLimitVideoBitrate.CheckedChanged += checkBoxLimitBitrate_CheckedChanged;
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new Point(3, 191);
+            label11.Margin = new Padding(3, 5, 3, 3);
+            label11.MinimumSize = new Size(0, 23);
+            label11.Name = "label11";
+            label11.Size = new Size(117, 23);
+            label11.TabIndex = 13;
+            label11.Text = "Limit bitrate dźwięku";
+            // 
+            // tableLayoutPanel6
+            // 
+            tableLayoutPanel6.AutoSize = true;
+            tableLayoutPanel6.ColumnCount = 3;
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel6.Controls.Add(label14, 1, 0);
+            tableLayoutPanel6.Controls.Add(numericUpDownMaxAudioBitrate, 0, 0);
+            tableLayoutPanel6.Controls.Add(checkBoxLimitAudioBitrate, 2, 0);
+            tableLayoutPanel6.Dock = DockStyle.Top;
+            tableLayoutPanel6.Location = new Point(160, 186);
+            tableLayoutPanel6.Margin = new Padding(0);
+            tableLayoutPanel6.Name = "tableLayoutPanel6";
+            tableLayoutPanel6.RowCount = 1;
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel6.Size = new Size(248, 31);
+            tableLayoutPanel6.TabIndex = 14;
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Dock = DockStyle.Top;
+            label14.Location = new Point(69, 5);
+            label14.Margin = new Padding(3, 5, 3, 3);
+            label14.MinimumSize = new Size(0, 23);
+            label14.Name = "label14";
+            label14.Size = new Size(73, 23);
+            label14.TabIndex = 12;
+            label14.Text = "kbit/s";
+            // 
+            // numericUpDownMaxAudioBitrate
+            // 
+            numericUpDownMaxAudioBitrate.Dock = DockStyle.Top;
+            numericUpDownMaxAudioBitrate.Location = new Point(3, 3);
+            numericUpDownMaxAudioBitrate.Maximum = new decimal(new int[] { 12000, 0, 0, 0 });
+            numericUpDownMaxAudioBitrate.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
+            numericUpDownMaxAudioBitrate.Name = "numericUpDownMaxAudioBitrate";
+            numericUpDownMaxAudioBitrate.Size = new Size(60, 23);
+            numericUpDownMaxAudioBitrate.TabIndex = 11;
+            numericUpDownMaxAudioBitrate.TextAlign = HorizontalAlignment.Right;
+            numericUpDownMaxAudioBitrate.Value = new decimal(new int[] { 1000, 0, 0, 0 });
+            // 
+            // checkBoxLimitAudioBitrate
+            // 
+            checkBoxLimitAudioBitrate.AutoSize = true;
+            checkBoxLimitAudioBitrate.Dock = DockStyle.Top;
+            checkBoxLimitAudioBitrate.Location = new Point(148, 5);
+            checkBoxLimitAudioBitrate.Margin = new Padding(3, 5, 3, 3);
+            checkBoxLimitAudioBitrate.Name = "checkBoxLimitAudioBitrate";
+            checkBoxLimitAudioBitrate.Size = new Size(97, 19);
+            checkBoxLimitAudioBitrate.TabIndex = 13;
+            checkBoxLimitAudioBitrate.Text = "Zastosuj limit";
+            checkBoxLimitAudioBitrate.UseVisualStyleBackColor = true;
+            checkBoxLimitAudioBitrate.CheckedChanged += checkBoxLimitBitrate_CheckedChanged;
+            // 
             // groupBox4
             // 
             groupBox4.AutoSize = true;
             groupBox4.Controls.Add(tableLayoutPanel7);
             groupBox4.Dock = DockStyle.Fill;
-            groupBox4.Location = new Point(10, 398);
+            groupBox4.Location = new Point(10, 429);
             groupBox4.Margin = new Padding(10, 5, 10, 10);
             groupBox4.MinimumSize = new Size(350, 0);
             groupBox4.Name = "groupBox4";
@@ -555,18 +650,18 @@
             tableLayoutPanel4.Controls.Add(buttonAccept, 1, 0);
             tableLayoutPanel4.Controls.Add(buttonCancel, 0, 0);
             tableLayoutPanel4.Dock = DockStyle.Fill;
-            tableLayoutPanel4.Location = new Point(0, 492);
+            tableLayoutPanel4.Location = new Point(0, 523);
             tableLayoutPanel4.Margin = new Padding(0);
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle());
-            tableLayoutPanel4.Size = new Size(484, 69);
+            tableLayoutPanel4.Size = new Size(484, 38);
             tableLayoutPanel4.TabIndex = 6;
             // 
             // buttonAccept
             // 
             buttonAccept.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonAccept.Location = new Point(406, 43);
+            buttonAccept.Location = new Point(406, 12);
             buttonAccept.Name = "buttonAccept";
             buttonAccept.Size = new Size(75, 23);
             buttonAccept.TabIndex = 8;
@@ -577,7 +672,7 @@
             // buttonCancel
             // 
             buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            buttonCancel.Location = new Point(325, 43);
+            buttonCancel.Location = new Point(325, 12);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(75, 23);
             buttonCancel.TabIndex = 7;
@@ -606,6 +701,9 @@
             tableLayoutPanel8.ResumeLayout(false);
             tableLayoutPanel8.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownMaxVideoBitrate).EndInit();
+            tableLayoutPanel6.ResumeLayout(false);
+            tableLayoutPanel6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownMaxAudioBitrate).EndInit();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
             tableLayoutPanel7.ResumeLayout(false);
@@ -664,5 +762,11 @@
         private NumericUpDown numericUpDownMaxVideoBitrate;
         private TableLayoutPanel tableLayoutPanel8;
         private Label label13;
+        private Label label11;
+        private TableLayoutPanel tableLayoutPanel6;
+        private Label label14;
+        private NumericUpDown numericUpDownMaxAudioBitrate;
+        private CheckBox checkBoxLimitVideoBitrate;
+        private CheckBox checkBoxLimitAudioBitrate;
     }
 }

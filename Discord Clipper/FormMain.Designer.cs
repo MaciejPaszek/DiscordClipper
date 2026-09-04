@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            groupBoxOutput = new GroupBox();
-            tableLayoutPanel1 = new TableLayoutPanel();
+            groupBoxPreview = new GroupBox();
+            tableLayoutPanelPreview = new TableLayoutPanel();
             pictureBoxThumbnail = new PictureBox();
             progressBarOutput = new ProgressBar();
             labelFileName = new Label();
@@ -55,8 +55,9 @@
             pomocToolStripMenuItem = new ToolStripMenuItem();
             instrukcjaToolStripMenuItem = new ToolStripMenuItem();
             zgłośBłądToolStripMenuItem = new ToolStripMenuItem();
-            groupBoxOutput.SuspendLayout();
-            tableLayoutPanel1.SuspendLayout();
+            informacjaOWersjiToolStripMenuItem = new ToolStripMenuItem();
+            groupBoxPreview.SuspendLayout();
+            tableLayoutPanelPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxThumbnail).BeginInit();
             tableLayoutPanelMain.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -71,34 +72,34 @@
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
-            // groupBoxOutput
+            // groupBoxPreview
             // 
-            groupBoxOutput.Controls.Add(tableLayoutPanel1);
-            groupBoxOutput.Dock = DockStyle.Fill;
-            groupBoxOutput.Location = new Point(0, 0);
-            groupBoxOutput.Margin = new Padding(10, 5, 10, 10);
-            groupBoxOutput.Name = "groupBoxOutput";
-            groupBoxOutput.Size = new Size(604, 407);
-            groupBoxOutput.TabIndex = 1;
-            groupBoxOutput.TabStop = false;
-            groupBoxOutput.Text = "Podgląd";
+            groupBoxPreview.Controls.Add(tableLayoutPanelPreview);
+            groupBoxPreview.Dock = DockStyle.Fill;
+            groupBoxPreview.Location = new Point(0, 0);
+            groupBoxPreview.Margin = new Padding(10, 5, 10, 10);
+            groupBoxPreview.Name = "groupBoxPreview";
+            groupBoxPreview.Size = new Size(604, 413);
+            groupBoxPreview.TabIndex = 1;
+            groupBoxPreview.TabStop = false;
+            groupBoxPreview.Text = "Podgląd";
             // 
-            // tableLayoutPanel1
+            // tableLayoutPanelPreview
             // 
-            tableLayoutPanel1.ColumnCount = 1;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Controls.Add(pictureBoxThumbnail, 0, 0);
-            tableLayoutPanel1.Controls.Add(progressBarOutput, 0, 2);
-            tableLayoutPanel1.Controls.Add(labelFileName, 0, 1);
-            tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(3, 19);
-            tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 3;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(598, 385);
-            tableLayoutPanel1.TabIndex = 3;
+            tableLayoutPanelPreview.ColumnCount = 1;
+            tableLayoutPanelPreview.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanelPreview.Controls.Add(pictureBoxThumbnail, 0, 0);
+            tableLayoutPanelPreview.Controls.Add(progressBarOutput, 0, 2);
+            tableLayoutPanelPreview.Controls.Add(labelFileName, 0, 1);
+            tableLayoutPanelPreview.Dock = DockStyle.Fill;
+            tableLayoutPanelPreview.Location = new Point(3, 19);
+            tableLayoutPanelPreview.Name = "tableLayoutPanelPreview";
+            tableLayoutPanelPreview.RowCount = 3;
+            tableLayoutPanelPreview.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanelPreview.RowStyles.Add(new RowStyle());
+            tableLayoutPanelPreview.RowStyles.Add(new RowStyle());
+            tableLayoutPanelPreview.Size = new Size(598, 391);
+            tableLayoutPanelPreview.TabIndex = 3;
             // 
             // pictureBoxThumbnail
             // 
@@ -107,7 +108,7 @@
             pictureBoxThumbnail.Dock = DockStyle.Fill;
             pictureBoxThumbnail.Location = new Point(3, 3);
             pictureBoxThumbnail.Name = "pictureBoxThumbnail";
-            pictureBoxThumbnail.Size = new Size(592, 335);
+            pictureBoxThumbnail.Size = new Size(592, 341);
             pictureBoxThumbnail.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxThumbnail.TabIndex = 0;
             pictureBoxThumbnail.TabStop = false;
@@ -115,7 +116,7 @@
             // progressBarOutput
             // 
             progressBarOutput.Dock = DockStyle.Top;
-            progressBarOutput.Location = new Point(3, 359);
+            progressBarOutput.Location = new Point(3, 365);
             progressBarOutput.Name = "progressBarOutput";
             progressBarOutput.Size = new Size(592, 23);
             progressBarOutput.TabIndex = 1;
@@ -124,7 +125,7 @@
             // 
             labelFileName.AutoSize = true;
             labelFileName.Dock = DockStyle.Top;
-            labelFileName.Location = new Point(3, 341);
+            labelFileName.Location = new Point(3, 347);
             labelFileName.Name = "labelFileName";
             labelFileName.Size = new Size(592, 15);
             labelFileName.TabIndex = 2;
@@ -225,10 +226,12 @@
             // 
             // splitContainerOutput.Panel2
             // 
-            splitContainerOutput.Panel2.Controls.Add(groupBoxOutput);
+            splitContainerOutput.Panel2.Controls.Add(groupBoxPreview);
             splitContainerOutput.Size = new Size(604, 873);
-            splitContainerOutput.SplitterDistance = 462;
+            splitContainerOutput.SplitterDistance = 450;
+            splitContainerOutput.SplitterWidth = 10;
             splitContainerOutput.TabIndex = 3;
+            splitContainerOutput.DoubleClick += splitContainerOutput_DoubleClick;
             // 
             // groupBoxConsole
             // 
@@ -238,7 +241,7 @@
             groupBoxConsole.Margin = new Padding(10, 5, 10, 10);
             groupBoxConsole.Name = "groupBoxConsole";
             groupBoxConsole.Padding = new Padding(7);
-            groupBoxConsole.Size = new Size(604, 462);
+            groupBoxConsole.Size = new Size(604, 450);
             groupBoxConsole.TabIndex = 3;
             groupBoxConsole.TabStop = false;
             groupBoxConsole.Text = "Kolejka";
@@ -265,13 +268,13 @@
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel6.Size = new Size(590, 432);
+            tableLayoutPanel6.Size = new Size(590, 420);
             tableLayoutPanel6.TabIndex = 0;
             // 
             // buttonAddClips
             // 
             buttonAddClips.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonAddClips.Location = new Point(487, 406);
+            buttonAddClips.Location = new Point(487, 394);
             buttonAddClips.Name = "buttonAddClips";
             buttonAddClips.Size = new Size(100, 23);
             buttonAddClips.TabIndex = 15;
@@ -291,7 +294,7 @@
             dataGridViewClips.RowHeadersVisible = false;
             dataGridViewClips.RowTemplate.Height = 90;
             dataGridViewClips.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewClips.Size = new Size(584, 397);
+            dataGridViewClips.Size = new Size(584, 385);
             dataGridViewClips.TabIndex = 16;
             dataGridViewClips.CellContentClick += dataGridViewClips_CellContentClick;
             dataGridViewClips.SelectionChanged += dataGridViewClips_SelectionChanged;
@@ -338,7 +341,7 @@
             // 
             // oknaToolStripMenuItem
             // 
-            oknaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { otwórzFolderAppDataToolStripMenuItem });
+            oknaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { otwórzFolderAppDataToolStripMenuItem, informacjaOWersjiToolStripMenuItem });
             oknaToolStripMenuItem.Name = "oknaToolStripMenuItem";
             oknaToolStripMenuItem.Size = new Size(100, 20);
             oknaToolStripMenuItem.Text = "Discord Clipper";
@@ -371,6 +374,13 @@
             zgłośBłądToolStripMenuItem.Text = "Zgłoś błąd lub propozycję";
             zgłośBłądToolStripMenuItem.Click += zgłośBłądToolStripMenuItem_Click;
             // 
+            // informacjaOWersjiToolStripMenuItem
+            // 
+            informacjaOWersjiToolStripMenuItem.Name = "informacjaOWersjiToolStripMenuItem";
+            informacjaOWersjiToolStripMenuItem.Size = new Size(195, 22);
+            informacjaOWersjiToolStripMenuItem.Text = "Informacja o wersji";
+            informacjaOWersjiToolStripMenuItem.Click += informacjaOWersjiToolStripMenuItem_Click;
+            // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -383,9 +393,10 @@
             MinimumSize = new Size(400, 600);
             Name = "FormMain";
             Text = "Discord Clipper";
-            groupBoxOutput.ResumeLayout(false);
-            tableLayoutPanel1.ResumeLayout(false);
-            tableLayoutPanel1.PerformLayout();
+            FormClosed += FormMain_FormClosed;
+            groupBoxPreview.ResumeLayout(false);
+            tableLayoutPanelPreview.ResumeLayout(false);
+            tableLayoutPanelPreview.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxThumbnail).EndInit();
             tableLayoutPanelMain.ResumeLayout(false);
             tableLayoutPanelMain.PerformLayout();
@@ -407,12 +418,12 @@
         }
 
         #endregion
-        private GroupBox groupBoxOutput;
+        private GroupBox groupBoxPreview;
         private PictureBox pictureBoxThumbnail;
         private Label labelFileName;
         private ProgressBar progressBarOutput;
         private TableLayoutPanel tableLayoutPanelMain;
-        private TableLayoutPanel tableLayoutPanel1;
+        private TableLayoutPanel tableLayoutPanelPreview;
         private SplitContainer splitContainerOutput;
         private GroupBox groupBoxConsole;
         private TableLayoutPanel tableLayoutPanel6;
@@ -433,5 +444,6 @@
         private DataGridViewTextBoxColumn ClipName;
         private DataGridViewTextBoxColumn Status;
         private DataGridViewButtonColumn ColumnSend;
+        private ToolStripMenuItem informacjaOWersjiToolStripMenuItem;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using static DiscordClipper.FFmpeg;
 using static DiscordClipper.FormConsole;
 using static System.Windows.Forms.LinkLabel;
 
@@ -323,8 +324,8 @@ namespace DiscordClipper
             // Ścieżka do miniatury (w folderze wyjściowym)
             string thumbnailFilePath = $"{OutputFolder}\\{Path.GetFileNameWithoutExtension(clip.FilePath)}.png";
 
-            if(!File.Exists(thumbnailFilePath))
-            {
+            if (!File.Exists(thumbnailFilePath))
+            { 
                 // Miniatura nie istnieje, tworzymy ją
                 OnConsoleLine(new ConsoleLineEventArgs($"Tworzenie miniatury dla pliku \"{clip.FilePath}\"..."));
 
@@ -345,7 +346,7 @@ namespace DiscordClipper
             }
             else
             {
-                // Miniatura istnieje, tworzymy ją
+                // Miniatura istnieje
                 OnConsoleLine(new ConsoleLineEventArgs($"Miniatura dla pliku \"{clip.FilePath}\" już istnieje."));
             }
 
@@ -364,13 +365,13 @@ namespace DiscordClipper
             // Proces FFmpeg do tworzenia miniatury
             Process thumbnailProcess = new Process();
 
-            string command = $"-y -i \"{inputFilePath}\" -s 640x360 -frames:v 1 -update true \"{thumbnailFilePath}\"";
+            string command = $" -hide_banner -y -sseof -0.1 -i \"{inputFilePath}\" -s 640x360 -update true \"{thumbnailFilePath}\"";
 
             thumbnailProcess.StartInfo.FileName = "ffmpeg.exe";
             thumbnailProcess.StartInfo.Arguments = command;
             thumbnailProcess.StartInfo.UseShellExecute = false;
             thumbnailProcess.StartInfo.CreateNoWindow = true;
-            thumbnailProcess.StartInfo.RedirectStandardOutput = true;
+            thumbnailProcess.StartInfo.RedirectStandardError = true;
 
             // Wysłanie komendy do konsoli
             OnConsoleLine(new ConsoleLineEventArgs($"{thumbnailProcess.StartInfo.FileName} {thumbnailProcess.StartInfo.Arguments}", Priority.Command));
@@ -382,9 +383,9 @@ namespace DiscordClipper
             string? line;
 
             // Czytaj aż do końca strumienia
-            while (thumbnailProcess.StandardOutput.EndOfStream == false)
+            while (thumbnailProcess.StandardError.EndOfStream == false)
             {
-                line = thumbnailProcess.StandardOutput.ReadLine();
+                line = thumbnailProcess.StandardError.ReadLine();
 
                 if(line == null)
                 {
@@ -470,8 +471,6 @@ namespace DiscordClipper
 
             OnConsoleLine(new ConsoleLineEventArgs($"Tworzenie video dla pliku \"{clip.FilePath}\"..."));
 
-            
-
             // Nazwa pliku po zmianie rozszerzenia na ".mp4"
             string clipFileNameWihoutExtension = Path.GetFileNameWithoutExtension(clip.FilePath);
 
@@ -537,12 +536,18 @@ namespace DiscordClipper
 
             // Włącz logowanie wyjścia
             countProcess.StartInfo.RedirectStandardOutput = true;
+            //countProcess.StartInfo.RedirectStandardError = true;
 
             // Wysłanie komendy do konsoli
             OnConsoleLine(new ConsoleLineEventArgs($"{countProcess.StartInfo.FileName} {countProcess.StartInfo.Arguments}", Priority.Command));
 
             // Rozpoczęcie procesu
-            countProcess.Start();
+            if (!countProcess.Start())
+            {
+                OnConsoleLine(new ConsoleLineEventArgs($"Nie można rozpocząć procesu countProcess dla pliku \"{inputFile}\".", Priority.Error));
+                frameCount = -1;
+                return -1;
+            }
 
             // Odczytania linia
             string? line;
@@ -560,7 +565,7 @@ namespace DiscordClipper
                     continue;
                 }
 
-                //OnConsoleLine(new ConsoleLineEventArgs(line, Priority.Output));
+                OnConsoleLine(new ConsoleLineEventArgs(line, Priority.Output));
 
                 try
                 {
@@ -572,7 +577,7 @@ namespace DiscordClipper
                 }
 
             }
-            
+
             // Oczekiwanie na zakończenie procesu
             countProcess.WaitForExit();
 
@@ -580,6 +585,7 @@ namespace DiscordClipper
 
             // Zamykanie procesu
             countProcess.Close();
+            countProcess.Dispose();
 
             // Sprawdzenie, czy nastąpił błąd
             if (exitCode != 0)
@@ -603,46 +609,51 @@ namespace DiscordClipper
             // Proces FFmpeg
             Process videoProcess = new Process();
 
-            string command = $"-y -progress pipe:1 -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -maxrate {MaxVideoBitrate}k -c:a copy \"{outputFilePath}\"";
+            //string command = $"-y -progress pipe:1 -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -maxrate {MaxVideoBitrate}k -c:a copy \"{outputFilePath}\"";
+            string command = $"-hide_banner -y -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -maxrate {MaxVideoBitrate}k -c:a copy \"{outputFilePath}\"";
 
             videoProcess.StartInfo.FileName = "ffmpeg.exe";
             videoProcess.StartInfo.Arguments = command;
             videoProcess.StartInfo.UseShellExecute = false;
             videoProcess.StartInfo.CreateNoWindow = true;
-            videoProcess.StartInfo.RedirectStandardOutput = true;
+            videoProcess.StartInfo.RedirectStandardError = true;
 
             // Wysłanie komendy do konsoli
             OnConsoleLine(new ConsoleLineEventArgs($"{videoProcess.StartInfo.FileName} {videoProcess.StartInfo.Arguments}", Priority.Command));
 
             // Rozpoczęcie procesu
-            videoProcess.Start();
+            if (!videoProcess.Start())
+            {
+                OnConsoleLine(new ConsoleLineEventArgs($"Nie można rozpocząć procesu videoProcess dla pliku \"{inputFilePath}\".", Priority.Error));
+                return -1;
+            }
 
             // Odczytania linia
             string? line;
 
-            // Czytaj aż do końca strumienia
-            while (videoProcess.StandardOutput.EndOfStream == false)
+            // Czytaj aż do końca strumienia (ffmpeg loguje dane w StandardError)
+            while (videoProcess.StandardError.EndOfStream == false)
             {
-                line = videoProcess.StandardOutput.ReadLine();
+                line = videoProcess.StandardError.ReadLine();
 
                 if (line == null)
                 {
                     continue;
                 }
 
-                //OnConsoleLine(new ConsoleLineEventArgs(line, Priority.Output));
+                OnConsoleLine(new ConsoleLineEventArgs(line, Priority.Output));
 
                 // Rodziel nazwę i wartość
-                string[] strings = line.Split('=');
+                string[] strings = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                 // Jeśli istnieje nazwa i wartość
-                if (strings.Length == 2)
+                if (strings != null && strings.Length >= 2)
                 {
                     // Odczytaj nawzę parametru
                     string name = strings[0];
 
                     // Jeśli parametr to numer klatki
-                    if (name == "frame")
+                    if (name == "frame=")
                     {
                         // Odczytaj wartość parametru
                         string value = strings[1];
@@ -666,6 +677,8 @@ namespace DiscordClipper
                 }
             }
 
+
+
             // Oczekiwanie na zakończenie procesu
             videoProcess.WaitForExit();
 
@@ -673,6 +686,7 @@ namespace DiscordClipper
 
             // Zamykanie procesu
             videoProcess.Close();
+            videoProcess.Dispose();
 
             // Sprawdzenie, czy nastąpił błąd
             if (exitCode != 0)

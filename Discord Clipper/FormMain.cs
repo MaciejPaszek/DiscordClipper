@@ -12,6 +12,7 @@ namespace DiscordClipper
          *******************************************************/
 
         List<Clip> OutputClips = new List<Clip>();
+        List<string> Thumbnails = new List<string>();
 
         // Okno ustawień
         FormSettings? FormSettings;
@@ -46,12 +47,8 @@ namespace DiscordClipper
         {
             InitializeComponent();
 
-            // Utwóz formularz konsoli
-            //FormConsole = new FormConsole();
-
-            // Rozwiązanie tymczasowe na crash consoli
-            //FormConsole.Show();
-            //FormConsole.Hide();
+            // Ustaw proporcje miniatury podglądu
+            SetPictureBoxProportions();
 
             // Utwórz obiekt klasy FFmpeg i dodaj obsługę zdarzeń
             FFmpeg = new FFmpeg();
@@ -326,7 +323,7 @@ namespace DiscordClipper
 
         private void AddClip(string filePath)
         {
-            if(Settings == null)
+            if (Settings == null)
             {
                 return;
             }
@@ -392,7 +389,7 @@ namespace DiscordClipper
             }
 
             Discord.AddClip(clipID, filePath);
-          
+
             return;
         }
 
@@ -415,7 +412,6 @@ namespace DiscordClipper
         /// <summary>
         /// Funkcja pomocnicza do ustawiania miniatury podglądu
         /// </summary>
-        /// <param name="bitmap"></param>
         private void ClearPictureBox()
         {
             if (pictureBoxThumbnail.InvokeRequired)
@@ -578,6 +574,8 @@ namespace DiscordClipper
         private void FFmpeg_ThumbnailCreated(object? sender, FFmpeg.ThumbnailCreatedEventArgs e)
         {
             SetDataGridViewImage(e.ClipID, new Bitmap(e.ThumbnailFilePath));
+
+            Thumbnails.Add(e.ThumbnailFilePath);
         }
 
         /// <summary>
@@ -716,7 +714,7 @@ namespace DiscordClipper
                 return;
             }
 
-            string? value = (string?) dataGridViewClips.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            string? value = (string?)dataGridViewClips.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 
             if (value == null)
             {
@@ -735,12 +733,96 @@ namespace DiscordClipper
 
             Clip clip = OutputClips.Find(x => x.ClipID == e.RowIndex);
 
-            if(!File.Exists(clip.FilePath))
+            if (!File.Exists(clip.FilePath))
             {
                 return;
             }
 
             SendToDiscord(clip.ClipID, clip.FilePath);
+        }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Zwolnij wszystkie obrazy z dataGridViewClips
+            if (dataGridViewClips.Rows.Count > 0)
+            {
+                foreach (DataGridViewRow row in dataGridViewClips.Rows)
+                {
+                    if (row.Cells[0].Value is Bitmap bitmap)
+                    {
+                        bitmap.Dispose();
+                    }
+                }
+            }
+
+            // Zwolnij obraz z pictureBoxThumbnail
+            if (pictureBoxThumbnail.Image != null)
+            {
+                pictureBoxThumbnail.Image.Dispose();
+            }
+
+            // Usuń wsystkie utworzone pliki bitmap
+            foreach (string thumbnailFilePath in Thumbnails)
+            {
+                if (File.Exists(thumbnailFilePath))
+                {
+                    try
+                    {
+                        File.Delete(thumbnailFilePath);
+                    }
+                    catch
+                    {
+                        MessageBox.Show($"Nie można usunąć pliku miniatury: {thumbnailFilePath}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void splitContainerOutput_DoubleClick(object sender, EventArgs e)
+        {
+            SetPictureBoxProportions();
+        }
+
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania proporcji miniatury podglądu
+        /// </summary>
+        private void SetPictureBoxProportions()
+        {
+            // Szerokość obrazu bez paddingu i marginu
+            int imageWidth = pictureBoxThumbnail.ClientSize.Width
+                - pictureBoxThumbnail.Margin.Left - pictureBoxThumbnail.Margin.Right
+                - pictureBoxThumbnail.Padding.Left - pictureBoxThumbnail.Padding.Right;
+
+            // Wysokość obrazu bez paddingu i marginu
+            int imageHeight = pictureBoxThumbnail.ClientSize.Height
+                - pictureBoxThumbnail.Margin.Top - pictureBoxThumbnail.Margin.Bottom
+                - pictureBoxThumbnail.Padding.Top - pictureBoxThumbnail.Padding.Bottom;
+
+            // Tyle, ile jest vs tyle, ile powinno być
+            int heightDifference = imageHeight - imageWidth * 9 / 16;
+
+            // Zastsuj przesunięcie, oblicz nową pozycję
+            int newSplitterDistance = splitContainerOutput.SplitterDistance + heightDifference;
+
+            // Ograniczenie z dołu
+            if (newSplitterDistance < 0)
+            {
+                newSplitterDistance = 0;
+            }
+
+            // Ograniczenie z góry
+            if (newSplitterDistance > splitContainerOutput.ClientSize.Height)
+            {
+                newSplitterDistance = splitContainerOutput.ClientSize.Height;
+            }
+
+            // Zastosuj nową pozycję
+            splitContainerOutput.SplitterDistance = newSplitterDistance;
+        }
+
+        private void informacjaOWersjiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show($"Discord Clipper v{Application.ProductVersion}", "Informacja o wersji", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

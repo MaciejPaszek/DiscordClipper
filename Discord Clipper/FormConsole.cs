@@ -34,10 +34,10 @@
             {
                 if (Sender == null || Sender == string.Empty)
                 {
-                    return $"[{DateTime:yyyy-MM-dd HH:mm:ss}] {Message}";
+                    return $"[{DateTime:yyyy-MM-dd HH:mm:ss.fff}] {Message}";
                 }
 
-                return $"[{DateTime:yyyy-MM-dd HH:mm:ss}] {Sender} {Message}";
+                return $"[{DateTime:yyyy-MM-dd HH:mm:ss.fff}] {Sender} {Message}";
             }
         }
 
@@ -49,8 +49,10 @@
             InitializeComponent();
 
             // Dodaj komunikaty z archiwum
-            foreach(ConsoleLineEventArgs e in consoleLineEventArgs)
+            // przy foreach: System.InvalidOperationException: „Collection was modified; enumeration operation may not execute.”
+            for (int i = 0; i < consoleLineEventArgs.Count; i++)
             {
+                ConsoleLineEventArgs e = consoleLineEventArgs[i];
                 WriteLine(e);
             }
         }
@@ -169,7 +171,14 @@
         /// <param name="text"></param>
         private void WriteCommand(string text)
         {
-            WriteLine(text, Color.Gray);
+            if (Application.ColorMode == SystemColorMode.Classic)
+            {
+                WriteLine(text, Color.Blue);
+            }
+            else
+            {
+                WriteLine(text, Color.LightBlue);
+            }
         }
 
         /// <summary>
@@ -178,7 +187,14 @@
         /// <param name="text"></param>
         private void WriteOutput(string text)
         {
-            WriteLine(text, Color.DarkBlue);
+            if (Application.ColorMode == SystemColorMode.Classic)
+            {
+                WriteLine(text, Color.Gray);
+            }
+            else
+            {
+                WriteLine(text, Color.DarkGray);
+            }
         }
 
         /// <summary>
@@ -216,6 +232,23 @@
 
             // Odznaczenie całego tekstu
             richTextBoxConsole.DeselectAll();
+        }
+
+        /// <summary>
+        /// Kopiowanie zawartości konsoli do schowka
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonCopyToClipboard_Click(object sender, EventArgs e)
+        {
+            string? text = richTextBoxConsole.Text;
+            
+            if(text == null)
+            {
+                return;
+            }
+            
+            Clipboard.SetText(text, TextDataFormat.Text);
         }
     }
 }
