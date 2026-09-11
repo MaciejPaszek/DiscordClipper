@@ -1,59 +1,36 @@
-﻿namespace DiscordClipper
+﻿using System.Diagnostics.Eventing.Reader;
+using static DiscordClipper.Logger;
+
+namespace DiscordClipper
 {
     public partial class FormConsole : Form
     {
         /// <summary>
-        /// Priorytet
-        /// </summary>
-        public enum Priority
-        {
-            Info,
-            Command,
-            Output,
-            Error
-        }
-
-        public class ConsoleLineEventArgs : EventArgs
-        {
-            public DateTime DateTime = DateTime.Now;
-            public string Sender = string.Empty;
-            public string Message = string.Empty;
-            public Priority Priority = Priority.Info;
-            public ConsoleLineEventArgs(string message)
-            {
-                Message = message;
-            }
-
-            public ConsoleLineEventArgs(string message, Priority priority)
-            {
-                Message = message;
-                Priority = priority;
-            }
-
-            public override string ToString()
-            {
-                if (Sender == null || Sender == string.Empty)
-                {
-                    return $"[{DateTime:yyyy-MM-dd HH:mm:ss.fff}] {Message}";
-                }
-
-                return $"[{DateTime:yyyy-MM-dd HH:mm:ss.fff}] {Sender} {Message}";
-            }
-        }
-
-        /// <summary>
         /// Formularz okna konsoli
         /// </summary>
-        public FormConsole(List<ConsoleLineEventArgs> consoleLineEventArgs)
+        public FormConsole()
         {
             InitializeComponent();
 
-            // Dodaj komunikaty z archiwum
-            // przy foreach: System.InvalidOperationException: „Collection was modified; enumeration operation may not execute.”
-            for (int i = 0; i < consoleLineEventArgs.Count; i++)
+            //
+            Logger.LogAdded += Logger_LogAdded;
+
+            // Wczystaj poprzednie logi
+            ReadLogger();
+        }
+
+        private void Logger_LogAdded(object? sender, LogData e)
+        {
+            WriteLine(e);
+        }
+
+        private void ReadLogger()
+        {
+            Logger.LogData[] logDataArray = Logger.GetLogs();
+
+            foreach (Logger.LogData logData in logDataArray)
             {
-                ConsoleLineEventArgs e = consoleLineEventArgs[i];
-                WriteLine(e);
+                WriteLine(logData);
             }
         }
 
@@ -61,19 +38,19 @@
         /// Publiczna metoda do pisania po konsoli
         /// </summary>
         /// <param name="e"></param>
-        public void WriteLine(ConsoleLineEventArgs consoleLineEventArgs)
+        private void WriteLine(Logger.LogData consoleLineEventArgs)
         {
             switch (consoleLineEventArgs.Priority)
             {
-                case Priority.Command:
+                case Logger.Priority.Command:
                     WriteCommand(consoleLineEventArgs.ToString());
                     break;
 
-                case Priority.Output:
+                case Logger.Priority.Output:
                     WriteOutput(consoleLineEventArgs.ToString());
                     break;
 
-                case Priority.Error:
+                case Logger.Priority.Error:
                     WriteError(consoleLineEventArgs.ToString());
                     break;
 
@@ -242,13 +219,46 @@
         private void buttonCopyToClipboard_Click(object sender, EventArgs e)
         {
             string? text = richTextBoxConsole.Text;
-            
-            if(text == null)
+
+            if (text == null)
             {
                 return;
             }
-            
+
             Clipboard.SetText(text, TextDataFormat.Text);
+        }
+
+        private void FormConsole_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Logger.LogAdded -= Logger_LogAdded;
+        }
+
+        private void RichTextBoxConsole_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                // Get all lines
+                var lines = richTextBoxConsole.Lines;
+
+                // If over limit, remove oldest lines
+                if (lines.Length > Logger.QueueSize)
+                {
+                    // Keep only the last MaxLines lines
+                    lines = lines.Skip(lines.Length - Logger.QueueSize).ToArray();
+
+                    // Temporarily detach event to avoid recursion
+                    richTextBoxConsole.TextChanged -= RichTextBoxConsole_TextChanged;
+                    richTextBoxConsole.Lines = lines;
+                    richTextBoxConsole.SelectionStart = richTextBoxConsole.Text.Length; // Move caret to end
+                    richTextBoxConsole.ScrollToCaret();
+                    richTextBoxConsole.TextChanged += RichTextBoxConsole_TextChanged;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error limiting lines: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

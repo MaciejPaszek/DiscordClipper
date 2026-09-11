@@ -2,6 +2,7 @@ using DiscordClipper.Properties;
 using System.Diagnostics;
 using static DiscordClipper.FFmpeg;
 using static DiscordClipper.FormConsole;
+using static DiscordClipper.Logger;
 
 namespace DiscordClipper
 {
@@ -11,29 +12,49 @@ namespace DiscordClipper
          * Obiekty Globalne
          *******************************************************/
 
+        /// <summary>
+        /// Lista przetworzonych klipów przenaczonych do sysłania na Discorda
+        /// </summary>
         List<Clip> OutputClips = new List<Clip>();
+
+        /// <summary>
+        /// Lista miniatur utworzonych przez FFmpeg, które należy usunąć po zamknięciu programu
+        /// </summary>
         List<string> Thumbnails = new List<string>();
 
-        // Okno ustawień
+        /// <summary>
+        /// Formularz ustawień
+        /// </summary>
         FormSettings? FormSettings;
 
-        // Okno konsoli
+        /// <summary>
+        /// Formularz konsoli
+        /// </summary>
         FormConsole? FormConsole;
-        List<ConsoleLineEventArgs> ListConsoleLineEventArgs = new List<ConsoleLineEventArgs>();
 
-        // Monitorowanie folderu
+        /// <summary>
+        /// Monitorowanie folderu
+        /// </summary>
         FileSystemWatcher? FileSystemWatcher;
 
-        // Czy monitorowanie plików jest aktywne
-        private bool isWatcherActive = false;
+        /// <summary>
+        /// Informacja o aktywności FileSystemWatcher'a
+        /// </summary>
+        private bool IsFileSystemWatcherActive = false;
 
-        // Klasa Settings
+        /// <summary>
+        /// Obiekt klasy Settings do przechowywania ustawień programu
+        /// </summary>
         Settings? Settings;
 
-        // Klasa FFmpeg
+        /// <summary>
+        /// Obiekt klasy FFmpeg
+        /// </summary>
         FFmpeg? FFmpeg;
 
-        // Klasa Discord
+        /// <summary>
+        /// Obiekt klasy Discord
+        /// </summary>
         Discord? Discord;
 
         /*******************************************************
@@ -45,14 +66,12 @@ namespace DiscordClipper
         /// </summary>
         public FormMain()
         {
+            Logger.WriteLine("Inicjalizacja okna głównego...", Priority.Info);
             InitializeComponent();
 
-            // Ustaw proporcje miniatury podglądu
-            SetPictureBoxProportions();
-
             // Utwórz obiekt klasy FFmpeg i dodaj obsługę zdarzeń
+            Logger.WriteLine("Tworzenie obiektu klasy FFmpeg...", Priority.Info);
             FFmpeg = new FFmpeg();
-            FFmpeg.ConsoleLine += ConsoleLine;
             FFmpeg.FFmpegError += FFmpeg_FFmpegError;
             FFmpeg.ConversionStarted += FFmpeg_ConversionStarted;
             FFmpeg.ThumbnailCreated += FFmpeg_ThumbnailCreated;
@@ -60,57 +79,133 @@ namespace DiscordClipper
             FFmpeg.VideoCreated += FFmpeg_VideoCreated;
 
             // Utwórz obiekt klasy Discord
+            Logger.WriteLine("Tworzenie obiektu klasy Discord...", Priority.Info);
             Discord = new Discord();
-            Discord.ConsoleLine += ConsoleLine;
             Discord.ClipSent += Discord_ClipSent;
             Discord.DiscordError += Discord_DiscordError;
 
             // Utwórz obiekt klasy Settings zawierający ustawienia domyślne
+            Logger.WriteLine("Tworzenie obiektu klasy Settings...", Priority.Info);
             string profileName = "settings";
             Settings = new Settings(profileName);
 
             // Załaduj ustawienia z pliku settings.txt
             Settings.Load();
 
-            // Zastosuj tryb kolorów (tylko raz na początku)
-            ApplyColorMode(Settings.ColorMode);
-
             // Zastosuj ustawienia do obiektów FFmpeg i Discord
             ApplySettings(Settings);
 
+            // Zastosuj tryb kolorów (tylko raz na początku)
+            ApplyColorMode(Settings.ColorMode);
+
+            // Ustaw proporcje miniatury podglądu
+            SetPictureBoxProportions();
+
             // Utwórz formularz ustawień wykorzystując wczytane ustawienia
+            // Może lepiej zrobić tak jak z console Window, i tworzyć go za każydym razem od nowa
+            Logger.WriteLine("Tworzenie obiektu klasy FormSettings...", Priority.Info);
             FormSettings = new FormSettings(Settings);
+        }
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Zwolnij wszystkie obrazy z dataGridViewClips
+            if (dataGridViewClips.Rows.Count > 0)
+            {
+                foreach (DataGridViewRow row in dataGridViewClips.Rows)
+                {
+                    if (row.Cells[0].Value is Bitmap bitmap)
+                    {
+                        bitmap.Dispose();
+                        bitmap = null;
+                    }
+                }
+            }
+
+            // Zwolnij obraz z pictureBoxThumbnail
+            if (pictureBoxThumbnail.Image != null)
+            {
+                pictureBoxThumbnail.Image.Dispose();
+                pictureBoxThumbnail.Image = null;
+            }
+
+            // Usuń wsystkie utworzone pliki bitmap
+            foreach (string thumbnailFilePath in Thumbnails)
+            {
+                if (File.Exists(thumbnailFilePath))
+                {
+                    try
+                    {
+                        File.Delete(thumbnailFilePath);
+                    }
+                    catch(Exception ex)
+                    {
+                        Logger.WriteLine($"Nie można usunąć pliku miniatury: {thumbnailFilePath}: {ex.Message}", Priority.Error);
+                        MessageBox.Show($"Nie można usunąć pliku miniatury: {thumbnailFilePath}: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
 
         /*******************************************************
-         * Okno Konsoli 
+         * MenuStrip 
          *******************************************************/
 
-        /// <summary>
-        /// OBsługa przycisku do tworzenia okna konsoli
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonConsole_Click(object sender, EventArgs e)
+        private void toolStripMenuItemVersion_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show($"Discord Clipper v{Application.ProductVersion}", "Informacja o wersji", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void toolStripMenuItemOpenAppData_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", Application.UserAppDataPath);
+        }
+
+        private void instrukcjaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenBrowser("https://github.com/MaciejPaszek/DiscordClipper/wiki");
+        }
+
+        private void zgłośBłądToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenBrowser("https://github.com/MaciejPaszek/DiscordClipper/issues");
+        }
+
+        private void OpenBrowser(string url)
+        {
+            Logger.WriteLine($"Otwieranie adresu \"{url}\" w przeglądarce...", Priority.Info);
+
+            Process browserProcess = new Process();
+            browserProcess.StartInfo.FileName = url;
+            browserProcess.StartInfo.UseShellExecute = true;
+
+            try
+            {
+                browserProcess.Start();
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine($"Błąd otwierania przeglądarki: {ex.Message}", Priority.Error);
+            }
+        }
+
+        /*******************************************************
+         * FormConsole
+         *******************************************************/
+
+        private void toolStripMenuItemOpenConsole_Click(object sender, EventArgs e)
         {
             if (FormConsole == null)
             {
                 // Okno konsoli jest zamknięte, otwórz je
-
-                FormConsole = new FormConsole(ListConsoleLineEventArgs);
+                FormConsole = new FormConsole();
                 FormConsole.FormClosed += FormConsole_FormClosed;
                 FormConsole.Show();
-
-                buttonConsole.Text = "Ukryj konsolę";
-
             }
             else
             {
-                // Okno konsoli jest otwarte, zamknij je
-                FormConsole.Close();
+                // Okno konsoli jest otwarte, pokaż je na wierzchu
+                FormConsole.Activate();
             }
-
-            return;
         }
 
         /// <summary>
@@ -121,59 +216,42 @@ namespace DiscordClipper
         private void FormConsole_FormClosed(object? sender, FormClosedEventArgs e)
         {
             FormConsole = null;
-            buttonConsole.Text = "Pokaż konsolę";
         }
-
-        /// <summary>
-        /// Funkcja do pisania konsoli przez inne okna
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ConsoleLine(object? sender, ConsoleLineEventArgs e)
-        {
-            // Konsola jest ukryta, dodaj do kolejki
-            ListConsoleLineEventArgs.Add(e);
-
-            // JEśli okno konsoli jest zamknięte, to koniec
-            if (FormConsole == null)
-            {
-                return;
-            }
-
-            // Jeśli okno konsoli jest otwarte, to dodaj nowy
-            FormConsole.WriteLine(e);
-
-            return;
-        }
-
-        /// <summary>
-        /// Przełączanie widoczności konsoli
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
 
         /*******************************************************
-         * Zdarzenia FormMain
+         * FormSettings
          *******************************************************/
 
         private void ButtonSettings_Click(object? sender, EventArgs e)
         {
             if (FormSettings == null)
             {
+                Logger.WriteLine("Obiekt FormSettings ma wartość null.", Priority.Error);
                 return;
             }
 
-            FormSettings.ShowDialog();
+            Logger.WriteLine("Otwieranie okna ustawień...", Priority.Info);
+            try
+            {
+                FormSettings.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine($"Błąd otwierania okna ustawień: {ex.Message}", Priority.Error);
+            }
 
             if (FormSettings.DialogResult != DialogResult.OK)
             {
+                Logger.WriteLine("Anulowano zmiany w ustawieniach.", Priority.Info);
                 return;
             }
 
+            // Pobierz ustawienia z formularza ustawień
             Settings = FormSettings.Settings;
 
             if (Settings == null)
             {
+                Logger.WriteLine("Obiekt Settings ma wartość null.", Priority.Error);
                 return;
             }
 
@@ -182,65 +260,9 @@ namespace DiscordClipper
             ApplySettings(Settings);
         }
 
-        private void ApplyColorMode(int colorMode)
-        {
-            switch (colorMode)
-            {
-                case 0:
-                    Application.SetColorMode(SystemColorMode.Classic);
-                    break;
-                case 1:
-                    Application.SetColorMode(SystemColorMode.Dark);
-                    break;
-                default:
-                    Application.SetColorMode(SystemColorMode.System);
-                    break;
-            }
-        }
-
-        private void ApplySettings(Settings settings)
-        {
-            if (FFmpeg == null)
-            {
-                return;
-            }
-
-            FFmpeg.OutputFolder = settings.OutputFolder;
-
-            FFmpeg.FrameRate = FFmpeg.FrameRates[settings.FrameRate].Value;
-            FFmpeg.ResolutionName = FFmpeg.Resolutions[settings.Resolution].Name;
-            FFmpeg.Resolution = FFmpeg.Resolutions[settings.Resolution].Value;
-            FFmpeg.Encoder = FFmpeg.Encoders[settings.Encoder].Value;
-            FFmpeg.MaxVideoBitrate = settings.MaxVideoBitrate.ToString();
-
-            if (Discord == null)
-            {
-                return;
-            }
-
-            Discord.WebhookURL = settings.DiscordWebhook;
-        }
-
-        private void ButtonActivate_Click(object sender, EventArgs e)
-        {
-            if (!isWatcherActive)
-            {
-                if (!InitalizeFileSystemWatcher())
-                {
-                    return;
-                }
-
-                buttonSettings.Enabled = false;
-                buttonActivate.Text = "Zatrzymaj monitorowanie";
-                isWatcherActive = true;
-            }
-            else
-            {
-                buttonSettings.Enabled = true;
-                buttonActivate.Text = "Rozpocznij monitorowanie";
-                isWatcherActive = false;
-            }
-        }
+        /*******************************************************
+         * Dodawanie Klipów Przyciskiem
+         *******************************************************/
 
         private void ButtonAddClips_Click(object sender, EventArgs e)
         {
@@ -262,50 +284,88 @@ namespace DiscordClipper
             return;
         }
 
-        //*******************************************************
-        // FileSystemWatcher
-        //*******************************************************
+        /*******************************************************
+         * FileSystemWatcher
+         *******************************************************/
 
+        private void ButtonActivate_Click(object sender, EventArgs e)
+        {
+            if (!IsFileSystemWatcherActive)
+            {
+                if (!InitalizeFileSystemWatcher())
+                {
+                    Logger.WriteLine("Nie można aktywować FileSystemWatcher'a.", Priority.Error);
+                    return;
+                }
+
+                buttonSettings.Enabled = false;
+                buttonActivate.Text = "Zatrzymaj monitorowanie";
+                IsFileSystemWatcherActive = true;
+            }
+            else
+            {
+                Logger.WriteLine("Zakończono monitorowanie klipów.", Priority.Info);
+
+                buttonSettings.Enabled = true;
+                buttonActivate.Text = "Rozpocznij monitorowanie";
+                IsFileSystemWatcherActive = false;
+            }
+        }
         private bool InitalizeFileSystemWatcher()
         {
+            Logger.WriteLine("Inicjalizacja nowego obiektu FileSystemWatcher...", Priority.Info);
+
             if (Settings == null)
             {
+                Logger.WriteLine("Obiekt Settings ma wartość null.", Priority.Error);
                 return false;
             }
 
             // Walidacja pola InputFolder
             if (Settings.InputFolder == null || Settings.InputFolder == string.Empty)
             {
-                MessageBox.Show("Ustaw folder wejściowy.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.WriteLine("Folder wejściowy ma wartość null.", Priority.Error);
+
+                MessageBox.Show("Nie wybrano folderu wejściowego do monitorowania klipów.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
             if (!Directory.Exists(Settings.InputFolder))
             {
-                MessageBox.Show($"Wybrany folder wejściowy nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.WriteLine($"Folder wejściowy \"{Settings.InputFolder}\" nie istnieje.", Priority.Error);
+
+                MessageBox.Show($"Folder wejściowy \"{Settings.InputFolder}\" nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
             // Walidacja pola OutputFolder
             if (Settings.OutputFolder == null || Settings.OutputFolder == string.Empty)
             {
-                MessageBox.Show("Nie określono folderu wyjściowego.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.WriteLine("Folder wyjściowy ma wartość null.", Priority.Error);
+
+                MessageBox.Show("Nie wybrano folderu wyjściowego do zapisywania klipów.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
             if (!Directory.Exists(Settings.OutputFolder))
             {
-                MessageBox.Show($"Wybrany folder wyjściowy nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.WriteLine($"Folder wyjściowy \"{Settings.OutputFolder}\" nie istnieje.", Priority.Error);
+
+                MessageBox.Show($"Folder wyjściowy \"{Settings.OutputFolder}\" nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
             // Wyłącz poprzedniego FileSystemWatchera
             if (FileSystemWatcher != null)
             {
+                Logger.WriteLine("Deaktywacja poprzedniego obiektu FileSystemWatcher...", Priority.Info);
+
                 FileSystemWatcher.Dispose();
             }
 
             // Nowy FileSystemWatcher
+            Logger.WriteLine("Aktywacja nowego obiektu FileSystemWatcher...", Priority.Info);
+
             FileSystemWatcher = new FileSystemWatcher(Settings.InputFolder);
             FileSystemWatcher.Created += FileSystemWatcher_Created;
             FileSystemWatcher.Filter = FFmpeg.InputFileFormats[Settings.InputFileFormat].Name;
@@ -315,34 +375,83 @@ namespace DiscordClipper
             return true;
         }
 
+        /*******************************************************
+         * Funkcje Pomocnicze Formularza Głównego
+         *******************************************************/
 
-
-        //*******************************************************
-        // Funkcje pomocnicze formularza
-        //*******************************************************
-
-        private void AddClip(string filePath)
+        private void ApplyColorMode(int colorMode)
         {
+            switch (colorMode)
+            {
+                case 0:
+                    Logger.WriteLine("Stosowanie jasnego trybu kolorów...", Priority.Info);
+                    Application.SetColorMode(SystemColorMode.Classic);
+                    break;
+                case 1:
+                    Logger.WriteLine("Stosowanie ciemnego trybu kolorów...", Priority.Info);
+                    Application.SetColorMode(SystemColorMode.Dark);
+                    break;
+                default:
+                    Logger.WriteLine("Stosowanie systemowego trybu kolorów...", Priority.Info);
+                    Application.SetColorMode(SystemColorMode.System);
+                    break;
+            }
+        }
+
+        private bool ApplySettings(Settings settings)
+        {
+            Logger.WriteLine("Stosowanie ustawień...", Priority.Info);
+
+            if (FFmpeg == null)
+            {
+                Logger.WriteLine("Obiekt FFmpeg ma wartość null.", Priority.Error);
+                return false;
+            }
+
+            FFmpeg.OutputFolder = settings.OutputFolder;
+            FFmpeg.FrameRate = FFmpeg.FrameRates[settings.FrameRate].Value;
+            FFmpeg.ResolutionName = FFmpeg.Resolutions[settings.Resolution].Name;
+            FFmpeg.Resolution = FFmpeg.Resolutions[settings.Resolution].Value;
+            FFmpeg.Encoder = FFmpeg.Encoders[settings.Encoder].Value;
+            FFmpeg.MaxVideoBitrate = settings.MaxVideoBitrate.ToString();
+
+            if (Discord == null)
+            {
+                Logger.WriteLine("Obiekt Discord ma wartość null.", Priority.Error);
+                return false;
+            }
+
+            Discord.WebhookURL = settings.DiscordWebhook;
+
+            return true;
+        }
+
+        private bool AddClip(string filePath)
+        {
+            Logger.WriteLine($"Dodawanie klipu {filePath} do kolejki...", Priority.Info);
+
             if (Settings == null)
             {
-                return;
+                Logger.WriteLine("Obiekt Settings ma wartość null.", Priority.Error);
+                return false;
             }
 
             // Walidacja pola OutputFolder
             if (Settings.OutputFolder == null || Settings.OutputFolder == string.Empty)
             {
-                MessageBox.Show("Nie określono folderu wyjściowego.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                Logger.WriteLine("Folder wyjściowy ma wartość null.", Priority.Error);
 
+                MessageBox.Show("Nie wybrano folderu wyjściowego do zapisywania klipów.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
 
             if (!Directory.Exists(Settings.OutputFolder))
             {
-                MessageBox.Show($"Wybrany folder wyjściowy nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+                Logger.WriteLine($"Folder wyjściowy \"{Settings.OutputFolder}\" nie istnieje.", Priority.Error);
 
-            ConsoleLine(this.ToString(), new ConsoleLineEventArgs($"Dodawanie pliku \"{filePath}\" do kolejki..."));
+                MessageBox.Show($"Folder wyjściowy \"{Settings.OutputFolder}\" nie istnieje.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
 
             // Dodaj plik na listę
             int clipID = AddDataGridViewClip(Path.GetFileName(filePath));
@@ -350,33 +459,36 @@ namespace DiscordClipper
             // Dodawanie pliku do kolejki FFmpeg w osobnym wątku
             if (FFmpeg == null)
             {
-                return;
+                Logger.WriteLine("Obiekt FFmpeg ma wartość null.", Priority.Error);
+                return false;
             }
 
             FFmpeg.AddClip(clipID, filePath);
 
-            ConsoleLine(this.ToString(), new ConsoleLineEventArgs($"Dodano plik \"{filePath}\" do kolejki."));
-
-            return;
+            return true;
         }
 
-        private void SendToDiscord(int clipID, string filePath)
+        private bool SendToDiscord(int clipID, string filePath)
         {
             if (Discord == null)
             {
-                return;
+                Logger.WriteLine("Obiekt Discord ma wartość null.", Priority.Error);
+                return false;
             }
 
             if (Settings == null)
             {
-                return;
+                Logger.WriteLine("Obiekt Settings ma wartość null.", Priority.Error);
+                return false;
             }
 
-            // Walidacja pola OutputFolder
+            // Walidacja pola DiscordWebhook
             if (Settings.DiscordWebhook == null || Settings.DiscordWebhook == string.Empty)
             {
-                MessageBox.Show("Nie określono adresu URL Webhooka.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                Logger.WriteLine("Obiekt DiscordWebhook ma wartość null.", Priority.Error);
+
+                MessageBox.Show("Nie określono adresu URL Webhooka kanału na Discordzie.", "Ustawienia", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
 
             if (Application.ColorMode == SystemColorMode.Classic)
@@ -390,7 +502,7 @@ namespace DiscordClipper
 
             Discord.AddClip(clipID, filePath);
 
-            return;
+            return true;
         }
 
         /// <summary>
@@ -486,7 +598,6 @@ namespace DiscordClipper
             }
             else
             {
-                // Znajdź wiersz i dodaj obraz
                 dataGridViewClips.Rows.Add(new object[] { Resources.Replay, clipName, "Oczekiwanie", "Oczekiwanie" });
                 dataGridViewClips.FirstDisplayedScrollingRowIndex = dataGridViewClips.Rows.Count - 1;
             }
@@ -514,6 +625,7 @@ namespace DiscordClipper
                 dataGridViewClips.Rows[rowIndex].Cells[2].Style.ForeColor = color;
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -549,9 +661,61 @@ namespace DiscordClipper
             }
         }
 
-        //*******************************************************
-        // Zdarzenia
-        //*******************************************************
+        private void splitContainerOutput_DoubleClick(object sender, EventArgs e)
+        {
+            SetPictureBoxProportions();
+        }
+
+        /// <summary>
+        /// Funkcja pomocnicza do ustawiania proporcji miniatury podglądu
+        /// </summary>
+        private void SetPictureBoxProportions()
+        {
+            Logger.WriteLine("Ustawianie proporcji miniatury podglądu...", Priority.Info);
+
+            // Szerokość obrazu bez paddingu i marginu
+            int imageWidth = pictureBoxThumbnail.ClientSize.Width
+                - pictureBoxThumbnail.Margin.Left - pictureBoxThumbnail.Margin.Right
+                - pictureBoxThumbnail.Padding.Left - pictureBoxThumbnail.Padding.Right;
+
+            // Wysokość obrazu bez paddingu i marginu
+            int imageHeight = pictureBoxThumbnail.ClientSize.Height
+                - pictureBoxThumbnail.Margin.Top - pictureBoxThumbnail.Margin.Bottom
+                - pictureBoxThumbnail.Padding.Top - pictureBoxThumbnail.Padding.Bottom;
+
+            // Tyle, ile jest vs tyle, ile powinno być
+            int heightDifference = imageHeight - imageWidth * 9 / 16;
+
+            // Zastsuj przesunięcie, oblicz nową pozycję
+            int newSplitterDistance = splitContainerOutput.SplitterDistance + heightDifference;
+
+            // Ograniczenie z dołu
+            if (newSplitterDistance < 0)
+            {
+                newSplitterDistance = 0;
+            }
+
+            // Ograniczenie z góry
+            if (newSplitterDistance > splitContainerOutput.ClientSize.Height)
+            {
+                newSplitterDistance = splitContainerOutput.ClientSize.Height;
+            }
+
+            // Zastosuj nową pozycję
+            try
+            {
+                splitContainerOutput.SplitterDistance = newSplitterDistance;
+
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine($"Błąd podczas ustawiania proporcji miniatury podglądu: {ex.Message}", Priority.Error);
+            }
+        }
+
+        /*******************************************************
+         * Zdarzenia Klipów
+         *******************************************************/
 
         /// <summary>
         /// Zdarzenie utworzenia nowgo pliku w folderze wejściowym (kolor szary)
@@ -576,6 +740,8 @@ namespace DiscordClipper
             SetDataGridViewImage(e.ClipID, new Bitmap(e.ThumbnailFilePath));
 
             Thumbnails.Add(e.ThumbnailFilePath);
+
+            return;
         }
 
         /// <summary>
@@ -636,6 +802,7 @@ namespace DiscordClipper
 
             if (Settings == null)
             {
+                Logger.WriteLine("Obiekt Settings ma wartość null.", Priority.Error);
                 return;
             }
 
@@ -675,31 +842,8 @@ namespace DiscordClipper
             SetDataGridViewStatus(e.ClipID, "Discord error", Color.Red);
         }
 
-        private void instrukcjaToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenBrowser("https://github.com/MaciejPaszek/DiscordClipper/wiki");
-        }
+        // Inne
 
-        private void zgłośBłądToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenBrowser("https://github.com/MaciejPaszek/DiscordClipper/issues");
-
-        }
-
-        private void OpenBrowser(string url)
-        {
-            Process browserProcess = new Process();
-            browserProcess.StartInfo.FileName = url;
-            browserProcess.StartInfo.UseShellExecute = true;
-
-            browserProcess.Start();
-
-        }
-
-        private void otwórzFolderAppDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Process.Start("explorer.exe", Application.UserAppDataPath);
-        }
 
         private void dataGridViewClips_SelectionChanged(object sender, EventArgs e)
         {
@@ -741,88 +885,22 @@ namespace DiscordClipper
             SendToDiscord(clip.ClipID, clip.FilePath);
         }
 
-        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        private void toolStripMenuItemCheckFFmpeg_Click(object sender, EventArgs e)
         {
-            // Zwolnij wszystkie obrazy z dataGridViewClips
-            if (dataGridViewClips.Rows.Count > 0)
+            if (FFmpeg == null)
             {
-                foreach (DataGridViewRow row in dataGridViewClips.Rows)
-                {
-                    if (row.Cells[0].Value is Bitmap bitmap)
-                    {
-                        bitmap.Dispose();
-                    }
-                }
+                Logger.WriteLine("Obiekt FFmpeg ma wartość null.", Priority.Error);
+                return;
             }
 
-            // Zwolnij obraz z pictureBoxThumbnail
-            if (pictureBoxThumbnail.Image != null)
+            if (FFmpeg.Version() == 0)
             {
-                pictureBoxThumbnail.Image.Dispose();
+                MessageBox.Show("Program FFmpeg jest zainstalowany.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            // Usuń wsystkie utworzone pliki bitmap
-            foreach (string thumbnailFilePath in Thumbnails)
+            else
             {
-                if (File.Exists(thumbnailFilePath))
-                {
-                    try
-                    {
-                        File.Delete(thumbnailFilePath);
-                    }
-                    catch
-                    {
-                        MessageBox.Show($"Nie można usunąć pliku miniatury: {thumbnailFilePath}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                MessageBox.Show("Zainstaluj FFmpeg zgodnie z instrukcją na Discord Clipper Wiki.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void splitContainerOutput_DoubleClick(object sender, EventArgs e)
-        {
-            SetPictureBoxProportions();
-        }
-
-        /// <summary>
-        /// Funkcja pomocnicza do ustawiania proporcji miniatury podglądu
-        /// </summary>
-        private void SetPictureBoxProportions()
-        {
-            // Szerokość obrazu bez paddingu i marginu
-            int imageWidth = pictureBoxThumbnail.ClientSize.Width
-                - pictureBoxThumbnail.Margin.Left - pictureBoxThumbnail.Margin.Right
-                - pictureBoxThumbnail.Padding.Left - pictureBoxThumbnail.Padding.Right;
-
-            // Wysokość obrazu bez paddingu i marginu
-            int imageHeight = pictureBoxThumbnail.ClientSize.Height
-                - pictureBoxThumbnail.Margin.Top - pictureBoxThumbnail.Margin.Bottom
-                - pictureBoxThumbnail.Padding.Top - pictureBoxThumbnail.Padding.Bottom;
-
-            // Tyle, ile jest vs tyle, ile powinno być
-            int heightDifference = imageHeight - imageWidth * 9 / 16;
-
-            // Zastsuj przesunięcie, oblicz nową pozycję
-            int newSplitterDistance = splitContainerOutput.SplitterDistance + heightDifference;
-
-            // Ograniczenie z dołu
-            if (newSplitterDistance < 0)
-            {
-                newSplitterDistance = 0;
-            }
-
-            // Ograniczenie z góry
-            if (newSplitterDistance > splitContainerOutput.ClientSize.Height)
-            {
-                newSplitterDistance = splitContainerOutput.ClientSize.Height;
-            }
-
-            // Zastosuj nową pozycję
-            splitContainerOutput.SplitterDistance = newSplitterDistance;
-        }
-
-        private void informacjaOWersjiToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show($"Discord Clipper v{Application.ProductVersion}", "Informacja o wersji", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

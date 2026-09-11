@@ -32,11 +32,11 @@
             tableLayoutPanel6 = new TableLayoutPanel();
             richTextBoxConsole = new RichTextBox();
             tableLayoutPanel1 = new TableLayoutPanel();
+            buttonCopyToClipboard = new Button();
             label12 = new Label();
             numericUpDownConsoleFontSize = new NumericUpDown();
-            buttonClearConsole = new Button();
             checkBoxAutoscroll = new CheckBox();
-            buttonCopyToClipboard = new Button();
+            buttonClearConsole = new Button();
             tableLayoutPanel6.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownConsoleFontSize).BeginInit();
@@ -70,6 +70,7 @@
             richTextBoxConsole.Size = new Size(1258, 644);
             richTextBoxConsole.TabIndex = 1;
             richTextBoxConsole.Text = "";
+            richTextBoxConsole.TextChanged += RichTextBoxConsole_TextChanged;
             // 
             // tableLayoutPanel1
             // 
@@ -94,6 +95,17 @@
             tableLayoutPanel1.Size = new Size(1264, 31);
             tableLayoutPanel1.TabIndex = 2;
             // 
+            // buttonCopyToClipboard
+            // 
+            buttonCopyToClipboard.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonCopyToClipboard.Location = new Point(1035, 3);
+            buttonCopyToClipboard.Name = "buttonCopyToClipboard";
+            buttonCopyToClipboard.Size = new Size(120, 23);
+            buttonCopyToClipboard.TabIndex = 20;
+            buttonCopyToClipboard.Text = "Kopiuj do schowka";
+            buttonCopyToClipboard.UseVisualStyleBackColor = true;
+            buttonCopyToClipboard.Click += buttonCopyToClipboard_Click;
+            // 
             // label12
             // 
             label12.AutoSize = true;
@@ -117,17 +129,6 @@
             numericUpDownConsoleFontSize.Value = new decimal(new int[] { 9, 0, 0, 0 });
             numericUpDownConsoleFontSize.ValueChanged += numericUpDownConsoleFontSize_ValueChanged;
             // 
-            // buttonClearConsole
-            // 
-            buttonClearConsole.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonClearConsole.Location = new Point(1161, 3);
-            buttonClearConsole.Name = "buttonClearConsole";
-            buttonClearConsole.Size = new Size(100, 23);
-            buttonClearConsole.TabIndex = 16;
-            buttonClearConsole.Text = "Wyczyść";
-            buttonClearConsole.UseVisualStyleBackColor = true;
-            buttonClearConsole.Click += buttonClearConsole_Click;
-            // 
             // checkBoxAutoscroll
             // 
             checkBoxAutoscroll.AutoSize = true;
@@ -141,16 +142,16 @@
             checkBoxAutoscroll.Text = "Autoscroll";
             checkBoxAutoscroll.UseVisualStyleBackColor = true;
             // 
-            // buttonCopyToClipboard
+            // buttonClearConsole
             // 
-            buttonCopyToClipboard.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonCopyToClipboard.Location = new Point(1035, 3);
-            buttonCopyToClipboard.Name = "buttonCopyToClipboard";
-            buttonCopyToClipboard.Size = new Size(120, 23);
-            buttonCopyToClipboard.TabIndex = 20;
-            buttonCopyToClipboard.Text = "Kopiuj do schowka";
-            buttonCopyToClipboard.UseVisualStyleBackColor = true;
-            buttonCopyToClipboard.Click += buttonCopyToClipboard_Click;
+            buttonClearConsole.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttonClearConsole.Location = new Point(1161, 3);
+            buttonClearConsole.Name = "buttonClearConsole";
+            buttonClearConsole.Size = new Size(100, 23);
+            buttonClearConsole.TabIndex = 16;
+            buttonClearConsole.Text = "Wyczyść";
+            buttonClearConsole.UseVisualStyleBackColor = true;
+            buttonClearConsole.Click += buttonClearConsole_Click;
             // 
             // FormConsole
             // 
@@ -162,6 +163,7 @@
             MinimumSize = new Size(400, 200);
             Name = "FormConsole";
             Text = "Konsola";
+            FormClosed += FormConsole_FormClosed;
             tableLayoutPanel6.ResumeLayout(false);
             tableLayoutPanel6.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);

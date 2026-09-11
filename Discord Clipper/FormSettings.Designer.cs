@@ -332,7 +332,10 @@
             // checkBoxLimitVideoBitrate
             // 
             checkBoxLimitVideoBitrate.AutoSize = true;
+            checkBoxLimitVideoBitrate.Checked = true;
+            checkBoxLimitVideoBitrate.CheckState = CheckState.Checked;
             checkBoxLimitVideoBitrate.Dock = DockStyle.Top;
+            checkBoxLimitVideoBitrate.Enabled = false;
             checkBoxLimitVideoBitrate.Location = new Point(148, 5);
             checkBoxLimitVideoBitrate.Margin = new Padding(3, 5, 3, 3);
             checkBoxLimitVideoBitrate.Name = "checkBoxLimitVideoBitrate";
@@ -387,6 +390,7 @@
             // numericUpDownMaxAudioBitrate
             // 
             numericUpDownMaxAudioBitrate.Dock = DockStyle.Top;
+            numericUpDownMaxAudioBitrate.Enabled = false;
             numericUpDownMaxAudioBitrate.Location = new Point(3, 3);
             numericUpDownMaxAudioBitrate.Maximum = new decimal(new int[] { 12000, 0, 0, 0 });
             numericUpDownMaxAudioBitrate.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
@@ -400,6 +404,7 @@
             // 
             checkBoxLimitAudioBitrate.AutoSize = true;
             checkBoxLimitAudioBitrate.Dock = DockStyle.Top;
+            checkBoxLimitAudioBitrate.Enabled = false;
             checkBoxLimitAudioBitrate.Location = new Point(148, 5);
             checkBoxLimitAudioBitrate.Margin = new Padding(3, 5, 3, 3);
             checkBoxLimitAudioBitrate.Name = "checkBoxLimitAudioBitrate";

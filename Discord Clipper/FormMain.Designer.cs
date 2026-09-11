@@ -37,7 +37,7 @@
             tableLayoutPanelMain = new TableLayoutPanel();
             groupBox2 = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
-            buttonConsole = new Button();
+            buttonNothing = new Button();
             buttonSettings = new Button();
             buttonActivate = new Button();
             splitContainerOutput = new SplitContainer();
@@ -49,13 +49,15 @@
             ClipName = new DataGridViewTextBoxColumn();
             Status = new DataGridViewTextBoxColumn();
             ColumnSend = new DataGridViewButtonColumn();
-            menuStrip1 = new MenuStrip();
+            menuStrip = new MenuStrip();
             oknaToolStripMenuItem = new ToolStripMenuItem();
-            otwórzFolderAppDataToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItemVersion = new ToolStripMenuItem();
+            toolStripMenuItemOpenConsole = new ToolStripMenuItem();
+            toolStripMenuItemOpenAppData = new ToolStripMenuItem();
             pomocToolStripMenuItem = new ToolStripMenuItem();
-            instrukcjaToolStripMenuItem = new ToolStripMenuItem();
-            zgłośBłądToolStripMenuItem = new ToolStripMenuItem();
-            informacjaOWersjiToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItemOpenWiki = new ToolStripMenuItem();
+            toolStripMenuItemOpenIssues = new ToolStripMenuItem();
+            toolStripMenuItemCheckFFmpeg = new ToolStripMenuItem();
             groupBoxPreview.SuspendLayout();
             tableLayoutPanelPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxThumbnail).BeginInit();
@@ -69,7 +71,7 @@
             groupBoxConsole.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridViewClips).BeginInit();
-            menuStrip1.SuspendLayout();
+            menuStrip.SuspendLayout();
             SuspendLayout();
             // 
             // groupBoxPreview
@@ -79,7 +81,7 @@
             groupBoxPreview.Location = new Point(0, 0);
             groupBoxPreview.Margin = new Padding(10, 5, 10, 10);
             groupBoxPreview.Name = "groupBoxPreview";
-            groupBoxPreview.Size = new Size(604, 413);
+            groupBoxPreview.Size = new Size(604, 443);
             groupBoxPreview.TabIndex = 1;
             groupBoxPreview.TabStop = false;
             groupBoxPreview.Text = "Podgląd";
@@ -98,7 +100,7 @@
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle());
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle());
-            tableLayoutPanelPreview.Size = new Size(598, 391);
+            tableLayoutPanelPreview.Size = new Size(598, 421);
             tableLayoutPanelPreview.TabIndex = 3;
             // 
             // pictureBoxThumbnail
@@ -108,7 +110,7 @@
             pictureBoxThumbnail.Dock = DockStyle.Fill;
             pictureBoxThumbnail.Location = new Point(3, 3);
             pictureBoxThumbnail.Name = "pictureBoxThumbnail";
-            pictureBoxThumbnail.Size = new Size(592, 341);
+            pictureBoxThumbnail.Size = new Size(592, 371);
             pictureBoxThumbnail.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxThumbnail.TabIndex = 0;
             pictureBoxThumbnail.TabStop = false;
@@ -116,7 +118,7 @@
             // progressBarOutput
             // 
             progressBarOutput.Dock = DockStyle.Top;
-            progressBarOutput.Location = new Point(3, 365);
+            progressBarOutput.Location = new Point(3, 395);
             progressBarOutput.Name = "progressBarOutput";
             progressBarOutput.Size = new Size(592, 23);
             progressBarOutput.TabIndex = 1;
@@ -125,7 +127,7 @@
             // 
             labelFileName.AutoSize = true;
             labelFileName.Dock = DockStyle.Top;
-            labelFileName.Location = new Point(3, 347);
+            labelFileName.Location = new Point(3, 377);
             labelFileName.Name = "labelFileName";
             labelFileName.Size = new Size(592, 15);
             labelFileName.TabIndex = 2;
@@ -165,7 +167,7 @@
             tableLayoutPanel2.AutoSize = true;
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Controls.Add(buttonConsole, 0, 2);
+            tableLayoutPanel2.Controls.Add(buttonNothing, 0, 2);
             tableLayoutPanel2.Controls.Add(buttonSettings, 0, 0);
             tableLayoutPanel2.Controls.Add(buttonActivate, 0, 1);
             tableLayoutPanel2.Dock = DockStyle.Fill;
@@ -178,16 +180,15 @@
             tableLayoutPanel2.Size = new Size(598, 87);
             tableLayoutPanel2.TabIndex = 0;
             // 
-            // buttonConsole
+            // buttonNothing
             // 
-            buttonConsole.Dock = DockStyle.Top;
-            buttonConsole.Location = new Point(3, 61);
-            buttonConsole.Name = "buttonConsole";
-            buttonConsole.Size = new Size(592, 23);
-            buttonConsole.TabIndex = 8;
-            buttonConsole.Text = "Pokaż konsolę";
-            buttonConsole.UseVisualStyleBackColor = true;
-            buttonConsole.Click += buttonConsole_Click;
+            buttonNothing.Dock = DockStyle.Top;
+            buttonNothing.Location = new Point(3, 61);
+            buttonNothing.Name = "buttonNothing";
+            buttonNothing.Size = new Size(592, 23);
+            buttonNothing.TabIndex = 8;
+            buttonNothing.Text = "Na razie nic";
+            buttonNothing.UseVisualStyleBackColor = true;
             // 
             // buttonSettings
             // 
@@ -228,7 +229,7 @@
             // 
             splitContainerOutput.Panel2.Controls.Add(groupBoxPreview);
             splitContainerOutput.Size = new Size(604, 873);
-            splitContainerOutput.SplitterDistance = 450;
+            splitContainerOutput.SplitterDistance = 420;
             splitContainerOutput.SplitterWidth = 10;
             splitContainerOutput.TabIndex = 3;
             splitContainerOutput.DoubleClick += splitContainerOutput_DoubleClick;
@@ -241,7 +242,7 @@
             groupBoxConsole.Margin = new Padding(10, 5, 10, 10);
             groupBoxConsole.Name = "groupBoxConsole";
             groupBoxConsole.Padding = new Padding(7);
-            groupBoxConsole.Size = new Size(604, 450);
+            groupBoxConsole.Size = new Size(604, 420);
             groupBoxConsole.TabIndex = 3;
             groupBoxConsole.TabStop = false;
             groupBoxConsole.Text = "Kolejka";
@@ -268,13 +269,13 @@
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel6.Size = new Size(590, 420);
+            tableLayoutPanel6.Size = new Size(590, 390);
             tableLayoutPanel6.TabIndex = 0;
             // 
             // buttonAddClips
             // 
             buttonAddClips.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonAddClips.Location = new Point(487, 394);
+            buttonAddClips.Location = new Point(487, 364);
             buttonAddClips.Name = "buttonAddClips";
             buttonAddClips.Size = new Size(100, 23);
             buttonAddClips.TabIndex = 15;
@@ -294,7 +295,7 @@
             dataGridViewClips.RowHeadersVisible = false;
             dataGridViewClips.RowTemplate.Height = 90;
             dataGridViewClips.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewClips.Size = new Size(584, 385);
+            dataGridViewClips.Size = new Size(584, 355);
             dataGridViewClips.TabIndex = 16;
             dataGridViewClips.CellContentClick += dataGridViewClips_CellContentClick;
             dataGridViewClips.SelectionChanged += dataGridViewClips_SelectionChanged;
@@ -330,56 +331,70 @@
             ColumnSend.ReadOnly = true;
             ColumnSend.Text = "Wyślij";
             // 
-            // menuStrip1
+            // menuStrip
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { oknaToolStripMenuItem, pomocToolStripMenuItem });
-            menuStrip1.Location = new Point(0, 0);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(624, 24);
-            menuStrip1.TabIndex = 3;
-            menuStrip1.Text = "menuStrip1";
+            menuStrip.Items.AddRange(new ToolStripItem[] { oknaToolStripMenuItem, pomocToolStripMenuItem });
+            menuStrip.Location = new Point(0, 0);
+            menuStrip.Name = "menuStrip";
+            menuStrip.Size = new Size(624, 24);
+            menuStrip.TabIndex = 3;
+            menuStrip.Text = "menuStrip1";
             // 
             // oknaToolStripMenuItem
             // 
-            oknaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { otwórzFolderAppDataToolStripMenuItem, informacjaOWersjiToolStripMenuItem });
+            oknaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuItemVersion, toolStripMenuItemCheckFFmpeg, toolStripMenuItemOpenConsole, toolStripMenuItemOpenAppData });
             oknaToolStripMenuItem.Name = "oknaToolStripMenuItem";
             oknaToolStripMenuItem.Size = new Size(100, 20);
             oknaToolStripMenuItem.Text = "Discord Clipper";
             // 
-            // otwórzFolderAppDataToolStripMenuItem
+            // toolStripMenuItemVersion
             // 
-            otwórzFolderAppDataToolStripMenuItem.Name = "otwórzFolderAppDataToolStripMenuItem";
-            otwórzFolderAppDataToolStripMenuItem.Size = new Size(195, 22);
-            otwórzFolderAppDataToolStripMenuItem.Text = "Otwórz folder AppData";
-            otwórzFolderAppDataToolStripMenuItem.Click += otwórzFolderAppDataToolStripMenuItem_Click;
+            toolStripMenuItemVersion.Name = "toolStripMenuItemVersion";
+            toolStripMenuItemVersion.Size = new Size(216, 22);
+            toolStripMenuItemVersion.Text = "Wersja programu";
+            toolStripMenuItemVersion.Click += toolStripMenuItemVersion_Click;
+            // 
+            // toolStripMenuItemOpenConsole
+            // 
+            toolStripMenuItemOpenConsole.Name = "toolStripMenuItemOpenConsole";
+            toolStripMenuItemOpenConsole.Size = new Size(216, 22);
+            toolStripMenuItemOpenConsole.Text = "Otwórz okno konsoli...";
+            toolStripMenuItemOpenConsole.Click += toolStripMenuItemOpenConsole_Click;
+            // 
+            // toolStripMenuItemOpenAppData
+            // 
+            toolStripMenuItemOpenAppData.Name = "toolStripMenuItemOpenAppData";
+            toolStripMenuItemOpenAppData.Size = new Size(216, 22);
+            toolStripMenuItemOpenAppData.Text = "Otwórz folder AppData...";
+            toolStripMenuItemOpenAppData.Click += toolStripMenuItemOpenAppData_Click;
             // 
             // pomocToolStripMenuItem
             // 
-            pomocToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { instrukcjaToolStripMenuItem, zgłośBłądToolStripMenuItem });
+            pomocToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuItemOpenWiki, toolStripMenuItemOpenIssues });
             pomocToolStripMenuItem.Name = "pomocToolStripMenuItem";
             pomocToolStripMenuItem.Size = new Size(57, 20);
             pomocToolStripMenuItem.Text = "GitHub";
             // 
-            // instrukcjaToolStripMenuItem
+            // toolStripMenuItemOpenWiki
             // 
-            instrukcjaToolStripMenuItem.Name = "instrukcjaToolStripMenuItem";
-            instrukcjaToolStripMenuItem.Size = new Size(210, 22);
-            instrukcjaToolStripMenuItem.Text = "Discord Clipper Wiki";
-            instrukcjaToolStripMenuItem.Click += instrukcjaToolStripMenuItem_Click;
+            toolStripMenuItemOpenWiki.Name = "toolStripMenuItemOpenWiki";
+            toolStripMenuItemOpenWiki.Size = new Size(210, 22);
+            toolStripMenuItemOpenWiki.Text = "Discord Clipper Wiki";
+            toolStripMenuItemOpenWiki.Click += instrukcjaToolStripMenuItem_Click;
             // 
-            // zgłośBłądToolStripMenuItem
+            // toolStripMenuItemOpenIssues
             // 
-            zgłośBłądToolStripMenuItem.Name = "zgłośBłądToolStripMenuItem";
-            zgłośBłądToolStripMenuItem.Size = new Size(210, 22);
-            zgłośBłądToolStripMenuItem.Text = "Zgłoś błąd lub propozycję";
-            zgłośBłądToolStripMenuItem.Click += zgłośBłądToolStripMenuItem_Click;
+            toolStripMenuItemOpenIssues.Name = "toolStripMenuItemOpenIssues";
+            toolStripMenuItemOpenIssues.Size = new Size(210, 22);
+            toolStripMenuItemOpenIssues.Text = "Zgłoś błąd lub propozycję";
+            toolStripMenuItemOpenIssues.Click += zgłośBłądToolStripMenuItem_Click;
             // 
-            // informacjaOWersjiToolStripMenuItem
+            // toolStripMenuItemCheckFFmpeg
             // 
-            informacjaOWersjiToolStripMenuItem.Name = "informacjaOWersjiToolStripMenuItem";
-            informacjaOWersjiToolStripMenuItem.Size = new Size(195, 22);
-            informacjaOWersjiToolStripMenuItem.Text = "Informacja o wersji";
-            informacjaOWersjiToolStripMenuItem.Click += informacjaOWersjiToolStripMenuItem_Click;
+            toolStripMenuItemCheckFFmpeg.Name = "toolStripMenuItemCheckFFmpeg";
+            toolStripMenuItemCheckFFmpeg.Size = new Size(216, 22);
+            toolStripMenuItemCheckFFmpeg.Text = "Sprawdź instalację FFmpeg";
+            toolStripMenuItemCheckFFmpeg.Click += toolStripMenuItemCheckFFmpeg_Click;
             // 
             // FormMain
             // 
@@ -387,9 +402,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(624, 1041);
             Controls.Add(tableLayoutPanelMain);
-            Controls.Add(menuStrip1);
+            Controls.Add(menuStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MainMenuStrip = menuStrip1;
+            MainMenuStrip = menuStrip;
             MinimumSize = new Size(400, 600);
             Name = "FormMain";
             Text = "Discord Clipper";
@@ -411,8 +426,8 @@
             groupBoxConsole.PerformLayout();
             tableLayoutPanel6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridViewClips).EndInit();
-            menuStrip1.ResumeLayout(false);
-            menuStrip1.PerformLayout();
+            menuStrip.ResumeLayout(false);
+            menuStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -432,18 +447,20 @@
         private Button buttonSettings;
         private Button buttonActivate;
         private Button buttonAddClips;
-        private Button buttonConsole;
+        private Button buttonNothing;
         private DataGridView dataGridViewClips;
-        private MenuStrip menuStrip1;
+        private MenuStrip menuStrip;
         private ToolStripMenuItem oknaToolStripMenuItem;
-        private ToolStripMenuItem otwórzFolderAppDataToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItemOpenAppData;
         private ToolStripMenuItem pomocToolStripMenuItem;
-        private ToolStripMenuItem instrukcjaToolStripMenuItem;
-        private ToolStripMenuItem zgłośBłądToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItemOpenWiki;
+        private ToolStripMenuItem toolStripMenuItemOpenIssues;
         private DataGridViewImageColumn Thumbnail;
         private DataGridViewTextBoxColumn ClipName;
         private DataGridViewTextBoxColumn Status;
         private DataGridViewButtonColumn ColumnSend;
-        private ToolStripMenuItem informacjaOWersjiToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItemVersion;
+        private ToolStripMenuItem toolStripMenuItemOpenConsole;
+        private ToolStripMenuItem toolStripMenuItemCheckFFmpeg;
     }
 }

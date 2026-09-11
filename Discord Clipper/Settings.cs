@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
+using static DiscordClipper.Logger;
 
 namespace DiscordClipper
 {
@@ -33,9 +35,12 @@ namespace DiscordClipper
         {
             string settingsFilePath = $"{Application.UserAppDataPath}\\{profileName}.txt";
 
+            Logger.WriteLine($"Wczytywanie ustawień z pliku {settingsFilePath}...", Priority.Info);
+
             // Jeśli plik ustawień nie istnieje, zwróć ustawienia domyślne
             if (!File.Exists(settingsFilePath))
             {
+                Logger.WriteLine($"Plik ustawień {settingsFilePath} nie istnieje.", Priority.Info);
                 return false;
             }
 
@@ -43,11 +48,10 @@ namespace DiscordClipper
 
             if (streamReader == null)
             {
+                Logger.WriteLine($"Obiekt streamReader ma wartość null.", Priority.Error);
+
                 return false;
             }
-
-            // Numer linii
-            int i = 0;
 
             // Tekst linii
             string? line;
@@ -62,6 +66,8 @@ namespace DiscordClipper
                     // Pomiń błędne linie
                     if (parts.Length != 2)
                     {
+                        Logger.WriteLine($"Błędna linia w pliku ustawień: {line}.", Priority.Warning);
+
                         continue;
                     }
 
@@ -85,10 +91,8 @@ namespace DiscordClipper
                 }
                 catch
                 {
-
+                    Logger.WriteLine($"Błąd konwersji linii ustawień: {line}.", Priority.Warning);
                 }
-
-                i++;
             }
 
             // Zamykanie pliku
@@ -101,26 +105,35 @@ namespace DiscordClipper
         {
             string settingsFilePath = $"{Application.UserAppDataPath}\\{profileName}.txt";
 
-            StreamWriter streamWriter = File.CreateText(settingsFilePath);
+            Logger.WriteLine($"Zapisywanie ustawień do pliku {settingsFilePath}...", Priority.Info);
 
-            streamWriter.WriteLine($"ColorMode        = {ColorMode.ToString()}");
+            try
+            {
+                StreamWriter streamWriter = File.CreateText(settingsFilePath);
 
-            streamWriter.WriteLine($"InputFolder      = {InputFolder.ToString()}");
-            streamWriter.WriteLine($"InputFileFormat  = {InputFileFormat.ToString()}");
+                streamWriter.WriteLine($"ColorMode        = {ColorMode.ToString()}");
 
-            streamWriter.WriteLine($"OutputFolder     = {OutputFolder.ToString()}");
-            streamWriter.WriteLine($"OutputFileFormat = {OutputFileFormat.ToString()}");
-            streamWriter.WriteLine($"Resolution       = {Resolution.ToString()}");
-            streamWriter.WriteLine($"FrameRate        = {FrameRate.ToString()}");
-            streamWriter.WriteLine($"Encoder          = {Encoder.ToString()}");
-            streamWriter.WriteLine($"MaxVideoBitrate  = {MaxVideoBitrate.ToString()}");
+                streamWriter.WriteLine($"InputFolder      = {InputFolder.ToString()}");
+                streamWriter.WriteLine($"InputFileFormat  = {InputFileFormat.ToString()}");
 
-            streamWriter.WriteLine($"DiscordWebhook   = {DiscordWebhook.ToString()}");
-            streamWriter.WriteLine($"DiscordMode      = {DiscordMode.ToString()}");
-            streamWriter.WriteLine($"DiscordShortcut  = {DiscordShortcut.ToString()}");
+                streamWriter.WriteLine($"OutputFolder     = {OutputFolder.ToString()}");
+                streamWriter.WriteLine($"OutputFileFormat = {OutputFileFormat.ToString()}");
+                streamWriter.WriteLine($"Resolution       = {Resolution.ToString()}");
+                streamWriter.WriteLine($"FrameRate        = {FrameRate.ToString()}");
+                streamWriter.WriteLine($"Encoder          = {Encoder.ToString()}");
+                streamWriter.WriteLine($"MaxVideoBitrate  = {MaxVideoBitrate.ToString()}");
 
-            streamWriter.Close();
-            streamWriter.Dispose();
+                streamWriter.WriteLine($"DiscordWebhook   = {DiscordWebhook.ToString()}");
+                streamWriter.WriteLine($"DiscordMode      = {DiscordMode.ToString()}");
+                streamWriter.WriteLine($"DiscordShortcut  = {DiscordShortcut.ToString()}");
+
+                streamWriter.Close();
+                streamWriter.Dispose();
+            }
+            catch(Exception ex)
+            {
+                Logger.WriteLine($"Błąd podczas zapisywania ustawień do pliku {settingsFilePath}: {ex.Message}", Priority.Error);
+            }
         }
     }
 }

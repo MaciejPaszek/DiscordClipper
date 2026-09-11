@@ -326,7 +326,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_B71C0CE1B8F94E729EFE95534782D00D"
             {
-            "Name" = "8:Discord Clipper v$(VersionPrefix)"
+            "Name" = "8:Discord Clipper v1.2.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -340,7 +340,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F26C8ABD9A4D490D9EA22B4BD38AAA85"
             {
-            "Name" = "8:Discord Clipper v$(VersionPrefix)"
+            "Name" = "8:Discord Clipper v1.2.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
