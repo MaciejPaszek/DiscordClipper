@@ -2,6 +2,9 @@
 {
     internal static class Logger
     {
+        /// <summary>
+        /// Priorytet logu
+        /// </summary>
         public enum Priority
         {
             Error = 1,
@@ -11,6 +14,9 @@
             Output = 5
         }
 
+        /// <summary>
+        /// Pojedynczy wpis logu
+        /// </summary>
         public class LogData
         {
             public DateTime DateTime { get; set; }
@@ -30,19 +36,59 @@
             }
         }
 
+        /// <summary>
+        /// Kolejka przechowująca logi
+        /// </summary>
         private static Queue<LogData> LogQueue = new Queue<LogData>();
 
+        /// <summary>
+        /// Rozmiar kolejki logów
+        /// </summary>
         public static int QueueSize = 500;
 
-        private static string LogFilePath = $"{Application.UserAppDataPath}\\Discord Clipper.log";
+        /// <summary>
+        /// Ścieżka do pliku logów
+        /// </summary>
+        private static readonly string LogFilePath = $"{Application.UserAppDataPath}\\Discord Clipper.log";
 
-        public static bool LogToFile = true;
         private static StreamWriter? LogFileStreamWriter;
+
         public static event EventHandler<LogData>? LogAdded;
 
         private static void OnLogAdded(LogData logData)
         {
             LogAdded?.Invoke(null, logData);    
+        }
+
+
+        public static void InitializeLogFile()
+        {
+            string productVersion = Application.ProductVersion;
+            
+            string[] versionParts = productVersion.Split('+');
+
+            if (versionParts.Length > 1)
+            {
+                productVersion = versionParts[0];
+            }
+
+            StreamWriter streamWriter = new StreamWriter(LogFilePath, false);
+            streamWriter.WriteLine($"**************************************************");
+            streamWriter.WriteLine($"* Discord Clipper v{productVersion,-30}*");
+            streamWriter.WriteLine($"* {DateTime.Now,-47:yyyy-MM-dd HH:mm:ss}*");
+            streamWriter.WriteLine($"**************************************************");
+
+            streamWriter.Flush();
+            streamWriter.Close();
+        }
+
+        private static void AppendLogToFile(LogData logData)
+        {
+            StreamWriter streamWriter = new StreamWriter(LogFilePath, true);
+            streamWriter.WriteLine(logData.ToString());
+
+            streamWriter.Flush();
+            streamWriter.Close();
         }
 
         /// <summary>
@@ -66,9 +112,7 @@
             OnLogAdded(logData);
 
             // Dodaj nowy log do pliku
-            //StreamWriter writer = new StreamWriter(LogFilePath, true);
-            //writer.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{priority}] {message}");
-            //writer.Close();
+            AppendLogToFile(logData);
         }
 
         /// <summary>

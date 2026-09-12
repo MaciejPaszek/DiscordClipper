@@ -1,7 +1,6 @@
 using DiscordClipper.Properties;
 using System.Diagnostics;
 using static DiscordClipper.FFmpeg;
-using static DiscordClipper.FormConsole;
 using static DiscordClipper.Logger;
 
 namespace DiscordClipper
@@ -137,7 +136,7 @@ namespace DiscordClipper
                     {
                         File.Delete(thumbnailFilePath);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Logger.WriteLine($"Nie można usunąć pliku miniatury: {thumbnailFilePath}: {ex.Message}", Priority.Error);
                         MessageBox.Show($"Nie można usunąć pliku miniatury: {thumbnailFilePath}: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -152,7 +151,16 @@ namespace DiscordClipper
 
         private void toolStripMenuItemVersion_Click(object sender, EventArgs e)
         {
-            MessageBox.Show($"Discord Clipper v{Application.ProductVersion}", "Informacja o wersji", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            string productVersion = Application.ProductVersion;
+
+            string[] versionParts = productVersion.Split('+');
+
+            if (versionParts.Length > 1)
+            {
+                productVersion = versionParts[0];
+            }
+
+            MessageBox.Show($"Discord Clipper v{productVersion}", "Informacja o wersji", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void toolStripMenuItemOpenAppData_Click(object sender, EventArgs e)
@@ -185,6 +193,33 @@ namespace DiscordClipper
             catch (Exception ex)
             {
                 Logger.WriteLine($"Błąd otwierania przeglądarki: {ex.Message}", Priority.Error);
+            }
+        }
+
+        private void toolStripMenuItemCheckFFmpeg_Click(object sender, EventArgs e)
+        {
+            if (FFmpeg == null)
+            {
+                Logger.WriteLine("Obiekt FFmpeg ma wartość null.", Priority.Error);
+                return;
+            }
+
+            string? ffmpegVersion = FFmpeg.Version();
+
+            if (ffmpegVersion != null)
+            {
+                MessageBox.Show($"Program FFmpeg jest zainstalowany. \n\n {ffmpegVersion}", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Program FFmpeg nie jest zainstalowany.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                DialogResult result = MessageBox.Show("Czy chcesz przejść do strony z instrukcją instalacji programu FFmpeg?", "Instalacja", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    OpenBrowser("https://github.com/MaciejPaszek/DiscordClipper/wiki/Instalacja");
+                }
             }
         }
 
@@ -883,24 +918,6 @@ namespace DiscordClipper
             }
 
             SendToDiscord(clip.ClipID, clip.FilePath);
-        }
-
-        private void toolStripMenuItemCheckFFmpeg_Click(object sender, EventArgs e)
-        {
-            if (FFmpeg == null)
-            {
-                Logger.WriteLine("Obiekt FFmpeg ma wartość null.", Priority.Error);
-                return;
-            }
-
-            if (FFmpeg.Version() == 0)
-            {
-                MessageBox.Show("Program FFmpeg jest zainstalowany.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show("Zainstaluj FFmpeg zgodnie z instrukcją na Discord Clipper Wiki.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
     }
 }

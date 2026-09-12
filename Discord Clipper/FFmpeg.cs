@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using static DiscordClipper.Logger;
 
 namespace DiscordClipper
@@ -208,7 +209,7 @@ namespace DiscordClipper
             VideoQueueClipAdded += FFmpeg_VideoQueueClipAdded;
         }
 
-        public int Version()
+        public string? Version()
         {
             Process versionProcess = new Process();
 
@@ -216,10 +217,25 @@ namespace DiscordClipper
             versionProcess.StartInfo.Arguments = "-version";
             versionProcess.StartInfo.UseShellExecute = false;
             versionProcess.StartInfo.CreateNoWindow = true;
+            versionProcess.StartInfo.RedirectStandardOutput = true;
 
             Logger.WriteLine($"Uruchamianie procesu versionProcess...", Priority.Command);
             Logger.WriteLine($"{versionProcess.StartInfo.FileName} {versionProcess.StartInfo.Arguments}", Priority.Command);
-            versionProcess.Start();
+
+
+            try
+            {
+                versionProcess.Start();
+            }
+            catch(Exception ex)
+            {
+                Logger.WriteLine($"Wystąpił błąd podczas uruchamiania procesu versionProcess: {ex.Message}", Priority.Error);
+                return null;
+            }
+            
+            string? line = versionProcess.StandardOutput.ReadLine();
+            versionProcess.StandardOutput.ReadToEnd();
+
             Logger.WriteLine($"Oczekiwanie na zakończenie procesu versionProcess...", Priority.Info);
 
             // Oczekiwanie na zakończenie procesu
@@ -236,10 +252,25 @@ namespace DiscordClipper
             if (exitCode != 0)
             {
                 Logger.WriteLine($"Procesu versionProcess zakończył się z kodem: {exitCode}", Priority.Error);
-                return exitCode;
             }
 
-            return 0;
+            if (line != null)
+            {
+                string[] strings = line.Split(" Copyright ");
+
+                if (strings.Length > 1)
+                {
+                    return $"{strings[0]}\n Copyright {strings[1]}";
+                }
+                else
+                {
+                    return strings[0];
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -265,11 +296,11 @@ namespace DiscordClipper
             if (ThumbnailProcessActive)
             {
                 // Jeśli proces jest uruchomiony, nie uruchamiaj kolejnego
-                Logger.WriteLine("Proces ThumbnailProcess jest aktywny.", Priority.Info);
+                Logger.WriteLine("Kolejka ThumbnailQueue jest już przetwarzana.", Priority.Info);
                 return;
             }
 
-            Logger.WriteLine("Uruchamianie procesu ThumbnailProcess...", Priority.Info);
+            Logger.WriteLine("Przetwarzanie kolejki ThumbnailQueue...", Priority.Info);
 
             // Zaznacz, że proces jest aktywny
             ThumbnailProcessActive = true;
@@ -402,12 +433,12 @@ namespace DiscordClipper
             if (VideoProcessActive)
             {
                 // Jeśli proces jest uruchomiony, nie uruchamiaj kolejnego
-                Logger.WriteLine("Proces VideoProcess jest aktywny.", Priority.Info);
+                Logger.WriteLine("Kolejka VideoQueue jest już przetwarzana.", Priority.Info);
 
                 return;
             }
 
-            Logger.WriteLine("Uruchamianie procesu VideoProcess...", Priority.Info);
+            Logger.WriteLine("Przetwarzanie kolejki VideoQueue...", Priority.Info);
 
             VideoProcessActive = true;
 

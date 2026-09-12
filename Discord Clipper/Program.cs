@@ -10,6 +10,7 @@ namespace DiscordClipper
         [STAThread]
         static void Main()
         {
+            Logger.InitializeLogFile();
             Logger.WriteLine("Uruchamianie programu Discord Clipper...", Priority.Info);
 
             // To customize application configuration such as set high DPI settings or default font,

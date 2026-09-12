@@ -52,12 +52,12 @@
             menuStrip = new MenuStrip();
             oknaToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuItemVersion = new ToolStripMenuItem();
+            toolStripMenuItemCheckFFmpeg = new ToolStripMenuItem();
             toolStripMenuItemOpenConsole = new ToolStripMenuItem();
             toolStripMenuItemOpenAppData = new ToolStripMenuItem();
             pomocToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuItemOpenWiki = new ToolStripMenuItem();
             toolStripMenuItemOpenIssues = new ToolStripMenuItem();
-            toolStripMenuItemCheckFFmpeg = new ToolStripMenuItem();
             groupBoxPreview.SuspendLayout();
             tableLayoutPanelPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxThumbnail).BeginInit();
@@ -81,7 +81,7 @@
             groupBoxPreview.Location = new Point(0, 0);
             groupBoxPreview.Margin = new Padding(10, 5, 10, 10);
             groupBoxPreview.Name = "groupBoxPreview";
-            groupBoxPreview.Size = new Size(604, 443);
+            groupBoxPreview.Size = new Size(604, 455);
             groupBoxPreview.TabIndex = 1;
             groupBoxPreview.TabStop = false;
             groupBoxPreview.Text = "Podgląd";
@@ -100,7 +100,7 @@
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle());
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle());
-            tableLayoutPanelPreview.Size = new Size(598, 421);
+            tableLayoutPanelPreview.Size = new Size(598, 433);
             tableLayoutPanelPreview.TabIndex = 3;
             // 
             // pictureBoxThumbnail
@@ -110,7 +110,7 @@
             pictureBoxThumbnail.Dock = DockStyle.Fill;
             pictureBoxThumbnail.Location = new Point(3, 3);
             pictureBoxThumbnail.Name = "pictureBoxThumbnail";
-            pictureBoxThumbnail.Size = new Size(592, 371);
+            pictureBoxThumbnail.Size = new Size(592, 383);
             pictureBoxThumbnail.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxThumbnail.TabIndex = 0;
             pictureBoxThumbnail.TabStop = false;
@@ -118,7 +118,7 @@
             // progressBarOutput
             // 
             progressBarOutput.Dock = DockStyle.Top;
-            progressBarOutput.Location = new Point(3, 395);
+            progressBarOutput.Location = new Point(3, 407);
             progressBarOutput.Name = "progressBarOutput";
             progressBarOutput.Size = new Size(592, 23);
             progressBarOutput.TabIndex = 1;
@@ -127,7 +127,7 @@
             // 
             labelFileName.AutoSize = true;
             labelFileName.Dock = DockStyle.Top;
-            labelFileName.Location = new Point(3, 377);
+            labelFileName.Location = new Point(3, 389);
             labelFileName.Name = "labelFileName";
             labelFileName.Size = new Size(592, 15);
             labelFileName.TabIndex = 2;
@@ -229,7 +229,7 @@
             // 
             splitContainerOutput.Panel2.Controls.Add(groupBoxPreview);
             splitContainerOutput.Size = new Size(604, 873);
-            splitContainerOutput.SplitterDistance = 420;
+            splitContainerOutput.SplitterDistance = 408;
             splitContainerOutput.SplitterWidth = 10;
             splitContainerOutput.TabIndex = 3;
             splitContainerOutput.DoubleClick += splitContainerOutput_DoubleClick;
@@ -242,7 +242,7 @@
             groupBoxConsole.Margin = new Padding(10, 5, 10, 10);
             groupBoxConsole.Name = "groupBoxConsole";
             groupBoxConsole.Padding = new Padding(7);
-            groupBoxConsole.Size = new Size(604, 420);
+            groupBoxConsole.Size = new Size(604, 408);
             groupBoxConsole.TabIndex = 3;
             groupBoxConsole.TabStop = false;
             groupBoxConsole.Text = "Kolejka";
@@ -269,13 +269,13 @@
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel6.Size = new Size(590, 390);
+            tableLayoutPanel6.Size = new Size(590, 378);
             tableLayoutPanel6.TabIndex = 0;
             // 
             // buttonAddClips
             // 
             buttonAddClips.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonAddClips.Location = new Point(487, 364);
+            buttonAddClips.Location = new Point(487, 352);
             buttonAddClips.Name = "buttonAddClips";
             buttonAddClips.Size = new Size(100, 23);
             buttonAddClips.TabIndex = 15;
@@ -295,7 +295,7 @@
             dataGridViewClips.RowHeadersVisible = false;
             dataGridViewClips.RowTemplate.Height = 90;
             dataGridViewClips.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewClips.Size = new Size(584, 355);
+            dataGridViewClips.Size = new Size(584, 343);
             dataGridViewClips.TabIndex = 16;
             dataGridViewClips.CellContentClick += dataGridViewClips_CellContentClick;
             dataGridViewClips.SelectionChanged += dataGridViewClips_SelectionChanged;
@@ -351,8 +351,15 @@
             // 
             toolStripMenuItemVersion.Name = "toolStripMenuItemVersion";
             toolStripMenuItemVersion.Size = new Size(216, 22);
-            toolStripMenuItemVersion.Text = "Wersja programu";
+            toolStripMenuItemVersion.Text = "Sprawdź wersję programu";
             toolStripMenuItemVersion.Click += toolStripMenuItemVersion_Click;
+            // 
+            // toolStripMenuItemCheckFFmpeg
+            // 
+            toolStripMenuItemCheckFFmpeg.Name = "toolStripMenuItemCheckFFmpeg";
+            toolStripMenuItemCheckFFmpeg.Size = new Size(216, 22);
+            toolStripMenuItemCheckFFmpeg.Text = "Sprawdź instalację FFmpeg";
+            toolStripMenuItemCheckFFmpeg.Click += toolStripMenuItemCheckFFmpeg_Click;
             // 
             // toolStripMenuItemOpenConsole
             // 
@@ -388,13 +395,6 @@
             toolStripMenuItemOpenIssues.Size = new Size(210, 22);
             toolStripMenuItemOpenIssues.Text = "Zgłoś błąd lub propozycję";
             toolStripMenuItemOpenIssues.Click += zgłośBłądToolStripMenuItem_Click;
-            // 
-            // toolStripMenuItemCheckFFmpeg
-            // 
-            toolStripMenuItemCheckFFmpeg.Name = "toolStripMenuItemCheckFFmpeg";
-            toolStripMenuItemCheckFFmpeg.Size = new Size(216, 22);
-            toolStripMenuItemCheckFFmpeg.Text = "Sprawdź instalację FFmpeg";
-            toolStripMenuItemCheckFFmpeg.Click += toolStripMenuItemCheckFFmpeg_Click;
             // 
             // FormMain
             // 

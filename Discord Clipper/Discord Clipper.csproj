@@ -9,7 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>Discord Clipper</AssemblyName>
     <ApplicationIcon>Resources\Discord Clipper.ico</ApplicationIcon>
-    <Version>1.2.1</Version>
+    <Version>1.2.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

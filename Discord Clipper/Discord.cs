@@ -125,76 +125,70 @@ namespace DiscordClipper
                 return;
             }
 
-            try
-            {
-                if (!File.Exists(clip.FilePath))
-                {
-                    OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
-
-                    Logger.WriteLine($"Klip \"{clip.FilePath}\" nie istnieje.", Priority.Error);
-
-                    return;
-                }
-
-                using HttpClient client = new HttpClient();
-
-                using MultipartFormDataContent form = new MultipartFormDataContent();
-
-                // Wiadomość
-                form.Add(new StringContent($":clapper: **{Path.GetFileName(clip.FilePath)}**"), "content");
-
-                // Plik
-
-                byte[] fileBytes;
-
-                try
-                {
-                    fileBytes = await File.ReadAllBytesAsync(clip.FilePath);
-                }
-                catch(Exception ex)
-                {
-                    Logger.WriteLine($"Błąd podczas odczytywania pliku \"{clip.FilePath}\": {ex.Message}", Priority.Error);
-                    OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
-                    return;
-                }
-
-                ByteArrayContent fileContent = new ByteArrayContent(fileBytes);
-
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue("video/mp4");
-
-                form.Add(fileContent, "files[0]", Path.GetFileName(clip.FilePath));
-
-                HttpResponseMessage response;
-                try
-                {
-                    response = await client.PostAsync(WebhookURL, form);
-                }
-                catch (HttpRequestException ex)
-                {
-                    Logger.WriteLine($"Błąd podczas wysyłania pliku \"{clip.FilePath}\" do Discord: {ex.Message}", Priority.Error);
-                    OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
-                    return;
-                }
-
-                if (response.IsSuccessStatusCode)
-                {
-                    OnClipSent(new ClipSentEventArgs(clip.ClipID, clip.FilePath));
-
-                    Logger.WriteLine($"Klip \"{clip.FilePath}\" został wysłany.", Priority.Info);
-                }
-                else
-                {
-                    string error = await response.Content.ReadAsStringAsync();
-
-                    OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
-                    Logger.WriteLine($"Plik \"{clip.FilePath}\" nie został wysłany - HTTP {response.StatusCode}: {error}", Priority.Error);
-                }
-            }
-            catch (Exception ex)
+            
+            if (!File.Exists(clip.FilePath))
             {
                 OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
-                Logger.WriteLine($"Błąd podczas wysyłania pliku \"{clip.FilePath}\": {ex.Message}", Priority.Error);
+
+                Logger.WriteLine($"Klip \"{clip.FilePath}\" nie istnieje.", Priority.Error);
+
+                return;
             }
+
+            using HttpClient client = new HttpClient();
+
+            using MultipartFormDataContent form = new MultipartFormDataContent();
+
+            // Wiadomość
+            form.Add(new StringContent($":clapper: **{Path.GetFileName(clip.FilePath)}**"), "content");
+
+            // Plik
+
+            byte[] fileBytes;
+
+            try
+            {
+                fileBytes = await File.ReadAllBytesAsync(clip.FilePath);
+            }
+            catch(Exception ex)
+            {
+                Logger.WriteLine($"Błąd podczas odczytywania pliku \"{clip.FilePath}\": {ex.Message}", Priority.Error);
+                OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
+                return;
+            }
+
+            ByteArrayContent fileContent = new ByteArrayContent(fileBytes);
+
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue("video/mp4");
+
+            form.Add(fileContent, "files[0]", Path.GetFileName(clip.FilePath));
+
+            HttpResponseMessage response;
+            try
+            {
+                response = await client.PostAsync(WebhookURL, form);
+            }
+            catch (HttpRequestException ex)
+            {
+                Logger.WriteLine($"Błąd podczas wysyłania pliku \"{clip.FilePath}\" do Discord: {ex.Message}", Priority.Error);
+                OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
+                return;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                OnClipSent(new ClipSentEventArgs(clip.ClipID, clip.FilePath));
+
+                Logger.WriteLine($"Klip \"{clip.FilePath}\" został wysłany.", Priority.Info);
+            }
+            else
+            {
+                string error = await response.Content.ReadAsStringAsync();
+
+                OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
+                Logger.WriteLine($"Plik \"{clip.FilePath}\" nie został wysłany - HTTP {response.StatusCode}: {error}", Priority.Error);
+            }
+            
         }
     }
 }
