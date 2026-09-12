@@ -391,7 +391,9 @@ namespace DiscordClipper
             Logger.WriteLine($"Dodawanie klipu {clip.FilePath} do kolejki VideoQueue...", Priority.Info);
 
             // Dodaj do kolejki video
+            VideoQueueMutex.WaitOne();
             VideoQueue.Enqueue(clip);
+            VideoQueueMutex.ReleaseMutex();
 
             // Obudź kolejkę VideoQueue
             Task.Run(() => OnVideoQueueClipAdded(new EventArgs()));

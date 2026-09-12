@@ -49,10 +49,11 @@ namespace DiscordClipper
         }
 
         private Queue<Clip> DiscordQueue = new Queue<Clip>();
-        /// <summary>
-        /// Flaga
-        /// </summary>
-        private bool DiscordProcessActive = false;
+        private Mutex DiscordQueueMutex = new Mutex();
+
+        private bool DiscordQueueAwake = false;
+        private Mutex DiscordQueueAwakeMutex = new Mutex();
+
 
         public string WebhookURL = string.Empty;
 
@@ -66,7 +67,9 @@ namespace DiscordClipper
             Logger.WriteLine($"Dodawanie klipu \"{clipFilePath}\" do kolejki DiscordQueue...", Priority.Info);
 
             // Dodaj nowy klip do kolejki
+            DiscordQueueMutex.WaitOne();
             DiscordQueue.Enqueue(new Clip(clipID, clipFilePath));
+            DiscordQueueMutex.ReleaseMutex();
 
             // Obudź kolejkę
             Task.Run(() => OnVideoQueueClipAdded(new EventArgs()));
@@ -76,42 +79,50 @@ namespace DiscordClipper
 
         private void Discord_VideoQueueClipAdded(object? sender, EventArgs e)
         {
-            if (DiscordProcessActive)
+            // Sprawdź, czy kolejka jest obudzona
+            DiscordQueueAwakeMutex.WaitOne();
+            if (DiscordQueueAwake)
             {
-                // Jeśli proces jest uruchomiony, nie uruchamiaj kolejnego
-                Logger.WriteLine("Proces Discord jest aktywny.", Priority.Info);
-
+                // Kolejka jest już obudzona, zwolnij mutex i wyjdź z metody
+                DiscordQueueAwakeMutex.ReleaseMutex();
+                Logger.WriteLine($"Kolejka DiscordQueue jest już aktywna.", Priority.Info);
                 return;
             }
 
-            Logger.WriteLine("Uruchamianie procesu Discord...", Priority.Info);
+            // Kolejka się budzi
+            DiscordQueueAwake = true;
+            DiscordQueueAwakeMutex.ReleaseMutex();
 
-            DiscordProcessActive = true;
+            Logger.WriteLine($"Kolejka DiscordQueue została aktywowana.", Priority.Info);
 
-            // Wyczyść całą kolejkę
-            while (DiscordQueue.Count > 0)
+            // Liczba elementów w kolejce
+            DiscordQueueMutex.WaitOne();
+            int discordQueueCount = DiscordQueue.Count;
+            DiscordQueueMutex.ReleaseMutex();
+
+            while (discordQueueCount > 0)
             {
-                Logger.WriteLine($"Liczba elementów w kolejce DiscordQueue: {DiscordQueue.Count}", Priority.Info);
+                Logger.WriteLine($"Liczba elementów w kolejce DiscordQueue: {discordQueueCount}", Priority.Info);
 
-                Clip clip;
-
-                try
-                {
-                    clip = DiscordQueue.Dequeue();
-                }
-
-                catch
-                {
-                    Logger.WriteLine($"Nie można pobrać klipu z kolejki DiscordQueue.", Priority.Warning);
-                    continue;
-                }
+                DiscordQueueMutex.WaitOne();
+                Clip clip = DiscordQueue.Dequeue();
+                DiscordQueueMutex.ReleaseMutex();
 
                 SendVideo(clip);
+
+                DiscordQueueMutex.WaitOne();
+                discordQueueCount = DiscordQueue.Count;
+                DiscordQueueMutex.ReleaseMutex();
             }
 
             Logger.WriteLine($"Kolejka DiscordQueue jest pusta.", Priority.Info);
 
-            DiscordProcessActive = false;
+            // Kolejka jest wyłączana
+            DiscordQueueAwakeMutex.WaitOne();
+            DiscordQueueAwake = false;
+            DiscordQueueAwakeMutex.ReleaseMutex();
+
+            Logger.WriteLine($"Kolejka DiscordQueue została wyłączona.", Priority.Info);
         }
 
         public async void SendVideo(Clip clip)
@@ -125,7 +136,6 @@ namespace DiscordClipper
                 return;
             }
 
-            
             if (!File.Exists(clip.FilePath))
             {
                 OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
@@ -188,7 +198,6 @@ namespace DiscordClipper
                 OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
                 Logger.WriteLine($"Plik \"{clip.FilePath}\" nie został wysłany - HTTP {response.StatusCode}: {error}", Priority.Error);
             }
-            
         }
     }
 }

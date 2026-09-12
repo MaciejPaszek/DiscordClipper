@@ -21,7 +21,6 @@ namespace DiscordClipper
 
         public string DiscordWebhook = string.Empty;
         public int DiscordMode = 0;
-        public string DiscordShortcut = string.Empty;
 
         public Settings(string profileName)
         {
@@ -86,7 +85,6 @@ namespace DiscordClipper
 
                     if (name == "DiscordWebhook") { DiscordWebhook = value; }
                     if (name == "DiscordMode") { DiscordMode = Convert.ToInt32(value); }
-                    if (name == "DiscordShortcut") { DiscordShortcut = value; }
                 }
                 catch
                 {
@@ -126,7 +124,6 @@ namespace DiscordClipper
 
                 streamWriter.WriteLine($"DiscordWebhook   = {DiscordWebhook.ToString()}");
                 streamWriter.WriteLine($"DiscordMode      = {DiscordMode.ToString()}");
-                streamWriter.WriteLine($"DiscordShortcut  = {DiscordShortcut.ToString()}");
 
                 streamWriter.Close();
                 streamWriter.Dispose();
