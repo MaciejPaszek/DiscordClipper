@@ -115,7 +115,6 @@ namespace DiscordClipper
                     if (row.Cells[0].Value is Bitmap bitmap)
                     {
                         bitmap.Dispose();
-                        bitmap = null;
                     }
                 }
             }
@@ -448,7 +447,8 @@ namespace DiscordClipper
             FFmpeg.ResolutionName = FFmpeg.Resolutions[settings.Resolution].Name;
             FFmpeg.Resolution = FFmpeg.Resolutions[settings.Resolution].Value;
             FFmpeg.Encoder = FFmpeg.Encoders[settings.Encoder].Value;
-            FFmpeg.MaxVideoBitrate = settings.MaxVideoBitrate.ToString();
+            FFmpeg.VideoBitrateLimit = settings.VideoBitrateLimit.ToString();
+            FFmpeg.VideoBitrateLimitEnabled = settings.VideoBitrateLimitEnabled;
 
             if (Discord == null)
             {
@@ -589,13 +589,11 @@ namespace DiscordClipper
             {
                 if (value > progressBarOutput.Maximum)
                 {
-                    Logger.WriteLine($"Wartość paska postępu ({value}) jest większa niż maksymalna ({progressBarOutput.Maximum}). Ustawiono wartość na maksymalną.", Priority.Warning);
                     progressBarOutput.Maximum = value;
                 }
 
                 try
                 {
-                    Logger.WriteLine($"Maximum: {progressBarOutput.Maximum}, Value: {value}", Priority.Info);
                     progressBarOutput.Value = value;
                 }
                 catch (Exception ex)
@@ -620,11 +618,8 @@ namespace DiscordClipper
             {
                 try
                 {
-                    Logger.WriteLine($"Maximum: {maximum}, Value: {value}", Priority.Info);
-
                     if(value > maximum)
                     {
-                        Logger.WriteLine($"Wartość paska postępu ({value}) jest większa niż maksymalna ({maximum}). Ustawiono wartość na maksymalną.", Priority.Warning);
                         maximum = value;
                     }
 
@@ -769,7 +764,7 @@ namespace DiscordClipper
             try
             {
                 splitContainerOutput.SplitterDistance = newSplitterDistance;
-
+                //Logger.WriteLine($"newSplitterDistance = {newSplitterDistance}", Priority.Info);
             }
             catch (Exception ex)
             {

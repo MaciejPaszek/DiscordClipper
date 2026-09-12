@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
-using static DiscordClipper.Logger;
+﻿using static DiscordClipper.Logger;
 
 namespace DiscordClipper
 {
@@ -17,10 +13,11 @@ namespace DiscordClipper
 
         public string OutputFolder = string.Empty;
         public int OutputFileFormat = 0;
-        public int Resolution = 2;
+        public int Resolution = 4;
         public int FrameRate = 1;
         public int Encoder = 3;
-        public int MaxVideoBitrate = 2600;
+        public int VideoBitrateLimit = 2500;
+        public bool VideoBitrateLimitEnabled = true;
 
         public string DiscordWebhook = string.Empty;
         public int DiscordMode = 0;
@@ -84,6 +81,8 @@ namespace DiscordClipper
                     if (name == "Resolution") { Resolution = Convert.ToInt32(value); }
                     if (name == "FrameRate") { FrameRate = Convert.ToInt32(value); }
                     if (name == "Encoder") { Encoder = Convert.ToInt32(value); }
+                    if (name == "VideoBitrateLimit") { VideoBitrateLimit = Convert.ToInt32(value); }
+                    if (name == "VideoBitrateLimitEnabled") { VideoBitrateLimitEnabled = Convert.ToBoolean(value); }
 
                     if (name == "DiscordWebhook") { DiscordWebhook = value; }
                     if (name == "DiscordMode") { DiscordMode = Convert.ToInt32(value); }
@@ -121,7 +120,9 @@ namespace DiscordClipper
                 streamWriter.WriteLine($"Resolution       = {Resolution.ToString()}");
                 streamWriter.WriteLine($"FrameRate        = {FrameRate.ToString()}");
                 streamWriter.WriteLine($"Encoder          = {Encoder.ToString()}");
-                streamWriter.WriteLine($"MaxVideoBitrate  = {MaxVideoBitrate.ToString()}");
+
+                streamWriter.WriteLine($"VideoBitrateLimit         = {VideoBitrateLimit.ToString()}");
+                streamWriter.WriteLine($"VideoBitrateLimitEnabled  = {VideoBitrateLimitEnabled.ToString()}");
 
                 streamWriter.WriteLine($"DiscordWebhook   = {DiscordWebhook.ToString()}");
                 streamWriter.WriteLine($"DiscordMode      = {DiscordMode.ToString()}");

@@ -37,7 +37,6 @@
             tableLayoutPanelMain = new TableLayoutPanel();
             groupBox2 = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
-            buttonNothing = new Button();
             buttonSettings = new Button();
             buttonActivate = new Button();
             splitContainerOutput = new SplitContainer();
@@ -81,7 +80,7 @@
             groupBoxPreview.Location = new Point(0, 0);
             groupBoxPreview.Margin = new Padding(10, 5, 10, 10);
             groupBoxPreview.Name = "groupBoxPreview";
-            groupBoxPreview.Size = new Size(604, 455);
+            groupBoxPreview.Size = new Size(604, 406);
             groupBoxPreview.TabIndex = 1;
             groupBoxPreview.TabStop = false;
             groupBoxPreview.Text = "Podgląd";
@@ -100,7 +99,7 @@
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle());
             tableLayoutPanelPreview.RowStyles.Add(new RowStyle());
-            tableLayoutPanelPreview.Size = new Size(598, 433);
+            tableLayoutPanelPreview.Size = new Size(598, 384);
             tableLayoutPanelPreview.TabIndex = 3;
             // 
             // pictureBoxThumbnail
@@ -110,7 +109,7 @@
             pictureBoxThumbnail.Dock = DockStyle.Fill;
             pictureBoxThumbnail.Location = new Point(3, 3);
             pictureBoxThumbnail.Name = "pictureBoxThumbnail";
-            pictureBoxThumbnail.Size = new Size(592, 383);
+            pictureBoxThumbnail.Size = new Size(592, 334);
             pictureBoxThumbnail.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxThumbnail.TabIndex = 0;
             pictureBoxThumbnail.TabStop = false;
@@ -118,7 +117,7 @@
             // progressBarOutput
             // 
             progressBarOutput.Dock = DockStyle.Top;
-            progressBarOutput.Location = new Point(3, 407);
+            progressBarOutput.Location = new Point(3, 358);
             progressBarOutput.Name = "progressBarOutput";
             progressBarOutput.Size = new Size(592, 23);
             progressBarOutput.TabIndex = 1;
@@ -127,7 +126,7 @@
             // 
             labelFileName.AutoSize = true;
             labelFileName.Dock = DockStyle.Top;
-            labelFileName.Location = new Point(3, 389);
+            labelFileName.Location = new Point(3, 340);
             labelFileName.Name = "labelFileName";
             labelFileName.Size = new Size(592, 15);
             labelFileName.TabIndex = 2;
@@ -146,7 +145,7 @@
             tableLayoutPanelMain.RowCount = 2;
             tableLayoutPanelMain.RowStyles.Add(new RowStyle());
             tableLayoutPanelMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanelMain.Size = new Size(624, 1017);
+            tableLayoutPanelMain.Size = new Size(624, 897);
             tableLayoutPanelMain.TabIndex = 2;
             // 
             // groupBox2
@@ -157,7 +156,7 @@
             groupBox2.Location = new Point(10, 10);
             groupBox2.Margin = new Padding(10);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(604, 109);
+            groupBox2.Size = new Size(604, 80);
             groupBox2.TabIndex = 4;
             groupBox2.TabStop = false;
             groupBox2.Text = "Aplikacja";
@@ -167,28 +166,16 @@
             tableLayoutPanel2.AutoSize = true;
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Controls.Add(buttonNothing, 0, 2);
             tableLayoutPanel2.Controls.Add(buttonSettings, 0, 0);
             tableLayoutPanel2.Controls.Add(buttonActivate, 0, 1);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(3, 19);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 3;
+            tableLayoutPanel2.RowCount = 2;
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
-            tableLayoutPanel2.RowStyles.Add(new RowStyle());
-            tableLayoutPanel2.Size = new Size(598, 87);
+            tableLayoutPanel2.Size = new Size(598, 58);
             tableLayoutPanel2.TabIndex = 0;
-            // 
-            // buttonNothing
-            // 
-            buttonNothing.Dock = DockStyle.Top;
-            buttonNothing.Location = new Point(3, 61);
-            buttonNothing.Name = "buttonNothing";
-            buttonNothing.Size = new Size(592, 23);
-            buttonNothing.TabIndex = 8;
-            buttonNothing.Text = "Na razie nic";
-            buttonNothing.UseVisualStyleBackColor = true;
             // 
             // buttonSettings
             // 
@@ -216,7 +203,7 @@
             // 
             splitContainerOutput.Dock = DockStyle.Fill;
             splitContainerOutput.FixedPanel = FixedPanel.Panel2;
-            splitContainerOutput.Location = new Point(10, 134);
+            splitContainerOutput.Location = new Point(10, 105);
             splitContainerOutput.Margin = new Padding(10, 5, 10, 10);
             splitContainerOutput.Name = "splitContainerOutput";
             splitContainerOutput.Orientation = Orientation.Horizontal;
@@ -228,8 +215,8 @@
             // splitContainerOutput.Panel2
             // 
             splitContainerOutput.Panel2.Controls.Add(groupBoxPreview);
-            splitContainerOutput.Size = new Size(604, 873);
-            splitContainerOutput.SplitterDistance = 408;
+            splitContainerOutput.Size = new Size(604, 782);
+            splitContainerOutput.SplitterDistance = 366;
             splitContainerOutput.SplitterWidth = 10;
             splitContainerOutput.TabIndex = 3;
             splitContainerOutput.DoubleClick += splitContainerOutput_DoubleClick;
@@ -242,7 +229,7 @@
             groupBoxConsole.Margin = new Padding(10, 5, 10, 10);
             groupBoxConsole.Name = "groupBoxConsole";
             groupBoxConsole.Padding = new Padding(7);
-            groupBoxConsole.Size = new Size(604, 408);
+            groupBoxConsole.Size = new Size(604, 366);
             groupBoxConsole.TabIndex = 3;
             groupBoxConsole.TabStop = false;
             groupBoxConsole.Text = "Kolejka";
@@ -269,13 +256,13 @@
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel6.Size = new Size(590, 378);
+            tableLayoutPanel6.Size = new Size(590, 336);
             tableLayoutPanel6.TabIndex = 0;
             // 
             // buttonAddClips
             // 
             buttonAddClips.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttonAddClips.Location = new Point(487, 352);
+            buttonAddClips.Location = new Point(487, 310);
             buttonAddClips.Name = "buttonAddClips";
             buttonAddClips.Size = new Size(100, 23);
             buttonAddClips.TabIndex = 15;
@@ -295,7 +282,7 @@
             dataGridViewClips.RowHeadersVisible = false;
             dataGridViewClips.RowTemplate.Height = 90;
             dataGridViewClips.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewClips.Size = new Size(584, 343);
+            dataGridViewClips.Size = new Size(584, 301);
             dataGridViewClips.TabIndex = 16;
             dataGridViewClips.CellContentClick += dataGridViewClips_CellContentClick;
             dataGridViewClips.SelectionChanged += dataGridViewClips_SelectionChanged;
@@ -400,12 +387,12 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(624, 1041);
+            ClientSize = new Size(624, 921);
             Controls.Add(tableLayoutPanelMain);
             Controls.Add(menuStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip;
-            MinimumSize = new Size(400, 600);
+            MinimumSize = new Size(400, 700);
             Name = "FormMain";
             Text = "Discord Clipper";
             FormClosed += FormMain_FormClosed;
@@ -447,7 +434,6 @@
         private Button buttonSettings;
         private Button buttonActivate;
         private Button buttonAddClips;
-        private Button buttonNothing;
         private DataGridView dataGridViewClips;
         private MenuStrip menuStrip;
         private ToolStripMenuItem oknaToolStripMenuItem;

@@ -53,7 +53,8 @@
             comboBoxResolution.SelectedIndex = settings.Resolution;
             comboBoxFrameRate.SelectedIndex = settings.FrameRate;
             comboBoxEncoder.SelectedIndex = settings.Encoder;
-            numericUpDownMaxVideoBitrate.Value = settings.MaxVideoBitrate;
+            numericUpDownVideoBitrateLimit.Value = settings.VideoBitrateLimit;
+            checkBoxVideoBitrateLimitEnabled.Checked = settings.VideoBitrateLimitEnabled;
 
             textBoxDiscordWebhook.Text = settings.DiscordWebhook;
             comboBoxDiscordMode.SelectedIndex = settings.DiscordMode;
@@ -132,7 +133,8 @@
             Settings.Resolution = comboBoxResolution.SelectedIndex;
             Settings.FrameRate = comboBoxFrameRate.SelectedIndex;
             Settings.Encoder = comboBoxEncoder.SelectedIndex;
-            Settings.MaxVideoBitrate = (int)numericUpDownMaxVideoBitrate.Value;
+            Settings.VideoBitrateLimit = (int)numericUpDownVideoBitrateLimit.Value;
+            Settings.VideoBitrateLimitEnabled = checkBoxVideoBitrateLimitEnabled.Checked;
 
             Settings.DiscordWebhook = textBoxDiscordWebhook.Text;
             Settings.DiscordMode = comboBoxDiscordMode.SelectedIndex;
@@ -146,14 +148,9 @@
         {
             CheckBox checkBox = (CheckBox)sender;
 
-            if(checkBox == checkBoxLimitVideoBitrate)
+            if(checkBox == checkBoxVideoBitrateLimitEnabled)
             {
-                numericUpDownMaxVideoBitrate.Enabled = checkBox.Checked;
-            }
-
-            if (checkBox == checkBoxLimitAudioBitrate)
-            {
-                numericUpDownMaxAudioBitrate.Enabled = checkBox.Checked;
+                numericUpDownVideoBitrateLimit.Enabled = checkBox.Checked;
             }
         }
     }

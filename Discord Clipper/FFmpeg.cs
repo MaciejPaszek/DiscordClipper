@@ -62,7 +62,8 @@ namespace DiscordClipper
         public string ResolutionName = string.Empty;
         public string FrameRate = string.Empty;
         public string Encoder = string.Empty;
-        public string MaxVideoBitrate = string.Empty;
+        public string VideoBitrateLimit = string.Empty;
+        public bool VideoBitrateLimitEnabled = true;
 
         /// <summary>
         /// Zdarzenia
@@ -440,9 +441,9 @@ namespace DiscordClipper
                 return;
             }
 
-            Logger.WriteLine("Przetwarzanie kolejki VideoQueue...", Priority.Info);
-
             VideoProcessActive = true;
+
+            Logger.WriteLine("Przetwarzanie kolejki VideoQueue...", Priority.Info);
 
             // Wyczyść całą kolejkę
             while (VideoQueue.Count > 0)
@@ -463,11 +464,14 @@ namespace DiscordClipper
                 }
 
                 CreateVideo(clip);
+
+                if (VideoQueue.Count == 0)
+                {
+                    VideoProcessActive = false;
+                }
             }
 
             Logger.WriteLine($"Kolejka VideoQueue jest pusta.", Priority.Info);
-
-            VideoProcessActive = false;
         }
 
         /// <summary>
@@ -641,7 +645,16 @@ namespace DiscordClipper
             // Proces FFmpeg
             Process videoProcess = new Process();
 
-            string command = $"-hide_banner -progress pipe:1 -y -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -maxrate {MaxVideoBitrate}k -c:a copy \"{outputFilePath}\"";
+            string command;
+
+            if(VideoBitrateLimitEnabled)
+            {
+                command = $"-hide_banner -progress pipe:1 -y -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -maxrate {VideoBitrateLimit}k -c:a copy \"{outputFilePath}\"";
+            }
+            else
+            {
+                command = $"-hide_banner -progress pipe:1 -y -i \"{inputFilePath}\" -r {FrameRate} -s {Resolution} -c:v {Encoder} -c:a copy \"{outputFilePath}\"";
+            }
 
             videoProcess.StartInfo.FileName = "ffmpeg.exe";
             videoProcess.StartInfo.Arguments = command;

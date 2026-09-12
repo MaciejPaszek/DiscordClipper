@@ -168,7 +168,7 @@ namespace DiscordClipper
             {
                 response = await client.PostAsync(WebhookURL, form);
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
                 Logger.WriteLine($"Błąd podczas wysyłania pliku \"{clip.FilePath}\" do Discord: {ex.Message}", Priority.Error);
                 OnDiscordError(new DiscordErrorEventArgs(clip.ClipID));
