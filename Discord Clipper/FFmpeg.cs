@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using static DiscordClipper.FFmpeg;
 using static DiscordClipper.Logger;
 
 namespace DiscordClipper
@@ -190,16 +191,23 @@ namespace DiscordClipper
         /// Kolejka dla miniatur
         /// </summary>
         private Queue<Clip> ThumbnailQueue = new Queue<Clip>();
+        private Mutex ThumbnailQueueMutex = new Mutex();
+
+        private bool ThumbnailQueueAwake = false;
+        private Mutex ThumbnailQueueAwakeMutex = new Mutex();
 
         /// <summary>
         /// Kolejka klipów
         /// </summary>
         private Queue<Clip> VideoQueue = new Queue<Clip>();
+        private Mutex VideoQueueMutex = new Mutex();
+
+        private bool VideoQueueAwake = false;
+        private Mutex VideoQueueAwakeMutex = new Mutex();
+
         /// <summary>
         /// Flaga
         /// </summary>
-        private bool VideoProcessActive = false;
-        private bool ThumbnailProcessActive = false;
 
         /// <summary>
         /// Konstruktor klasy FFmpeg
@@ -284,7 +292,9 @@ namespace DiscordClipper
             Logger.WriteLine($"Dodawanie klipu {clipFilePath} do kolejki ThumbnailQueue...", Priority.Info);
 
             // Dodaj nowy klip do kolejki
+            ThumbnailQueueMutex.WaitOne();
             ThumbnailQueue.Enqueue(new Clip(clipID, clipFilePath));
+            ThumbnailQueueMutex.ReleaseMutex();
 
             // Obudź kolejkę
             Task.Run(() => OnThumbnailQueueClipAdded(new EventArgs()));
@@ -294,44 +304,50 @@ namespace DiscordClipper
 
         private void FFmpeg_ThumnailQueueClipAdded(object? sender, EventArgs e)
         {
-            if (ThumbnailProcessActive)
+            // Sprawdź, czy kolejka jest obudzona
+            ThumbnailQueueAwakeMutex.WaitOne();
+            if(ThumbnailQueueAwake)
             {
-                // Jeśli proces jest uruchomiony, nie uruchamiaj kolejnego
-                Logger.WriteLine("Kolejka ThumbnailQueue jest już przetwarzana.", Priority.Info);
-                //return;
+                // Kolejka jest już obudzona, zwolnij mutex i wyjdź z metody
+                ThumbnailQueueAwakeMutex.ReleaseMutex();
+                Logger.WriteLine($"Kolejka ThumbnailQueue jest już aktywna.", Priority.Info);
+                return;
             }
-            ThumbnailProcessActive = true;
-            Logger.WriteLine("Przetwarzanie kolejki ThumbnailQueue...", Priority.Info);
 
-            // Zaznacz, że proces jest aktywny
-            
+            // Kolejka się budzi
+            ThumbnailQueueAwake = true;
+            ThumbnailQueueAwakeMutex.ReleaseMutex();
 
-            // Wyczyść całą kolejkę
-            while (ThumbnailQueue.Count > 0)
+            Logger.WriteLine($"Kolejka ThumbnailQueue została aktywowana.", Priority.Info);
+
+            // Liczba elementów w kolejce
+            ThumbnailQueueMutex.WaitOne();
+            int thumbnailQueueCount = ThumbnailQueue.Count;
+            ThumbnailQueueMutex.ReleaseMutex();
+
+            while(thumbnailQueueCount > 0)
             {
-                Logger.WriteLine($"Liczba elementów w kolejce ThumbnailQueue: {ThumbnailQueue.Count}", Priority.Info);
+                Logger.WriteLine($"Liczba elementów w kolejce ThumbnailQueue: {thumbnailQueueCount}", Priority.Info);
 
-                Clip clip;
-
-                try
-                {
-                    clip = ThumbnailQueue.Dequeue();
-                }
-                catch
-                {
-                    Logger.WriteLine($"Nie udało się pobrać klipu z kolejki ThumbnailQueue.", Priority.Error);
-                    continue;
-                }
+                ThumbnailQueueMutex.WaitOne();
+                Clip clip = ThumbnailQueue.Dequeue();
+                ThumbnailQueueMutex.ReleaseMutex();
 
                 CreateThumbnail(clip);
 
-                if(ThumbnailQueue.Count == 0)
-                {
-                    ThumbnailProcessActive = false;
-                }
+                ThumbnailQueueMutex.WaitOne();
+                thumbnailQueueCount = ThumbnailQueue.Count;
+                ThumbnailQueueMutex.ReleaseMutex();
             }
 
-            Logger.WriteLine("Kolejka ThumbnailQueue jest pusta.", Priority.Info);
+            Logger.WriteLine($"Kolejka ThumbnailQueue jest pusta.", Priority.Info);
+
+            // Kolejka jest wyłączana
+            ThumbnailQueueAwakeMutex.WaitOne();
+            ThumbnailQueueAwake = false;
+            ThumbnailQueueAwakeMutex.ReleaseMutex();
+
+            Logger.WriteLine($"Kolejka ThumbnailQueue została wyłączona.", Priority.Info);
         }
 
         /// <summary>
@@ -433,45 +449,50 @@ namespace DiscordClipper
         /// <param name="e"></param>
         private void FFmpeg_VideoQueueClipAdded(object? sender, EventArgs e)
         {
-            if (VideoProcessActive)
+            // Sprawdź, czy kolejka jest obudzona
+            VideoQueueAwakeMutex.WaitOne();
+            if (VideoQueueAwake)
             {
-                // Jeśli proces jest uruchomiony, nie uruchamiaj kolejnego
-                Logger.WriteLine("Kolejka VideoQueue jest już przetwarzana.", Priority.Info);
-
+                // Kolejka jest już obudzona, zwolnij mutex i wyjdź z metody
+                VideoQueueAwakeMutex.ReleaseMutex();
+                Logger.WriteLine($"Kolejka VideoQueue jest już aktywna.", Priority.Info);
                 return;
             }
 
-            VideoProcessActive = true;
+            // Kolejka się budzi
+            VideoQueueAwake = true;
+            VideoQueueAwakeMutex.ReleaseMutex();
 
-            Logger.WriteLine("Przetwarzanie kolejki VideoQueue...", Priority.Info);
+            Logger.WriteLine($"Kolejka VideoQueue została aktywowana.", Priority.Info);
 
-            // Wyczyść całą kolejkę
-            while (VideoQueue.Count > 0)
+            // Liczba elementów w kolejce
+            VideoQueueMutex.WaitOne();
+            int videoQueueCount = VideoQueue.Count;
+            VideoQueueMutex.ReleaseMutex();
+
+            while (videoQueueCount > 0)
             {
-                Logger.WriteLine($"Liczba elementów w kolejce VideoQueue: {VideoQueue.Count}", Priority.Info);
+                Logger.WriteLine($"Liczba elementów w kolejce VideoQueue: {videoQueueCount}", Priority.Info);
 
-                Clip clip;
-
-                try
-                {
-                    clip = VideoQueue.Dequeue();
-                }
-
-                catch
-                {
-                    Logger.WriteLine($"Nie udało się pobrać klipu z kolejki VideoQueue.", Priority.Error);
-                    continue;
-                }
+                VideoQueueMutex.WaitOne();
+                Clip clip = VideoQueue.Dequeue();
+                VideoQueueMutex.ReleaseMutex();
 
                 CreateVideo(clip);
 
-                if (VideoQueue.Count == 0)
-                {
-                    VideoProcessActive = false;
-                }
+                VideoQueueMutex.WaitOne();
+                videoQueueCount = VideoQueue.Count;
+                VideoQueueMutex.ReleaseMutex();
             }
 
             Logger.WriteLine($"Kolejka VideoQueue jest pusta.", Priority.Info);
+
+            // Kolejka jest wyłączana
+            VideoQueueAwakeMutex.WaitOne();
+            VideoQueueAwake = false;
+            VideoQueueAwakeMutex.ReleaseMutex();
+
+            Logger.WriteLine($"Kolejka VideoQueue została wyłączona.", Priority.Info);
         }
 
         /// <summary>

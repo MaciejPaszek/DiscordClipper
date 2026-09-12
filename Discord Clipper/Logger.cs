@@ -52,6 +52,7 @@
         private static readonly string LogFilePath = $"{Application.UserAppDataPath}\\Discord Clipper.log";
 
         private static StreamWriter? LogFileStreamWriter;
+        private static Mutex LogFileStreamWriterMutex = new Mutex();
 
         public static event EventHandler<LogData>? LogAdded;
 
@@ -72,23 +73,28 @@
                 productVersion = versionParts[0];
             }
 
-            StreamWriter streamWriter = new StreamWriter(LogFilePath, false);
-            streamWriter.WriteLine($"**************************************************");
-            streamWriter.WriteLine($"* Discord Clipper v{productVersion,-30}*");
-            streamWriter.WriteLine($"* {DateTime.Now,-47:yyyy-MM-dd HH:mm:ss}*");
-            streamWriter.WriteLine($"**************************************************");
+            LogFileStreamWriterMutex.WaitOne();
+            LogFileStreamWriter = new StreamWriter(LogFilePath, false);
+            LogFileStreamWriter.WriteLine($"**************************************************");
+            LogFileStreamWriter.WriteLine($"* Discord Clipper v{productVersion,-30}*");
+            LogFileStreamWriter.WriteLine($"* {DateTime.Now,-47:yyyy-MM-dd HH:mm:ss}*");
+            LogFileStreamWriter.WriteLine($"**************************************************");
 
-            streamWriter.Flush();
-            streamWriter.Close();
+            LogFileStreamWriter.Flush();
+            LogFileStreamWriter.Close();
+
+            LogFileStreamWriterMutex.ReleaseMutex();
+
         }
 
         private static void AppendLogToFile(LogData logData)
         {
-            StreamWriter streamWriter = new StreamWriter(LogFilePath, true);
-            streamWriter.WriteLine(logData.ToString());
-
-            streamWriter.Flush();
-            streamWriter.Close();
+            LogFileStreamWriterMutex.WaitOne();
+            LogFileStreamWriter = new StreamWriter(LogFilePath, true);
+            LogFileStreamWriter.WriteLine(logData.ToString());
+            LogFileStreamWriter.Flush();
+            LogFileStreamWriter.Close();
+            LogFileStreamWriterMutex.ReleaseMutex();
         }
 
         /// <summary>
