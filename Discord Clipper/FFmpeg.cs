@@ -297,13 +297,13 @@ namespace DiscordClipper
             {
                 // Jeśli proces jest uruchomiony, nie uruchamiaj kolejnego
                 Logger.WriteLine("Kolejka ThumbnailQueue jest już przetwarzana.", Priority.Info);
-                return;
+                //return;
             }
-
+            ThumbnailProcessActive = true;
             Logger.WriteLine("Przetwarzanie kolejki ThumbnailQueue...", Priority.Info);
 
             // Zaznacz, że proces jest aktywny
-            ThumbnailProcessActive = true;
+            
 
             // Wyczyść całą kolejkę
             while (ThumbnailQueue.Count > 0)
@@ -323,12 +323,14 @@ namespace DiscordClipper
                 }
 
                 CreateThumbnail(clip);
+
+                if(ThumbnailQueue.Count == 0)
+                {
+                    ThumbnailProcessActive = false;
+                }
             }
 
             Logger.WriteLine("Kolejka ThumbnailQueue jest pusta.", Priority.Info);
-
-            ThumbnailProcessActive = false;
-            
         }
 
         /// <summary>
@@ -564,7 +566,7 @@ namespace DiscordClipper
             catch (Exception ex)
             {
                 Logger.WriteLine($"Nie można rozpocząć procesu countProcess dla pliku \"{inputFile}\": {ex.Message}", Priority.Error);
-                frameCount = -1;
+                frameCount = 0;
                 return -1;
             }
 

@@ -587,7 +587,21 @@ namespace DiscordClipper
             }
             else
             {
-                progressBarOutput.Value = value;
+                if (value > progressBarOutput.Maximum)
+                {
+                    Logger.WriteLine($"Wartość paska postępu ({value}) jest większa niż maksymalna ({progressBarOutput.Maximum}). Ustawiono wartość na maksymalną.", Priority.Warning);
+                    progressBarOutput.Maximum = value;
+                }
+
+                try
+                {
+                    Logger.WriteLine($"Maximum: {progressBarOutput.Maximum}, Value: {value}", Priority.Info);
+                    progressBarOutput.Value = value;
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLine($"Błąd ustawiania wartości paska postępu: {ex.Message}", Priority.Error);
+                }
             }
         }
 
@@ -604,8 +618,23 @@ namespace DiscordClipper
             }
             else
             {
-                progressBarOutput.Value = value;
-                progressBarOutput.Maximum = maximum;
+                try
+                {
+                    Logger.WriteLine($"Maximum: {maximum}, Value: {value}", Priority.Info);
+
+                    if(value > maximum)
+                    {
+                        Logger.WriteLine($"Wartość paska postępu ({value}) jest większa niż maksymalna ({maximum}). Ustawiono wartość na maksymalną.", Priority.Warning);
+                        maximum = value;
+                    }
+
+                    progressBarOutput.Maximum = maximum;
+                    progressBarOutput.Value = value;
+                }                
+                catch(Exception ex)
+                {
+                    Logger.WriteLine($"Błąd ustawiania wartości paska postępu: {ex.Message} - Maximum: {maximum}, Value: {value}", Priority.Error);
+                }
             }
         }
 
